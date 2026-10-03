@@ -210,6 +210,13 @@ class ReleaseExecutorTests(unittest.TestCase):
             self.run_release()
         self.assertEqual(len(self.buffer.creates), 2)
 
+    def test_unexpected_early_sent_post_holds(self):
+        self.run_release()
+        self.buffer.rows["youtube-id"][0]["status"] = "sent"
+        with self.assertRaisesRegex(ReleaseHold, "differs from signed release intent"):
+            self.run_release()
+        self.assertEqual(len(self.buffer.creates), 2)
+
     def test_bad_signature_holds_before_host_or_buffer(self):
         signature = json.loads((self.artifact / "agent-release-signature.json").read_text())
         signature["signature"] = base64.b64encode(b"x" * 64).decode()

@@ -344,7 +344,7 @@ def _post_identity(post: dict[str, Any], channel_id: str, service: str, url: str
         return False
     videos = [a.get("source") for a in post.get("assets", []) if type(a) is dict]
     return (post.get("channelId") == channel_id and post.get("channelService") == service and
-            post.get("status") in ("scheduled", "sent") and
+            post.get("status") == "scheduled" and
             actual_due.tzinfo is not None and actual_due.astimezone(timezone.utc) ==
             due_at.astimezone(timezone.utc) and post.get("text") == text and videos == [url])
 
