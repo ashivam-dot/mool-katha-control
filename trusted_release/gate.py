@@ -18,10 +18,12 @@ from urllib.parse import unquote, urljoin, urlsplit
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from trusted_qa.candidate import load_candidate
-from trusted_qa.common import QaHold, digest_file, json_object, path_under, write_json_new
+from trusted_qa.candidate import Candidate, load_candidate
+from trusted_qa.common import QaHold, digest_file, json_object, path_under, timestamp, write_json_new
 from trusted_qa.fetch import _readable_and_links
 from trusted_qa.media import FRAME_BATCH_SIZE, MAX_REVIEW_BATCHES
+from trusted_qa.observations import FONT_ORIGIN, OFL_GRANTS
+from trusted_qa.provenance import font_source, verify_generated_asset
 
 from .executor import (GATE_CONTEXT, ReleaseHold, ReleasePlan, ReleasePolicy,
                        _check_signature, _read_archive_video, _verify_frozen_source,
@@ -72,7 +74,7 @@ def _fetched_text(root: Path, record: dict, label: str) -> str:
     return text[:-1]
 
 
-def _check_asset_origin(root: Path, source: dict, row: dict, identity: str) -> None:
+def _check_http_asset_origin(root: Path, source: dict, row: dict, identity: str) -> None:
     proof = row.get("origin_proof")
     require(type(proof) is dict and set(proof) ==
             {"source_object_id", "rights_basis", "origin_fetch", "exact_file"} and
@@ -137,6 +139,95 @@ def _check_asset_origin(root: Path, source: dict, row: dict, identity: str) -> N
             source["sha256"].casefold() in rights_text.casefold() or
             type(official_url) is str and official_url.casefold() in rights_text.casefold(),
             f"gate asset {identity} rights do not refer to the exact object")
+
+
+def _check_generated_asset_origin(candidate: Candidate, source: dict,
+                                  row: dict, identity: str) -> None:
+    proof = row.get("origin_proof")
+    rights = row.get("rights_fetch")
+    require(type(rights) is dict and set(rights) ==
+            {"origin", "checked_at", "content_sha256", "provenance_excerpt"} and
+            rights["origin"] == source.get("origin") and
+            rights["content_sha256"] == source["sha256"] and
+            type(rights["provenance_excerpt"]) is str and
+            len(rights["provenance_excerpt"].strip()) >= 20 and
+            rights["provenance_excerpt"] in source.get("rights_basis", ""),
+            f"gate asset {identity} internal rights record is incomplete")
+    try:
+        timestamp(rights["checked_at"], f"gate asset {identity} generation check")
+        checked = verify_generated_asset(candidate, source)
+    except QaHold as exc:
+        raise ReleaseHold(f"gate asset {identity} failed independent generation check: {exc}") from exc
+    require(proof == checked,
+            f"gate asset {identity} signed generation proof differs from control reproduction")
+
+
+def _check_font_asset_origin(root: Path, candidate: Candidate, source: dict,
+                             row: dict, identity: str) -> None:
+    proof = row.get("origin_proof")
+    rights = row.get("rights_fetch")
+    require(type(proof) is dict and set(proof) ==
+            {"kind", "source", "upstream_revision", "font_download", "license_sha256"} and
+            proof["kind"] == "control_upstream_font_v1" and
+            type(rights) is dict and set(rights) ==
+            {"url", "fetched_at", "http_status", "response_sha256", "response_ref",
+             "snapshot_ref", "snapshot_sha256", "license_excerpt"},
+            f"gate asset {identity} exact upstream font proof is incomplete")
+    try:
+        exact_source = font_source(candidate, source)
+    except QaHold as exc:
+        raise ReleaseHold(f"gate asset {identity} font source failed Git check") from exc
+    origin = source.get("origin")
+    match = FONT_ORIGIN.fullmatch(origin) if type(origin) is str else None
+    require(match is not None and proof["source"] == exact_source and
+            proof["upstream_revision"] == match[1] and
+            match[2] == match[3].split("-")[0].lower() and
+            source["file"] == f"pipeline/assets/fonts/{match[3]}" and
+            source.get("license") == "SIL Open Font License 1.1",
+            f"gate asset {identity} font URL or source differs from frozen Google Fonts release")
+    expected_rights_url = (f"https://raw.githubusercontent.com/google/fonts/{match[1]}/"
+                           f"ofl/{match[2]}/OFL.txt")
+    require(source.get("rights_url") == expected_rights_url and
+            rights.get("url") == expected_rights_url and rights.get("http_status") == 200,
+            f"gate asset {identity} upstream OFL URL differs from exact font release")
+    download = proof["font_download"]
+    require(type(download) is dict and set(download) ==
+            {"url", "final_url", "response_ref", "sha256"} and
+            download["url"] == origin and
+            type(download["final_url"]) is str and
+            download["final_url"].startswith("https://") and
+            download["sha256"] == source["sha256"],
+            f"gate asset {identity} exact font download is incomplete")
+    _bound_file(root, download["response_ref"], source["sha256"],
+                f"asset {identity} Google Fonts TTF")
+    _check_fetch(root, rights, f"asset {identity} upstream OFL")
+    raw_license = path_under(root, rights["response_ref"],
+                             f"asset {identity} upstream OFL raw response").read_bytes()
+    try:
+        visible, links = _readable_and_links(raw_license, "text/plain")
+    except QaHold as exc:
+        raise ReleaseHold(f"gate asset {identity} upstream OFL text cannot be checked") from exc
+    snapshot = _fetched_text(root, rights, f"asset {identity} upstream OFL")
+    require(links == () and visible == snapshot and
+            proof["license_sha256"] == exact_source["license"]["sha256"] and
+            rights["response_sha256"] == proof["license_sha256"] and
+            type(rights["license_excerpt"]) is str and
+            rights["license_excerpt"] in snapshot and
+            all(clause in snapshot for clause in OFL_GRANTS),
+            f"gate asset {identity} upstream OFL bytes or grant differ from exact font")
+
+
+def _check_asset_origin(root: Path, candidate: Candidate,
+                        source: dict, row: dict, identity: str) -> None:
+    if source.get("role") == "font" and (
+        "font_sources" in candidate.manifest or
+        str(source.get("origin", "")).startswith(
+            "https://raw.githubusercontent.com/google/fonts/")):
+        _check_font_asset_origin(root, candidate, source, row, identity)
+    elif source.get("role") in {"visual", "music"} and str(source.get("origin", "")).startswith("internal:"):
+        _check_generated_asset_origin(candidate, source, row, identity)
+    else:
+        _check_http_asset_origin(root, source, row, identity)
 
 
 def _check_frame_review(root: Path, candidate: Any, review: dict) -> None:
@@ -217,7 +308,7 @@ def _check_review_evidence(artifact_dir: Path, candidate: Any, review: dict) -> 
                 f"gate asset {identity} differs from exact media")
         rights = row.get("rights_fetch")
         require(type(rights) is dict, f"gate asset {identity} rights are missing")
-        _check_asset_origin(artifact_dir, source, row, identity)
+        _check_asset_origin(artifact_dir, candidate, source, row, identity)
     audio = review.get("audio_review")
     _approved(audio, qa_id, "audio review")
     require(type(audio.get("asr_results")) is list and len(audio["asr_results"]) == 2 and

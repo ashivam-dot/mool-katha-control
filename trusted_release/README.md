@@ -63,8 +63,11 @@ workflow are distinct from QA's. `trusted_release.gate.sign_gate_attestation`
 produces the attestation after rechecking the signed QA review, exact source
 checkout and archive, candidate boundary, source and rights evidence, ASR
 references, visual artifacts, QC dispositions, and voice-quality observation.
-It requires object-specific HTTP origin and rights snapshots for every used
-asset, checks any official download against the exact asset hash, and matches
+It requires object-specific HTTP origin and rights snapshots for ordinary
+external media, checks exact Google Fonts TTF/OFL downloads at one pinned
+upstream revision, and replays control pixel or PCM checks for newly receipted
+designed cards and tanpura beds. Gemini voice receipts still hold because the
+provider audio and full response are absent. It matches
 each saved numbered frame sheet to the signed all-frame pixel audit. Every
 decoded frame must have a clear, low-uncertainty model batch decision. The
 batch request and response hashes are signed by QA, but their private provider
@@ -117,6 +120,11 @@ Provision the DynamoDB table and restricted role, then test the store against
 the real table from independent runner machines. Shadow-test the QA signer and
 gate as separate tagged control jobs against real private QA output; code
 paths are implemented but no workflow, keys, or cloud resources are installed.
+The gate job must use the locked NumPy and Pillow versions, with Pillow built
+with libraqm for Hindi card reproduction, and a full read-only source history
+to verify the receipt's claimed ancestor commits. Shadow-check real cards on
+the producer and gate runners before enabling this comparison, since different
+system text-shaping or font library builds can move glyph pixels.
 Confirm Buffer's `name` field is the canonical username and validate its
 YouTube and Instagram post-detail metadata schema against live read-only
 responses. Then shadow-test Cloudinary's canonical unversioned URL and Buffer

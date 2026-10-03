@@ -125,6 +125,7 @@ jobs:
         with:
           repository: ashivam-dot/mool-katha
           ref: ${{ matrix.source_commit }}
+          fetch-depth: 0 # receipt source commits must be checked as ancestors of the frozen candidate
           ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
           path: source
           persist-credentials: false
@@ -134,9 +135,17 @@ jobs:
       - name: Install locked runner dependencies and media tools
         run: |
           python -m pip install uv==0.9.18
-          uv sync --frozen --project trusted_qa --python 3.12
           sudo apt-get update
-          sudo apt-get install -y ffmpeg poppler-utils tesseract-ocr tesseract-ocr-hin
+          sudo apt-get install -y ffmpeg poppler-utils tesseract-ocr tesseract-ocr-hin \
+            build-essential pkg-config libraqm-dev libfreetype6-dev libjpeg-dev \
+            zlib1g-dev libwebp-dev libtiff-dev
+          uv sync --frozen --project trusted_qa --python 3.12
+          uv pip install --python trusted_qa/.venv/bin/python --reinstall --no-binary pillow \
+            Pillow==12.3.0
+          trusted_qa/.venv/bin/python - <<'PY'
+          from PIL import features
+          assert features.check('raqm'), 'QA Pillow lacks Devanagari text shaping'
+          PY
       - name: Download and verify pinned local Whisper model
         run: |
           trusted_qa/.venv/bin/python - <<'PY'

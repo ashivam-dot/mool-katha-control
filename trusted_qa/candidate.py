@@ -177,6 +177,7 @@ def _records(value: Any, label: str) -> dict[str, dict[str, Any]]:
 @dataclass(frozen=True)
 class Candidate:
     root: Path
+    source_repo: Path
     episode_id: str
     source_commit: str
     qa_agent_id: str
@@ -222,6 +223,28 @@ class Candidate:
         for name, digest in self.archive_members.items():
             require(digest_file(self.root / name) == digest,
                     f"candidate archived file {name} changed after QA started")
+
+    def committed_blob(self, name: str, claimed_commit: str | None = None) -> bytes:
+        """Read exact source bytes from the frozen commit, checking any older claimed commit."""
+        pinned = _git_blob(self.source_repo, self.source_commit, name)
+        assert pinned is not None
+        if claimed_commit is not None:
+            require(isinstance(claimed_commit, str) and
+                    re.fullmatch(r"[0-9a-f]{40}", claimed_commit) is not None,
+                    f"source {name}: claimed Git commit is invalid")
+            # A shallow checkout cannot verify the claim and must hold. The QA
+            # workflow fetches complete source history for this check.
+            try:
+                relation = subprocess.run(
+                    ["git", "-C", str(self.source_repo), "merge-base", "--is-ancestor",
+                     claimed_commit, self.source_commit], capture_output=True,
+                    timeout=20, check=False)
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise QaHold(f"source {name}: claimed Git history could not be checked") from exc
+            require(relation.returncode == 0 and
+                    _git_blob(self.source_repo, claimed_commit, name) == pinned,
+                    f"source {name}: claimed commit does not contain the frozen bytes")
+        return pinned
 
 
 def _asset_file(root: Path, episode: str, name: Any) -> Path:
@@ -493,6 +516,6 @@ def load_candidate(repo: Path, archive: Path, destination: Path, episode_id: str
     for warning in check["warnings"]:
         require(not HARD_WARNING.match(warning) and "is a plain gradient" not in warning,
                 f"hard QC warning requires repair: {warning}")
-    return Candidate(destination, episode_id, source_commit, qa_agent_id, producer, script, spec,
+    return Candidate(destination, repo, episode_id, source_commit, qa_agent_id, producer, script, spec,
                      ledger, manifest, qc, pending, hashes, assets, paths,
                      internal_references, archive_members)

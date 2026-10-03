@@ -16,7 +16,8 @@ from .common import (QA_REPOSITORY, QaHold, digest_file, gemini_text_response,
                      json_object, require, timestamp, utc_now, valid_qa_workflow_ref,
                      write_json_new)
 from .media import MAX_REVIEW_BATCHES, VisualEvidence
-from .observations import ObservationSet, VerifiedHttpAssetRights
+from .observations import (ObservationSet, VerifiedFontAssetRights,
+                           VerifiedGeneratedAssetRights, VerifiedHttpAssetRights)
 from .reviewer import FrameBatchReview, ReviewModelResult
 from .terms import contains_adjacent_words, require_exact_ordered_beat, required_beat_terms
 
@@ -257,7 +258,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     require(set(observations.asset_rights) == set(candidate.assets),
             "every used asset needs independent origin and rights evidence")
     for identity, rights in observations.asset_rights.items():
-        require(isinstance(rights, VerifiedHttpAssetRights),
+        require(isinstance(rights, (VerifiedHttpAssetRights, VerifiedFontAssetRights,
+                                    VerifiedGeneratedAssetRights)),
                 f"asset {identity}: unverified or self-attested rights cannot approve")
         rights.recheck(candidate, candidate.assets[identity])
     decision = model.decision
@@ -316,7 +318,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
         require(isinstance(excerpt, str) and len(excerpt.strip()) >= 10 and
                 not INCOMPATIBLE.search(excerpt),
                 f"asset {identity}: rights excerpt is unclear or incompatible")
-        rights_fetch = rights.rights_page.rights_record(excerpt)
+        rights_fetch = rights.signed_rights_fetch(candidate, asset, excerpt)
         asset_findings.append({**_verdict(qa_id, "agent_checked_origin_and_rights", reviewed_at, item),
                                "id": identity, "sha256": asset["sha256"],
                                **{name: True for name in ASSET_CHECKS}, "rights_fetch": rights_fetch,

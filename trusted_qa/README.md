@@ -39,20 +39,43 @@ The review appears only after committed candidate fields, every archived file,
 assets, source and rights pages, full MP4 decode, every-frame pixel and model
 review, sampled readable frames, two complete audio recognizers, a separate
 full-audio quality observation, and the final semantic decisions validate.
-For every external asset, the runner fetches both the official origin and rights
+For every ordinary external media asset, the runner fetches both the official origin and rights
 pages. They must identify the same `source_object_id`; the rights page must
 name the specific licence and connect to the origin or exact file. The origin
 must visibly print the exact used SHA-256 or link an `official_asset_url` whose
 downloaded bytes match the used file. A generic licence page cannot clear a
-specific asset. Each signed `asset_findings` item carries `origin_proof` with
+specific asset. The ordinary HTTP `asset_findings` item carries `origin_proof` with
 the ledger object ID and rights basis, a content-addressed origin response and
 snapshot, and either the visible file SHA-256 or an exact-byte official
 download reference. Hidden HTML text and links are excluded. External
 stylesheets and CSS hiding selectors the parser cannot check hold; ambiguous
-inline styles are excluded. Internal visual, voice, font,
-music, and sound-effect assets hold until a separate control-owned provenance
-verifier exists. Generated animation holds pending dedicated provenance and
-frame validation.
+inline styles are excluded. New internal designed cards can pass the control
+verifier only with an archived exact-output sidecar, matching frozen spec and
+beat-selection bytes, reviewed generator source, exact font records, and a
+control-rendered typography and background pixel check. The producer's card
+grain is random, so this checks every pixel against the source design's bounded
+grain instead of claiming byte-for-byte regeneration. New tanpura beds require
+the matching sidecar and reviewed source, then all 2,649,600 PCM samples are
+compared with independent control synthesis. The fixed SHA-256 allowlist for
+both generators must be updated by review for any later code version.
+
+Google Fonts may pass only when the new `font_sources` record binds the exact
+rendered TTF and bundled OFL bytes to frozen Git and independent downloads
+from the same pinned `google/fonts` revision match both files. The control
+verifier also checks OFL 1.1's use and embedding clauses. A direct Google Fonts
+URL without those new records, an internal sound effect, a different internal
+visual or music source, and generated animation still hold. An ordinary external asset can
+still use the existing object-specific HTTP proof.
+
+The new Gemini `voice_take` receipt is inspected for its exact archived take,
+frozen script, request body, generator source, and internally consistent
+metadata. It deliberately omits the provider's audio and full response. Its
+claimed response/audio hashes therefore cannot independently prove that Google
+returned the selected take, so every internal Gemini voice still holds before
+an approved review is assembled. A possible next path is a control-owned
+Gemini TTS call that retains the raw provider response/audio and exact generated
+WAV, followed by independent ASR of the final video. The producer's metadata
+receipt alone remains insufficient.
 
 HTTP raw bodies live at
 `agent-qa-responses/<sha256>.bin`; readable UTF-8 text/OCR snapshots live at
@@ -120,6 +143,17 @@ summary.
 Model assessments of accent or pronunciation do not replace native Hindi
 listening. Model inspection of numbered frames does not replace human viewing;
 uncertain visuals hold.
+
+The dormant control gate replays the new card, tanpura, and font checks from
+the signed `origin_proof` and frozen candidate. The studio's current signed
+review validator still uses the older object-page HTTP schema for any HTTPS
+font origin. It must separately recognize `control_upstream_font_v1` before it
+can consume a new font proof. The draft QA workflow fetches full source history
+to verify claimed receipt commits as ancestors, and builds Pillow 12.3.0 with
+libraqm for Devanagari card comparison. A Linux shadow run still needs to show
+that producer and control font rasterization stays inside the pixel bounds;
+Pillow's version alone does not pin the system text-shaping and font libraries.
+The workflow remains inert and has not reviewed a production candidate.
 
 ## Verification
 
