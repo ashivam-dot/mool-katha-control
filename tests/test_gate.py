@@ -7,6 +7,7 @@ import json
 import tempfile
 import unittest
 from copy import deepcopy
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -21,8 +22,10 @@ from trusted_qa.fetch import _readable_and_links
 from trusted_qa.observations import OFL_GRANTS
 from trusted_qa.provenance import TANPURA_PARAMETERS, verify_generated_asset
 from trusted_qa.signing import sign_assembled_review
+from trusted_qa.voice_exchange import VoiceExchangePolicy
 from trusted_qa.tests.test_assemble import build_synthetic_approved_review
-from trusted_release.executor import ReleaseHold, ReleasePlan, ReleasePolicy
+from trusted_release.executor import (ReleaseHold, ReleasePlan, ReleasePolicy,
+                                      _verify_gate_attestation)
 from trusted_release.gate import (_check_asset_origin, _check_review_evidence,
                                   sign_gate_attestation)
 
@@ -174,6 +177,33 @@ class GateTests(unittest.TestCase):
         with self.assertRaisesRegex(ReleaseHold, "not pinned"):
             self.run_gate()
         self.assertFalse((self.candidate.episode_dir / "release-gate-signature.json").exists())
+
+    def test_voice_policy_change_invalidates_gate_attestation_and_release_intent(self):
+        voice_ref = ("ashivam-dot/mool-katha-control/.github/workflows/"
+                     "control-voice.yml@refs/tags/voice-v1")
+        public = lambda key: key.public_key().public_bytes(
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+        voice_policy = VoiceExchangePolicy(voice_ref, "d" * 40,
+                                           {"voice-key-1": public(Ed25519PrivateKey.generate())})
+        self.policy = replace(self.policy, voice_policy=voice_policy)
+        attestation_path, _ = self.run_gate()
+        attestation = json.loads(attestation_path.read_bytes())
+        self.assertEqual(attestation["voice_policy_sha256"], voice_policy.digest())
+        _verify_gate_attestation(self.candidate.episode_dir, self.plan, self.policy,
+                                 self.review, attestation["frozen_sha256"])
+
+        replacement = VoiceExchangePolicy(voice_ref, "d" * 40,
+                                           {"voice-key-1": public(Ed25519PrivateKey.generate())})
+        changed = replace(self.policy, voice_policy=replacement)
+        self.assertNotEqual(self.plan.intent_sha256(self.policy),
+                            self.plan.intent_sha256(changed))
+        with self.assertRaisesRegex(ReleaseHold, "does not bind the exact reviewed candidate"):
+            _verify_gate_attestation(self.candidate.episode_dir, self.plan, changed,
+                                     self.review, attestation["frozen_sha256"])
+        with self.assertRaisesRegex(ReleaseHold, "does not bind the exact reviewed candidate"):
+            _verify_gate_attestation(self.candidate.episode_dir, self.plan,
+                                     replace(self.policy, voice_policy=None),
+                                     self.review, attestation["frozen_sha256"])
 
     def test_generated_proof_replays_receipt_and_control_result(self):
         root = self.root / "generated-proof"

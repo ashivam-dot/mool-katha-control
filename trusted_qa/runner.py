@@ -21,6 +21,7 @@ from .media import extract_full_final_audio, make_visual_evidence
 from .observations import collect_observations
 from .reviewer import gemini_independent_review, gemini_review_frame_batches
 from .signing import sign_assembled_review
+from .voice_exchange import VoiceExchangePolicy
 
 
 def github_run_context(env: dict[str, str] | None = None) -> tuple[dict[str, Any], str]:
@@ -91,7 +92,9 @@ def discover_pending(repo: Path, source_commit: str, *, limit: int = 8) -> list[
 
 def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
             archive_path: Path | None = None, env: dict[str, str] | None = None,
-            qa_signing_key: bytes | None = None, qa_signing_key_id: str | None = None) -> Path:
+            qa_signing_key: bytes | None = None, qa_signing_key_id: str | None = None,
+            *, voice_bundle_path: Path | None = None,
+            voice_policy: VoiceExchangePolicy | None = None) -> Path:
     """Produce an unsigned or explicitly signed review after all checks pass."""
     values = os.environ if env is None else env
     require(EPISODE.fullmatch(episode_id) is not None, "QA needs an epNNN candidate")
@@ -136,11 +139,23 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         require(digest_file(archive_path) == archive_sha,
                 "private draft archive changed during candidate collection")
         video_hash = candidate.hashes["video"]
-        stage = "source_and_rights"
-        observations = collect_observations(candidate, private)
+        if any(asset.get("role") == "voice" and
+               isinstance(asset.get("origin"), str) and
+               asset["origin"].startswith("control:gemini:")
+               for asset in candidate.assets.values()):
+            stage = "control_voice_input"
+            require(isinstance(voice_policy, VoiceExchangePolicy) and
+                    isinstance(voice_bundle_path, Path),
+                    "control voice needs a separately pinned owner policy and signed bundle")
         stage = "media_decode"
         audio_path = private / "full-final-audio.wav"
         duration = extract_full_final_audio(candidate.video_path, audio_path, candidate.check["duration"])
+        stage = "source_and_rights"
+        observations = collect_observations(candidate, private,
+                                            voice_bundle_path=voice_bundle_path,
+                                            voice_policy=voice_policy,
+                                            final_audio_path=audio_path)
+        stage = "media_decode"
         visual = make_visual_evidence(candidate.video_path, candidate.episode_dir,
                                       candidate.manifest["beats"], candidate.check["duration"],
                                       candidate.hashes["video"], private)

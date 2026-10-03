@@ -67,15 +67,50 @@ URL without those new records, an internal sound effect, a different internal
 visual or music source, and generated animation still hold. An ordinary external asset can
 still use the existing object-specific HTTP proof.
 
-The new Gemini `voice_take` receipt is inspected for its exact archived take,
-frozen script, request body, generator source, and internally consistent
-metadata. It deliberately omits the provider's audio and full response. Its
-claimed response/audio hashes therefore cannot independently prove that Google
-returned the selected take, so every internal Gemini voice still holds before
-an approved review is assembled. A possible next path is a control-owned
-Gemini TTS call that retains the raw provider response/audio and exact generated
-WAV, followed by independent ASR of the final video. The producer's metadata
-receipt alone remains insufficient.
+The legacy Gemini `voice_take` receipt is inspected for its exact archived
+take, frozen script, request, generator source, and internally consistent
+metadata. It omits the provider's full response and returned audio. Its hashes
+cannot independently prove that Google returned the selected take, so this
+legacy voice path still holds before an approved review is assembled.
+
+`voice_exchange.issue_voice_exchange` implements a separate control-owned
+path. An owner-reviewed `VoiceExchangePolicy` pins the control repository's
+`voice-v1` workflow tag, exact workflow SHA, and Ed25519 public key. The issuer
+reads `short.yaml` and `script.json` from one frozen Git commit, sends their
+canonical TTS request, retains `request.json`, the complete `response.json`,
+the returned `provider-audio.wav`, and a derived mono 24 kHz PCM16
+`narration.wav`. It signs the raw `exchange.json` record and saves a detached
+`signature.json`. The private signing seed and provider key must stay in the
+separate control job. No issuing workflow is installed; the offline validation
+below uses a mocked provider response.
+
+The studio handoff must place those exact `narration.wav` bytes at
+`content/episodes/epNNN/work/narration.wav`, with a manifest
+`control_voice_exchange` link and a `control:gemini:<exchange SHA-256>` asset
+origin. That link has `schema: control_gemini_tts_exchange_v1`,
+`exchange_sha256`, `narration_sha256`, and `narration_asset_id`. The voice asset
+also needs the official terms URL as `rights_url` and
+`Gemini API Additional Terms` as `license`. The studio's TTS and render path
+must accept the control WAV by exact copy, skip its own TTS request and WAV
+trimming, and avoid a tempo change. Its manifest must omit `voice_take` and
+`narration_transform`; the archive must retain the exact narration WAV. The Python
+`runner.run_one` API accepts a bundle path outside both producer inputs and a
+separately pinned policy. QA copies the six files to `agent-control-voice/`,
+replays the signature, saved response, WAV derivation, frozen request, and
+asset hashes, then checks for the narration waveform in the complete mixed
+final-video audio. Any future approval would also require both
+full-final-audio recognizers; the current rights hold occurs before ASR.
+
+A signed exchange issued by the separate control workflow could resolve the
+missing provider-origin evidence; commercial-use rights remain unresolved.
+After a valid proof, QA
+writes `private/control-voice-origin.json` and an explicit hold; it does not
+assemble an approved review. The Gemini terms URL and producer's
+commercial-use claim are not an independently verified, explicit
+commercial-use grant. The control gate path is coded to replay the bundle and
+hold this rights gap if it reaches
+a signed review. The current CLI and inert draft workflow do not supply the
+voice bundle or policy.
 
 HTTP raw bodies live at
 `agent-qa-responses/<sha256>.bin`; readable UTF-8 text/OCR snapshots live at
@@ -108,6 +143,7 @@ caption and source inspection. Runs exceeding 72 review sheets hold.
 | Scope | Variables | Value or purpose |
 | --- | --- | --- |
 | Trusted Actions run | `GITHUB_REPOSITORY`, `GITHUB_WORKFLOW_REF`, `GITHUB_WORKFLOW_SHA`, `GITHUB_RUN_ID`, `GITHUB_RUN_ATTEMPT` | Actual GitHub context. Repository must be `ashivam-dot/mool-katha-control`; workflow ref may be a branch for shadow QA or `refs/tags/qa-v1`. Export `github.workflow_sha` as `GITHUB_WORKFLOW_SHA`. |
+| Separate control voice issuer | Owner-reviewed `VoiceExchangePolicy`, private Ed25519 seed, injected Gemini API key | Pins `refs/tags/voice-v1` and its exact workflow SHA; the key and workflow must be distinct from QA and gate signing. No issuer workflow or live key is configured here. |
 | Model review job secret | `QA_GEMINI_API_KEY` | QA-only Gemini API credential; never present in the Modal fetch job. |
 | Explicit Gemini models | `QA_GEMINI_ASR_MODEL`, `QA_GEMINI_QUALITY_MODEL`, `QA_GEMINI_REVIEW_MODEL` | Draft: `gemini-2.5-flash`, `gemini-2.5-flash`, `gemini-2.5-pro`. Provider-returned model versions and request IDs are retained. Confirm access with a shadow run. |
 | Pinned local ASR | `QA_WHISPER_MODEL_REPO`, `QA_WHISPER_MODEL_REVISION`, `QA_WHISPER_MODEL_SHA256`, `QA_WHISPER_MODEL_DIR` | `Systran/faster-whisper-large-v3`, commit `edaa852ec7e145841d8ffdb056a99866b5f0a478`, `model.bin` SHA-256 `69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1`, and its downloaded local directory. |
@@ -154,14 +190,26 @@ libraqm for Devanagari card comparison. A Linux shadow run still needs to show
 that producer and control font rasterization stays inside the pixel bounds;
 Pillow's version alone does not pin the system text-shaping and font libraries.
 The workflow remains inert and has not reviewed a production candidate.
+The voice issuer has no workflow in this tree. Lifting its commercial-rights
+hold requires independently verifiable grant evidence and a separate review of
+the QA and gate rules before any workflow activation or release.
 
 ## Verification
 
 ```sh
 trusted_qa/.venv/bin/python -m unittest discover -s trusted_qa/tests -v
+trusted_qa/.venv/bin/python -m unittest \
+  trusted_qa.tests.test_voice_exchange \
+  trusted_qa.tests.test_control_voice_observations \
+  tests.test_control_voice_gate -v
 python3.12 -m compileall -q trusted_qa
 ```
 
 The tests use synthetic media and mocked provider output plus short real
 FFmpeg decodes. Those fixtures check code and gate schema; they are
 never production QA evidence.
+
+The focused voice tests are an offline synthetic dry run: they create a temporary
+Git source and PCM WAV, replaces `_post_provider`, and checks signing, tamper
+rejection, workflow pins, and final-audio matching. It makes no paid provider
+call and supplies no commercial-rights evidence.

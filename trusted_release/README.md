@@ -28,11 +28,14 @@ IAM role has been provisioned or tested against AWS.
   file, hashes its exact bytes, and never imports or executes producer code.
 - `ReleasePolicy` pins distinct QA and gate public keys, their immutable
   workflow tags/SHAs, both Buffer destination IDs and exact usernames, and
-  the Cloudinary cloud. Remove a revoked key from this reviewed policy.
+  the Cloudinary cloud. Its optional `voice_policy` pins a third, distinct
+  workflow and public key; the gate requires it for a control voice origin.
+  Remove a revoked QA, gate, or voice key from this reviewed policy.
 - `ReleasePlan` is a reviewed control-repository decision for **one** source
   commit, archive, signed review, MP4, IST slot, YouTube description, Instagram
   caption, and YouTube posting metadata. Its digest also binds the policy's
-  destination identities and the Instagram Reel/AI metadata. It must not be
+  destination identities, the voice-policy digest, and the Instagram Reel/AI
+  metadata. It must not be
   constructed from producer files or model output.
 
 `release_pair` first verifies the detached QA Ed25519 signature over
@@ -41,7 +44,8 @@ provenance, the signed voice-quality artifact reference, and each frozen Git
 blob. It separately verifies the trusted gate signature over
 `b"mool-katha-control-release-gate-v1\0" + exact_attestation_bytes`; that
 attestation binds the source commit, archive, review and signature, quality
-artifact, MP4, all five frozen file hashes, and gate workflow identity.
+artifact, MP4, all five frozen file hashes, gate workflow identity, and the
+voice-policy digest when a voice policy is supplied.
 The voice-quality artifact records a **model observation**, not human
 listening. The executor then verifies the private MP4 hash, exact Buffer
 usernames and explicit false readiness flags, hosts the hash-named video
@@ -54,6 +58,9 @@ The gate attestation is a JSON object with exact fields `kind`, `decision`,
 `review_signature_sha256`, `video_sha256`, `frozen_sha256`,
 `quality_observation_sha256`, and `gate_run`. Its `kind` is
 `control_release_gate_attestation_v1`; `decision` must be `approved`.
+When the policy includes a control voice pin, the attestation also has
+`voice_policy_sha256`; removing or changing that pin invalidates the signed
+attestation and release intent.
 `frozen_sha256` maps the five paths above to raw SHA-256 digests. `gate_run`
 names `system`, `repository`, `workflow_ref`, `workflow_sha`, `run_id`, and
 `run_attempt`. The detached `release-gate-signature.json` has exact fields
@@ -66,14 +73,63 @@ references, visual artifacts, QC dispositions, and voice-quality observation.
 It requires object-specific HTTP origin and rights snapshots for ordinary
 external media, checks exact Google Fonts TTF/OFL downloads at one pinned
 upstream revision, and replays control pixel or PCM checks for newly receipted
-designed cards and tanpura beds. Gemini voice receipts still hold because the
-provider audio and full response are absent. It matches
+designed cards and tanpura beds. Legacy producer Gemini `voice_take` receipts
+still hold because the provider audio and full response are absent. It matches
 each saved numbered frame sheet to the signed all-frame pixel audit. Every
 decoded frame must have a clear, low-uncertainty model batch decision. The
 batch request and response hashes are signed by QA, but their private provider
 traces are not present in this gate artifact; a live shadow run must confirm
 the QA archive preserves those traces before the gate is enabled.
 No workflow invokes it yet.
+
+## Control-owned voice boundary
+
+The separate control voice issuer is a Python API with no active workflow. It
+reads the frozen script and voice specification from an exact Git commit,
+retains the complete Gemini request and response plus the
+returned PCM WAV, derives `narration.wav`, and signs `exchange.json` with a
+separate Ed25519 key. The six-file `agent-control-voice/` bundle also includes
+`signature.json`. A producer using this path must hand the exact signed
+`narration.wav` bytes to the studio as its narration asset and link their SHA-256
+in `control_voice_exchange`; no replacement take or tempo transform is allowed.
+The current studio TTS and render functions must be updated to copy this WAV
+without a provider call, trim, or rewrite, to omit `voice_take`, and to archive
+the exact WAV with the candidate.
+
+QA verifies the signed bundle against the frozen Git source and narration
+asset, then checks the narration waveform in the complete mixed video audio.
+Any future approval would still require full-final-video ASR; the current
+rights hold occurs first. If reached with a signed review, the gate replays
+this proof with `ReleasePolicy.voice_policy`, including a fresh final-audio
+decode. FFmpeg builds can write different WAV container headers for the same
+audio. The gate compares immutable signed exchange fields and checks the QA
+audio observation's format while independently measuring narration correlation
+on its own decode. A real cross-run shadow test is still needed to calibrate
+these waveform thresholds on the final production mix.
+
+The old producer `voice_take` metadata alone cannot establish the provider
+origin because it omitted the full response and audio.
+
+Even a valid control origin proof leaves commercial-use rights unresolved.
+The Gemini terms URL and producer rights claims are not an independently
+verified, explicit commercial-use basis. QA writes a hold after recording its
+origin proof, and the gate also explicitly holds this case; neither can grant
+release authority under the current rules. The focused offline synthetic dry
+run is:
+
+```sh
+trusted_qa/.venv/bin/python -m unittest \
+  trusted_qa.tests.test_voice_exchange \
+  trusted_qa.tests.test_control_voice_observations \
+  tests.test_control_voice_gate -v
+```
+
+It uses a temporary Git source, generated PCM WAV, mock provider response,
+and test signing key. It makes no live provider call and supplies no evidence
+of a live provider response or commercial rights. The issuer, QA, gate, and
+release workflows remain inactive for this path.
+
+## Release execution
 
 The injected `DurableReleaseStore` must hold a lock across independent runner
 machines and synchronously fsync or equivalently confirm each journal write.
@@ -120,6 +176,11 @@ Provision the DynamoDB table and restricted role, then test the store against
 the real table from independent runner machines. Shadow-test the QA signer and
 gate as separate tagged control jobs against real private QA output; code
 paths are implemented but no workflow, keys, or cloud resources are installed.
+
+For control voice, first obtain and independently verify an explicit
+commercial-use grant, then review the corresponding QA and gate rule changes
+and shadow-test a genuine privately issued bundle before activation.
+
 The gate job must use the locked NumPy and Pillow versions, with Pillow built
 with libraqm for Hindi card reproduction, and a full read-only source history
 to verify the receipt's claimed ancestor commits. Shadow-check real cards on

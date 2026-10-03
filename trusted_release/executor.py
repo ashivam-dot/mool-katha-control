@@ -28,6 +28,8 @@ from zoneinfo import ZoneInfo
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+from trusted_qa.voice_exchange import VoiceExchangePolicy
+
 CONTEXT = b"mool-katha-agent-release-v1\0"
 IST = ZoneInfo("Asia/Kolkata")
 EPISODE = re.compile(r"ep[0-9]{3}\Z")
@@ -97,6 +99,7 @@ class ReleasePolicy:
     instagram_channel_id: str
     instagram_handle: str
     cloudinary_cloud: str
+    voice_policy: VoiceExchangePolicy | None = None
 
     def __post_init__(self) -> None:
         require(self.qa_repository == "ashivam-dot/mool-katha-control", "QA repository pin is invalid")
@@ -119,12 +122,22 @@ class ReleasePolicy:
                 self.qa_workflow_ref != self.gate_workflow_ref,
                 "QA and signer gate must use separate keys and workflows")
         object.__setattr__(self, "gate_keys", MappingProxyType(dict(self.gate_keys)))
+        require(self.voice_policy is None or
+                isinstance(self.voice_policy, VoiceExchangePolicy) and
+                self.voice_policy.workflow_ref not in
+                {self.qa_workflow_ref, self.gate_workflow_ref} and
+                not set(self.voice_policy.keys.values()) &
+                (set(self.qa_keys.values()) | set(self.gate_keys.values())),
+                "control voice policy must pin a separate workflow and public key")
         require(self.youtube_channel_id != self.instagram_channel_id,
                 "YouTube and Instagram destinations must differ")
         require(bool(self.youtube_channel_id and self.instagram_channel_id
                      and self.youtube_handle and self.instagram_handle), "destination pins are incomplete")
         require(re.fullmatch(r"[A-Za-z0-9_-]+", self.cloudinary_cloud) is not None,
                 "Cloudinary cloud pin is invalid")
+
+    def voice_policy_sha256(self) -> str | None:
+        return self.voice_policy.digest() if self.voice_policy is not None else None
 
 
 @dataclass(frozen=True)
@@ -175,7 +188,8 @@ class ReleasePlan:
                   "youtube_channel_id": policy.youtube_channel_id,
                   "instagram_channel_id": policy.instagram_channel_id,
                   "youtube_handle": policy.youtube_handle, "instagram_handle": policy.instagram_handle,
-                  "cloudinary_cloud": policy.cloudinary_cloud}
+                  "cloudinary_cloud": policy.cloudinary_cloud,
+                  "voice_policy_sha256": policy.voice_policy_sha256()}
         return hashlib.sha256(json.dumps(intent, sort_keys=True, separators=(",", ":"),
                                          ensure_ascii=False, allow_nan=False).encode()).hexdigest()
 
@@ -279,9 +293,12 @@ def _verify_gate_attestation(artifact_dir: Path, plan: ReleasePlan, policy: Rele
         Ed25519PublicKey.from_public_bytes(policy.gate_keys[key_id]).verify(signature, GATE_CONTEXT + raw)
     except (InvalidSignature, ValueError) as exc:
         raise ReleaseHold("signer gate signature is invalid") from exc
-    require(set(signed) == {"kind", "decision", "episode_id", "source_commit", "archive_sha256",
-                            "review_sha256", "review_signature_sha256", "video_sha256",
-                            "frozen_sha256", "quality_observation_sha256", "gate_run"} and
+    fields = {"kind", "decision", "episode_id", "source_commit", "archive_sha256",
+              "review_sha256", "review_signature_sha256", "video_sha256",
+              "frozen_sha256", "quality_observation_sha256", "gate_run"}
+    if policy.voice_policy is not None:
+        fields.add("voice_policy_sha256")
+    require(set(signed) == fields and
             signed["kind"] == "control_release_gate_attestation_v1" and
             signed["decision"] == "approved" and signed["episode_id"] == plan.episode_id and
             signed["source_commit"] == plan.source_commit and
@@ -293,7 +310,9 @@ def _verify_gate_attestation(artifact_dir: Path, plan: ReleasePlan, policy: Rele
                 _read_regular(artifact_dir / "agent-release-signature.json", MAX_SIGNATURE_BYTES,
                               "QA signature")).hexdigest() and
             signed["quality_observation_sha256"] ==
-            review["audio_review"]["quality_observation"]["sha256"],
+            review["audio_review"]["quality_observation"]["sha256"] and
+            (policy.voice_policy is None or
+             signed["voice_policy_sha256"] == policy.voice_policy_sha256()),
             "signer gate attestation does not bind the exact reviewed candidate")
     run = signed["gate_run"]
     require(type(run) is dict and set(run) == {"system", "repository", "workflow_ref",

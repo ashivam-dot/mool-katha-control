@@ -9,7 +9,9 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import os
+import re
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -21,9 +23,11 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from trusted_qa.candidate import Candidate, load_candidate
 from trusted_qa.common import QaHold, digest_file, json_object, path_under, timestamp, write_json_new
 from trusted_qa.fetch import _readable_and_links
-from trusted_qa.media import FRAME_BATCH_SIZE, MAX_REVIEW_BATCHES
+from trusted_qa.media import FRAME_BATCH_SIZE, MAX_REVIEW_BATCHES, extract_full_final_audio
 from trusted_qa.observations import FONT_ORIGIN, OFL_GRANTS
 from trusted_qa.provenance import font_source, verify_generated_asset
+from trusted_qa.voice_exchange import (QA_BUNDLE_DIR, VoiceExchangePolicy,
+                                       verify_candidate_voice)
 
 from .executor import (GATE_CONTEXT, ReleaseHold, ReleasePlan, ReleasePolicy,
                        _check_signature, _read_archive_video, _verify_frozen_source,
@@ -217,8 +221,62 @@ def _check_font_asset_origin(root: Path, candidate: Candidate, source: dict,
             f"gate asset {identity} upstream OFL bytes or grant differ from exact font")
 
 
+def _replay_control_voice_origin(root: Path, candidate: Candidate, source: dict,
+                                 row: dict, identity: str, *,
+                                 voice_policy: VoiceExchangePolicy | None,
+                                 final_audio_path: Path | None) -> dict:
+    """Replay the QA-copied signed bundle against a fresh final-video audio decode."""
+    require(isinstance(voice_policy, VoiceExchangePolicy) and
+            isinstance(final_audio_path, Path),
+            f"gate asset {identity} lacks an independently pinned voice policy or final audio")
+    try:
+        replayed = verify_candidate_voice(candidate, source, root / QA_BUNDLE_DIR,
+                                          final_audio_path, voice_policy)
+    except QaHold as exc:
+        raise ReleaseHold(f"gate asset {identity} control voice replay failed: {exc}") from exc
+    signed = row.get("origin_proof")
+    stable = set(replayed) - {"final_audio_sha256", "audio_match"}
+    require(type(signed) is dict and set(signed) == set(replayed) and
+            all(signed[key] == replayed[key] for key in stable),
+            f"gate asset {identity} signed control voice proof differs from independent replay")
+    metrics = signed["audio_match"]
+    require(type(signed["final_audio_sha256"]) is str and
+            re.fullmatch(r"[0-9a-f]{64}", signed["final_audio_sha256"]) is not None and
+            type(metrics) is dict and set(metrics) ==
+            {"method", "offset_samples_16k", "global_correlation",
+             "median_window_correlation", "checked_windows", "strong_windows"} and
+            metrics["method"] == "waveform_correlation_v1" and
+            type(metrics["offset_samples_16k"]) is int and
+            abs(metrics["offset_samples_16k"]) <= 8_000 and
+            all(type(metrics[key]) in (int, float) and math.isfinite(metrics[key])
+                for key in ("global_correlation", "median_window_correlation")) and
+            0.45 <= metrics["global_correlation"] <= 1 and
+            0.50 <= metrics["median_window_correlation"] <= 1 and
+            type(metrics["checked_windows"]) is int and
+            3 <= metrics["checked_windows"] <= 30 and
+            type(metrics["strong_windows"]) is int and
+            math.ceil(0.7 * metrics["checked_windows"]) <=
+            metrics["strong_windows"] <= metrics["checked_windows"],
+            f"gate asset {identity} signed control voice audio observation is malformed")
+    return replayed
+
+
 def _check_asset_origin(root: Path, candidate: Candidate,
-                        source: dict, row: dict, identity: str) -> None:
+                        source: dict, row: dict, identity: str, *,
+                        voice_policy: VoiceExchangePolicy | None = None,
+                        final_audio_path: Path | None = None) -> None:
+    if source.get("role") == "voice" and str(source.get("origin", "")).startswith(
+            "control:gemini:"):
+        _replay_control_voice_origin(root, candidate, source, row, identity,
+                                     voice_policy=voice_policy,
+                                     final_audio_path=final_audio_path)
+        raise ReleaseHold(f"gate asset {identity} commercial-use rights remain unresolved; "
+                          "an independently verified explicit commercial-use basis is required")
+    voice_spec = candidate.spec.get("voice")
+    if source.get("role") == "voice" and type(voice_spec) is dict and voice_spec.get(
+            "engine") == "gemini":
+        raise ReleaseHold(f"gate asset {identity} Gemini voice lacks a signed "
+                          "control provider-origin exchange")
     if source.get("role") == "font" and (
         "font_sources" in candidate.manifest or
         str(source.get("origin", "")).startswith(
@@ -288,7 +346,9 @@ def _check_frame_review(root: Path, candidate: Any, review: dict) -> None:
     require(next_index == count + 1, "gate frame review did not cover every decoded frame")
 
 
-def _check_review_evidence(artifact_dir: Path, candidate: Any, review: dict) -> None:
+def _check_review_evidence(artifact_dir: Path, candidate: Any, review: dict, *,
+                           voice_policy: VoiceExchangePolicy | None = None,
+                           final_audio_path: Path | None = None) -> None:
     qa_id = candidate.qa_agent_id
     claims = _same_ids(review.get("claim_findings"),
                        {item["id"] for item in candidate.ledger["claims"]}, "claim findings")
@@ -306,6 +366,11 @@ def _check_review_evidence(artifact_dir: Path, candidate: Any, review: dict) -> 
         _approved(row, qa_id, f"asset {identity}")
         require(row.get("sha256") == source["sha256"],
                 f"gate asset {identity} differs from exact media")
+        if source.get("role") == "voice" and str(source.get("origin", "")).startswith(
+                "control:gemini:"):
+            _check_asset_origin(artifact_dir, candidate, source, row, identity,
+                                voice_policy=voice_policy,
+                                final_audio_path=final_audio_path)
         rights = row.get("rights_fetch")
         require(type(rights) is dict, f"gate asset {identity} rights are missing")
         _check_asset_origin(artifact_dir, candidate, source, row, identity)
@@ -408,7 +473,16 @@ def sign_gate_attestation(plan: ReleasePlan, policy: ReleasePolicy, artifact_dir
                     for name in ("script", "spec", "video", "qc", "evidence", "manifest")),
                 "gate candidate differs from signed QA hashes")
         try:
-            _check_review_evidence(artifact_dir, candidate, review)
+            final_audio_path = None
+            if any(asset.get("role") == "voice" and
+                   str(asset.get("origin", "")).startswith("control:gemini:")
+                   for asset in candidate.assets.values()):
+                final_audio_path = root / "gate-full-final-audio.wav"
+                extract_full_final_audio(candidate.video_path, final_audio_path,
+                                         candidate.check["duration"])
+            _check_review_evidence(artifact_dir, candidate, review,
+                                   voice_policy=policy.voice_policy,
+                                   final_audio_path=final_audio_path)
             candidate.recheck()
             require(digest_file(archive) == plan.archive_sha256,
                     "gate private archive changed during evidence validation")
@@ -429,6 +503,8 @@ def sign_gate_attestation(plan: ReleasePlan, policy: ReleasePolicy, artifact_dir
         "quality_observation_sha256": review["audio_review"]["quality_observation"]["sha256"],
         "gate_run": gate_run,
     }
+    if policy.voice_policy is not None:
+        attestation["voice_policy_sha256"] = policy.voice_policy_sha256()
     attestation_path = artifact_dir / "release-gate-attestation.json"
     signature_path = artifact_dir / "release-gate-signature.json"
     require(not attestation_path.exists() and not signature_path.exists(),

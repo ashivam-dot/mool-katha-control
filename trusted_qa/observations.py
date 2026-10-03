@@ -13,6 +13,8 @@ from .common import QaHold, digest_file, require, utc_now, write_json_new
 from .fetch import (AssetDownloadObservation, FetchObservation, _readable_and_links,
                     fetch_exact_asset, fetch_observation, text_window)
 from .provenance import font_source, inspect_voice_take, verify_generated_asset
+from .voice_exchange import (VoiceExchangePolicy, copy_voice_exchange,
+                             verify_candidate_voice)
 
 
 OBJECT_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{7,127}\Z")
@@ -226,7 +228,10 @@ class ObservationSet:
     review_packet: dict[str, Any]
 
 
-def collect_observations(candidate: Candidate, private_audit_dir: Path) -> ObservationSet:
+def collect_observations(candidate: Candidate, private_audit_dir: Path, *,
+                         voice_bundle_path: Path | None = None,
+                         voice_policy: VoiceExchangePolicy | None = None,
+                         final_audio_path: Path | None = None) -> ObservationSet:
     """Fetch each distinct page once and hold rights lacking exact object proof."""
     candidate.recheck()
     cache: dict[str, FetchObservation] = {}
@@ -272,6 +277,29 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
                 f"used asset {identity} changed during rights check")
         origin_url = asset.get("origin")
         rights_url = asset.get("rights_url")
+        if asset["role"] == "voice" and isinstance(origin_url, str) and origin_url.startswith(
+                "control:gemini:"):
+            require(isinstance(voice_policy, VoiceExchangePolicy) and
+                    isinstance(voice_bundle_path, Path) and
+                    isinstance(final_audio_path, Path),
+                    f"asset {identity}: independently pinned control voice policy, bundle, "
+                    "and final audio are required")
+            require(voice_bundle_path.is_dir() and
+                    not voice_bundle_path.resolve().is_relative_to(candidate.root.resolve()) and
+                    not voice_bundle_path.resolve().is_relative_to(candidate.source_repo.resolve()),
+                    f"asset {identity}: signed voice bundle must arrive outside producer inputs")
+            qa_bundle = copy_voice_exchange(voice_bundle_path, candidate.episode_dir,
+                                            voice_policy)
+            proof = verify_candidate_voice(candidate, asset, qa_bundle,
+                                           final_audio_path, voice_policy)
+            hold_reason = (f"asset {identity}: signed control Gemini origin was verified, but "
+                           "commercial-use rights remain unresolved; an independently verified "
+                           "explicit commercial-use basis is required")
+            write_json_new(private_audit_dir / "control-voice-origin.json",
+                           {"kind": "control_voice_origin_observation_v1",
+                            "origin_proof": proof, "rights_status": "hold",
+                            "rights_url": rights_url, "reason": hold_reason})
+            raise QaHold(hold_reason)
         if asset["role"] == "font" and (
             "font_sources" in candidate.manifest or
             isinstance(origin_url, str) and origin_url.startswith(
@@ -330,6 +358,11 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
             inspect_voice_take(candidate, asset)
             raise QaHold(f"asset {identity}: Gemini provider audio was omitted from the producer receipt; "
                          "its provider origin needs independent evidence")
+        voice_spec = candidate.spec.get("voice")
+        if asset["role"] == "voice" and isinstance(voice_spec, dict) and voice_spec.get(
+                "engine") == "gemini":
+            raise QaHold(f"asset {identity}: Gemini voice requires a signed control exchange "
+                         "for independent provider-origin evidence")
         if (not isinstance(origin_url, str) or not origin_url.startswith("https://") or
                 not isinstance(rights_url, str) or not rights_url.startswith("https://")):
             requirement = INTERNAL_RECORDS_REQUIRED.get(asset["role"], "an independently verifiable record")
