@@ -9,13 +9,14 @@ from __future__ import annotations
 
 import base64
 import copy
-import fcntl
 import hashlib
 import json
-import os
 import re
+import subprocess
 import tarfile
 import tempfile
+from abc import ABC, abstractmethod
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -39,6 +40,10 @@ MAX_REVIEW_BYTES = 8 * 1024 * 1024
 MAX_SIGNATURE_BYTES = 16 * 1024
 MAX_QUALITY_BYTES = 128 * 1024
 MAX_POSTS = 500
+FROZEN_FILES = {"script.json": "script_sha256", "short.yaml": "spec_sha256",
+                "qc.json": "qc_sha256", "evidence.json": "evidence_sha256",
+                "work/manifest.json": "manifest_sha256"}
+GATE_CONTEXT = b"mool-katha-control-release-gate-v1\0"
 EXPECTED_IG_METADATA = {"instagram": {"type": "reel", "shouldShareToFeed": True,
                                        "isAiGenerated": True}}
 
@@ -84,6 +89,9 @@ class ReleasePolicy:
     qa_workflow_ref: str
     qa_workflow_sha: str
     qa_keys: dict[str, bytes]
+    gate_workflow_ref: str
+    gate_workflow_sha: str
+    gate_keys: dict[str, bytes]
     youtube_channel_id: str
     youtube_handle: str
     instagram_channel_id: str
@@ -95,9 +103,22 @@ class ReleasePolicy:
         require(self.qa_workflow_ref.startswith(self.qa_repository + "/.github/workflows/")
                 and "@refs/tags/" in self.qa_workflow_ref, "QA workflow must be an immutable control tag")
         require(SHA1.fullmatch(self.qa_workflow_sha) is not None, "QA workflow SHA pin is invalid")
-        require(bool(self.qa_keys) and all(KEY_ID.fullmatch(k) and len(v) == 32
+        require(bool(self.qa_keys) and all(type(k) is str and KEY_ID.fullmatch(k) and
+                                           type(v) is bytes and len(v) == 32
                                            for k, v in self.qa_keys.items()), "QA public keys are invalid")
         object.__setattr__(self, "qa_keys", MappingProxyType(dict(self.qa_keys)))
+        require(self.gate_workflow_ref.startswith(self.qa_repository + "/.github/workflows/")
+                and "@refs/tags/" in self.gate_workflow_ref,
+                "gate workflow must be an immutable control tag")
+        require(SHA1.fullmatch(self.gate_workflow_sha) is not None, "gate workflow SHA pin is invalid")
+        require(bool(self.gate_keys) and all(type(k) is str and KEY_ID.fullmatch(k) and
+                                             type(v) is bytes and len(v) == 32
+                                             for k, v in self.gate_keys.items()),
+                "gate public keys are invalid")
+        require(not set(self.qa_keys.values()) & set(self.gate_keys.values()) and
+                self.qa_workflow_ref != self.gate_workflow_ref,
+                "QA and signer gate must use separate keys and workflows")
+        object.__setattr__(self, "gate_keys", MappingProxyType(dict(self.gate_keys)))
         require(self.youtube_channel_id != self.instagram_channel_id,
                 "YouTube and Instagram destinations must differ")
         require(bool(self.youtube_channel_id and self.instagram_channel_id
@@ -168,6 +189,120 @@ class BufferPublisher(Protocol):
 
 class MediaHost(Protocol):
     def ensure_video(self, video: Path, public_id: str) -> str: ...
+
+
+class DurableReleaseStore(ABC):
+    """Control-owned store whose methods work across independent runner machines.
+
+    `exclusive` must hold a cross-run lock for the whole release. `save` must
+    synchronously commit and fsync or obtain equivalent durable acknowledgement
+    before returning. A local runner file or process lock does not qualify.
+    This prototype intentionally provides no production implementation.
+    """
+
+    @abstractmethod
+    def exclusive(self, episode_id: str) -> AbstractContextManager[None]: ...
+
+    @abstractmethod
+    def load(self, episode_id: str) -> dict[str, Any] | None: ...
+
+    @abstractmethod
+    def save(self, episode_id: str, document: dict[str, Any]) -> None: ...
+
+
+def _source_blob(repo: Path, commit: str, path: str) -> bytes:
+    try:
+        entry = subprocess.run(["git", "-C", str(repo), "ls-tree", "-z", commit, "--", path],
+                               capture_output=True, timeout=20, check=True).stdout
+        require(entry.endswith(b"\0") and entry.count(b"\0") == 1,
+                f"committed {path} is missing or ambiguous")
+        header, actual = entry[:-1].split(b"\t", 1)
+        mode, kind, oid = header.decode("ascii").split()
+        require(actual.decode("utf-8") == path and mode in ("100644", "100755") and
+                kind == "blob" and SHA1.fullmatch(oid) is not None,
+                f"committed {path} is not an exact regular blob")
+        size = int(subprocess.run(["git", "-C", str(repo), "cat-file", "-s", oid],
+                                  capture_output=True, timeout=20, check=True).stdout)
+        require(0 < size <= 20 * 1024 * 1024, f"committed {path} is oversized")
+        blob = subprocess.run(["git", "-C", str(repo), "cat-file", "blob", oid],
+                              capture_output=True, timeout=20, check=True).stdout
+        require(len(blob) == size, f"committed {path} changed while read")
+        return blob
+    except (OSError, subprocess.SubprocessError, UnicodeError, ValueError) as exc:
+        raise ReleaseHold(f"committed {path} cannot be read safely") from exc
+
+
+def _verify_frozen_source(repo: Path, artifact_dir: Path, plan: ReleasePlan,
+                          review: dict[str, Any]) -> dict[str, str]:
+    require(repo.is_dir() and (repo / ".git").exists(), "private source checkout is unavailable")
+    try:
+        head = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
+                              capture_output=True, timeout=20, check=True).stdout.decode("ascii").strip()
+    except (OSError, subprocess.SubprocessError, UnicodeError) as exc:
+        raise ReleaseHold("private source commit cannot be read") from exc
+    require(head == plan.source_commit, "private checkout differs from control source commit pin")
+    hashes: dict[str, str] = {}
+    base = f"content/episodes/{plan.episode_id}/"
+    for filename, review_key in FROZEN_FILES.items():
+        committed = _source_blob(repo, plan.source_commit, base + filename)
+        saved = _read_regular(artifact_dir / filename, 20 * 1024 * 1024, filename)
+        require(saved == committed, f"QA snapshot {filename} differs from exact source commit")
+        digest = hashlib.sha256(committed).hexdigest()
+        require(review[review_key] == digest,
+                f"signed QA {review_key} differs from exact source bytes")
+        hashes[filename] = digest
+    return hashes
+
+
+def _verify_gate_attestation(artifact_dir: Path, plan: ReleasePlan, policy: ReleasePolicy,
+                             review: dict[str, Any], frozen: dict[str, str]) -> None:
+    raw = _read_regular(artifact_dir / "release-gate-attestation.json", MAX_SIGNATURE_BYTES,
+                        "signer gate attestation")
+    signed = _json_object(raw, "signer gate attestation")
+    envelope = _json_object(_read_regular(artifact_dir / "release-gate-signature.json",
+                                          MAX_SIGNATURE_BYTES, "signer gate signature"),
+                            "signer gate signature")
+    require(set(envelope) == {"kind", "algorithm", "key_id", "attestation_sha256", "signature"} and
+            envelope["kind"] == "control_release_gate_signature_v1" and
+            envelope["algorithm"] == "Ed25519" and
+            envelope["attestation_sha256"] == hashlib.sha256(raw).hexdigest(),
+            "signer gate signature envelope is invalid")
+    key_id = envelope["key_id"]
+    require(type(key_id) is str and key_id in policy.gate_keys,
+            "signer gate key is untrusted")
+    try:
+        encoded = envelope["signature"]
+        require(type(encoded) is str, "signer gate signature encoding is invalid")
+        signature = base64.b64decode(encoded, validate=True)
+        require(len(signature) == 64 and base64.b64encode(signature).decode("ascii") == encoded,
+                "signer gate signature encoding is invalid")
+        Ed25519PublicKey.from_public_bytes(policy.gate_keys[key_id]).verify(signature, GATE_CONTEXT + raw)
+    except (InvalidSignature, ValueError) as exc:
+        raise ReleaseHold("signer gate signature is invalid") from exc
+    require(set(signed) == {"kind", "decision", "episode_id", "source_commit", "archive_sha256",
+                            "review_sha256", "review_signature_sha256", "video_sha256",
+                            "frozen_sha256", "quality_observation_sha256", "gate_run"} and
+            signed["kind"] == "control_release_gate_attestation_v1" and
+            signed["decision"] == "approved" and signed["episode_id"] == plan.episode_id and
+            signed["source_commit"] == plan.source_commit and
+            signed["archive_sha256"] == plan.archive_sha256 and
+            signed["review_sha256"] == plan.review_sha256 and
+            signed["video_sha256"] == plan.video_sha256 and
+            signed["frozen_sha256"] == frozen and
+            signed["review_signature_sha256"] == hashlib.sha256(
+                _read_regular(artifact_dir / "agent-release-signature.json", MAX_SIGNATURE_BYTES,
+                              "QA signature")).hexdigest() and
+            signed["quality_observation_sha256"] ==
+            review["audio_review"]["quality_observation"]["sha256"],
+            "signer gate attestation does not bind the exact reviewed candidate")
+    run = signed["gate_run"]
+    require(type(run) is dict and set(run) == {"system", "repository", "workflow_ref",
+                                              "workflow_sha", "run_id", "run_attempt"} and
+            run["system"] == "github_actions" and run["repository"] == policy.qa_repository and
+            run["workflow_ref"] == policy.gate_workflow_ref and
+            run["workflow_sha"] == policy.gate_workflow_sha and
+            all(type(run[name]) is int and run[name] > 0 for name in ("run_id", "run_attempt")),
+            "signer gate attestation is not from the trusted control workflow")
 
 
 def _check_signature(artifact_dir: Path, plan: ReleasePlan, policy: ReleasePolicy) -> dict[str, Any]:
@@ -327,11 +462,15 @@ def _channel_ready(found: list[dict[str, Any]], policy: ReleasePolicy, service: 
     require(len(matches) == 1, f"{service} destination is missing or duplicated")
     channel = matches[0]
     require(channel.get("service") == service and
-            not any(channel.get(flag) for flag in ("isDisconnected", "isLocked", "isQueuePaused")),
+            all(channel.get(flag) is False for flag in
+                ("isDisconnected", "isLocked", "isQueuePaused")),
             f"{service} destination is disconnected, locked, paused, or mislabeled")
-    identity = " ".join(str(channel.get(k) or "") for k in ("name", "displayName")).lower()
-    handle = getattr(policy, f"{service}_handle").lower().lstrip("@")
-    require(re.search(rf"(?<![a-z0-9._])@?{re.escape(handle)}(?![a-z0-9._])", identity) is not None,
+    username = channel.get("name")
+    require(type(username) is str and username and username.strip() == username and
+            username.count("@") <= 1 and ("@" not in username or username.startswith("@")),
+            f"{service} destination has no canonical username")
+    handle = getattr(policy, f"{service}_handle").casefold().lstrip("@")
+    require(username.casefold().lstrip("@") == handle,
             f"{service} destination handle differs from trusted policy")
     return channel_id
 
@@ -394,61 +533,65 @@ def _reconcile(buffer: BufferPublisher, policy: ReleasePolicy, plan: ReleasePlan
     return result
 
 
-def _load_receipts(path: Path, plan: ReleasePlan, policy: ReleasePolicy) -> dict[str, str]:
-    if not path.exists():
-        return {}
-    raw = _read_regular(path, 16 * 1024, "release receipt")
-    saved = _json_object(raw, "release receipt")
-    require(saved.get("kind") == "control_release_receipt_v1" and
-            saved.get("episode_id") == plan.episode_id and
-            saved.get("intent_sha256") == plan.intent_sha256(policy) and
-            set(saved) == {"kind", "episode_id", "intent_sha256", "posts"},
-            "release receipt is bound to another candidate")
+def _load_journal(store: DurableReleaseStore, plan: ReleasePlan,
+                  policy: ReleasePolicy) -> dict[str, Any]:
+    try:
+        saved = store.load(plan.episode_id)
+    except Exception as exc:
+        raise ReleaseHold("durable release journal could not be read") from exc
+    if saved is None:
+        return {"kind": "control_release_journal_v1", "episode_id": plan.episode_id,
+                "intent_sha256": plan.intent_sha256(policy), "posts": {}, "create": None}
+    require(type(saved) is dict and set(saved) ==
+            {"kind", "episode_id", "intent_sha256", "posts", "create"} and
+            saved["kind"] == "control_release_journal_v1" and
+            saved["episode_id"] == plan.episode_id and
+            saved["intent_sha256"] == plan.intent_sha256(policy),
+            "durable release journal is bound to another candidate")
     posts = saved["posts"]
     require(type(posts) is dict and set(posts) <= {"youtube", "instagram"} and
-            all(type(v) is str and bool(v) for v in posts.values()), "release receipt is malformed")
-    return posts
+            all(type(value) is str and value for value in posts.values()),
+            "durable release journal has malformed post IDs")
+    create = saved["create"]
+    require(create is None or (type(create) is dict and set(create) ==
+            {"service", "payload_sha256", "state"} and
+            create["service"] in ("youtube", "instagram") and
+            type(create["payload_sha256"]) is str and
+            SHA256.fullmatch(create["payload_sha256"]) is not None and
+            create["state"] in ("create_started", "unknown_outcome")),
+            "durable release journal has malformed create state")
+    require(create is None, "a Buffer create may have succeeded; reconcile its durable unknown outcome manually")
+    return copy.deepcopy(saved)
 
 
-def _save_receipts(path: Path, plan: ReleasePlan, policy: ReleasePolicy,
-                   posts: dict[str, str]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    require(not path.is_symlink(), "release receipt path is a symlink")
-    payload = {"kind": "control_release_receipt_v1", "episode_id": plan.episode_id,
-               "intent_sha256": plan.intent_sha256(policy), "posts": posts}
-    descriptor, temporary = tempfile.mkstemp(prefix=".release-", dir=path.parent)
+def _save_journal(store: DurableReleaseStore, document: dict[str, Any]) -> None:
+    episode_id = document["episode_id"]
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8") as target:
-            json.dump(payload, target, sort_keys=True, separators=(",", ":"))
-            target.flush()
-            os.fsync(target.fileno())
-        os.replace(temporary, path)
-        directory = os.open(path.parent, os.O_DIRECTORY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
+        store.save(episode_id, copy.deepcopy(document))
+        confirmed = store.load(episode_id)
+    except Exception as exc:
+        raise ReleaseHold("durable release journal did not confirm its write") from exc
+    require(confirmed == document, "durable release journal did not read back its write")
 
 
 def _release_pair_locked(plan: ReleasePlan, policy: ReleasePolicy, artifact_dir: Path, archive: Path,
-                         receipt_path: Path, buffer: BufferPublisher, host: MediaHost, *,
-                         execute: bool, now: datetime | None) -> dict[str, str]:
+                         source_repo: Path, store: DurableReleaseStore, buffer: BufferPublisher,
+                         host: MediaHost, *, execute: bool, now: datetime | None) -> dict[str, str]:
     """Create or verify the exact YouTube/Instagram pair; hold every ambiguous state.
 
-    The caller must serialize calls for a plan and persist `receipt_path` in an
-    independently controlled durable store. A local file alone is insufficient
-    for crash recovery across ephemeral workers.
+    The injected store must hold the cross-run lock and durably acknowledge
+    every state transition before this method calls Buffer create.
     """
     require(execute is True, "release executor is dormant without explicit execution")
     require(plan.episode_id != "ep003", "ep003 pilot is outside this release prototype")
     clock = now or datetime.now(timezone.utc)
     require(clock.tzinfo is not None and plan.due_at - clock > timedelta(hours=2),
             "posting slot must leave more than two hours for safe reconciliation")
-    _check_signature(artifact_dir, plan, policy)
-    receipts = _load_receipts(receipt_path, plan, policy)
+    review = _check_signature(artifact_dir, plan, policy)
+    frozen = _verify_frozen_source(source_repo, artifact_dir, plan, review)
+    _verify_gate_attestation(artifact_dir, plan, policy, review, frozen)
+    journal = _load_journal(store, plan, policy)
+    receipts = journal["posts"]
     channels = buffer.channels()
     require(type(channels) is list, "Buffer destinations are unavailable")
     for service in ("youtube", "instagram"):
@@ -470,33 +613,41 @@ def _release_pair_locked(plan: ReleasePlan, policy: ReleasePolicy, artifact_dir:
                        "assets": [{"video": {"url": media_url}}],
                        "metadata": (copy.deepcopy(plan.youtube_metadata) if service == "youtube"
                                     else copy.deepcopy(EXPECTED_IG_METADATA))}
-            created = buffer.create(payload)
-            require(type(created) is dict and type(created.get("id")) is str and created["id"],
-                    f"{service} Buffer create response is uncertain")
+            payload_hash = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                                     ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+            journal["create"] = {"service": service, "payload_sha256": payload_hash,
+                                 "state": "create_started"}
+            _save_journal(store, journal)
+            try:
+                created = buffer.create(payload)
+                require(type(created) is dict and type(created.get("id")) is str and created["id"],
+                        f"{service} Buffer create response is uncertain")
+            except Exception as exc:
+                journal["create"]["state"] = "unknown_outcome"
+                _save_journal(store, journal)
+                raise ReleaseHold(f"{service} Buffer create outcome is unknown; reconcile manually") from exc
             receipts[service] = created["id"]
-            _save_receipts(receipt_path, plan, policy, receipts)
+            journal["create"] = None
+            _save_journal(store, journal)
             state = _reconcile(buffer, policy, plan, media_url, receipts)
         require(set(state) == {"youtube", "instagram"}, "Buffer did not confirm the complete pair")
         return state
 
 
 def release_pair(plan: ReleasePlan, policy: ReleasePolicy, artifact_dir: Path, archive: Path,
-                 receipt_path: Path, buffer: BufferPublisher, host: MediaHost, *, execute: bool = False,
+                 source_repo: Path, store: DurableReleaseStore | None, buffer: BufferPublisher,
+                 host: MediaHost, *, execute: bool = False,
                  now: datetime | None = None) -> dict[str, str]:
-    """Hold a local exclusive lock over verification and the whole Buffer pair.
-
-    A future workflow also needs a control-owned cross-run lock and durable
-    receipt storage. The local lock only protects processes sharing this path.
-    """
+    """Require an injected cross-run lock and durable journal before any mutation."""
     require(execute is True, "release executor is dormant without explicit execution")
     require(plan.episode_id != "ep003", "ep003 pilot is outside this release prototype")
-    receipt_path.parent.mkdir(parents=True, exist_ok=True)
-    lock_path = receipt_path.with_name(receipt_path.name + ".lock")
-    require(not lock_path.is_symlink(), "release lock path is a symlink")
-    with lock_path.open("a+b") as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise ReleaseHold("another release attempt holds this candidate lock") from exc
-        return _release_pair_locked(plan, policy, artifact_dir, archive, receipt_path,
-                                    buffer, host, execute=execute, now=now)
+    require(isinstance(store, DurableReleaseStore),
+            "cross-run durable release lock and journal are required")
+    try:
+        with store.exclusive(plan.episode_id):
+            return _release_pair_locked(plan, policy, artifact_dir, archive, source_repo,
+                                        store, buffer, host, execute=execute, now=now)
+    except ReleaseHold:
+        raise
+    except Exception as exc:
+        raise ReleaseHold("cross-run release lock failed or release state is uncertain") from exc
