@@ -13,8 +13,12 @@ credentials. Producer jobs have no write access here.
 - `source-check.yml` verifies the separate checkout and exact channel identity
   without executing source-repository code. It does not approve or publish a
   video.
+- `trusted_qa/` contains an unsigned, fail-closed QA runner prototype and an
+  inert workflow draft. Its synthetic tests pass, but independent review found
+  source/rights and full-frame coverage gaps that are being repaired before a
+  real cloud shadow run. No QA workflow is active.
 - QA signing, release credentials, and automatic publishing are **not enabled**.
-  A draft or a successful checkout alone cannot release a post.
+  A draft, checkout, or unsigned QA result cannot release a post.
 
 The first reviewed pilot, `ep003`, is scheduled independently of this control
 repository for 2026-10-03 19:00 IST. Its publication verifier and cloud
