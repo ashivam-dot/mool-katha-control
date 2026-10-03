@@ -20,6 +20,7 @@ from .common import (EPISODE, QA_REPOSITORY, QaHold, digest_file, json_object,
 from .media import extract_full_final_audio, make_visual_evidence
 from .observations import collect_observations
 from .reviewer import gemini_independent_review, gemini_review_frame_batches
+from .signing import sign_assembled_review
 
 
 def github_run_context(env: dict[str, str] | None = None) -> tuple[dict[str, Any], str]:
@@ -89,8 +90,9 @@ def discover_pending(repo: Path, source_commit: str, *, limit: int = 8) -> list[
 
 
 def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
-            archive_path: Path | None = None, env: dict[str, str] | None = None) -> Path:
-    """Produce an unsigned review only after every actual observation validates."""
+            archive_path: Path | None = None, env: dict[str, str] | None = None,
+            qa_signing_key: bytes | None = None, qa_signing_key_id: str | None = None) -> Path:
+    """Produce an unsigned or explicitly signed review after all checks pass."""
     values = os.environ if env is None else env
     require(EPISODE.fullmatch(episode_id) is not None, "QA needs an epNNN candidate")
     require(not output_dir.exists(), "QA output directory must be new")
@@ -172,8 +174,16 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         review = assemble_approved_review(candidate, observations, results, references,
                                           visual, frame_review, model, quality, run)
         path = save_unsigned_review(candidate, review)
+        if qa_signing_key is not None or qa_signing_key_id is not None:
+            stage = "qa_signing"
+            require(qa_signing_key is not None and qa_signing_key_id is not None,
+                    "QA signing configuration is incomplete")
+            sign_assembled_review(candidate, review, path, quality, run,
+                                  qa_signing_key_id, qa_signing_key)
         write_json_new(private / "run-result.json", {
-            "status": "reviewed_unsigned", "episode_id": episode_id,
+            "status": "reviewed_signed" if qa_signing_key is not None else "reviewed_unsigned",
+            "signature_sha256": (digest_file(candidate.episode_dir / "agent-release-signature.json")
+                                 if qa_signing_key is not None else None),
             "video_sha256": video_hash, "review_sha256": digest_file(path),
             "audio_quality_observation_sha256": quality.record_sha256,
             "audio_quality_response_sha256": quality.record["response_sha256"],
@@ -211,6 +221,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--episode", required=True)
     run.add_argument("--output-dir", type=Path, required=True)
     run.add_argument("--archive", type=Path, help="already fetched private Modal draft tar")
+    run.add_argument("--qa-key-file", type=Path, help="private 32-byte Ed25519 seed; signed run only")
+    run.add_argument("--qa-key-id", help="reviewed QA signing key ID; signed run only")
     args = parser.parse_args(argv)
     try:
         if args.command == "discover":
@@ -221,9 +233,18 @@ def main(argv: list[str] | None = None) -> int:
             path = fetch_modal_archive(args.episode, args.output)
             print(f"Private draft archive: {path}")
         else:
+            require((args.qa_key_file is None) == (args.qa_key_id is None),
+                    "QA signing key file and ID must be supplied together")
+            key = None
+            if args.qa_key_file is not None:
+                require(args.qa_key_file.is_file() and not args.qa_key_file.is_symlink() and
+                        args.qa_key_file.stat().st_size == 32,
+                        "QA signing key file must be an exact private seed")
+                key = args.qa_key_file.read_bytes()
             path = run_one(args.source_repo, args.episode, args.source_commit,
-                           args.output_dir, args.archive)
-            print(f"Unsigned independent QA review: {path}")
+                           args.output_dir, args.archive,
+                           qa_signing_key=key, qa_signing_key_id=args.qa_key_id)
+            print(f"Independent QA review: {path}")
         return 0
     except QaHold as exc:
         print(f"QA hold: {exc}", file=sys.stderr)

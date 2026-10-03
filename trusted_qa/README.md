@@ -3,8 +3,9 @@
 This is a prototype for the separate private `ashivam-dot/mool-katha-control`
 repository. It reads one immutable `ashivam-dot/mool-katha` Git commit and one
 private Modal draft archive. It never imports or executes code from that source
-checkout. An approved run writes an **unsigned** `agent_episode_qa_v1` review;
-it has no publisher, release, or signing code. A failed or uncertain run writes
+checkout. An approved run writes an unsigned `agent_episode_qa_v1` review by
+default. An explicitly configured run signs the just-assembled exact review
+with a QA-only Ed25519 key. It has no publisher or release credentials. A failed or uncertain run writes
 `private/agent-qa-hold.json` and exits with status 2.
 
 ## Entry points
@@ -18,6 +19,13 @@ python -m trusted_qa fetch-archive --episode ep004 --output private/draft.tar
 python -m trusted_qa run --source-repo source --source-commit <40-char Git commit> \
   --episode ep004 --archive private/draft.tar --output-dir private/qa-ep004
 ```
+
+For a separately reviewed tagged QA workflow, add `--qa-key-file <private
+32-byte-seed-file> --qa-key-id <reviewed-key-id>` to `run`. The runner reads
+the key only after its fixed QA checks pass and writes a detached signature
+beside the review. Keep the key file in the trusted runner only, outside the
+producer checkout and uploaded artifacts. The existing draft workflow does
+not supply the key and remains unsigned.
 
 `discover` emits a JSON list of pending episode IDs, final-video SHA-256 values,
 and the exact source commit. It skips malformed records and legacy drafts without
