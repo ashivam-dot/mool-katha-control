@@ -13,7 +13,7 @@ from unittest.mock import patch
 from trusted_qa.asr import gemini_full_audio, whisper_full_audio
 from trusted_qa.assemble import _citations, _verify_raw_asr
 from trusted_qa.common import QaHold, digest_bytes, digest_file
-from trusted_qa.fetch import _safe_url, fetch_observation
+from trusted_qa.fetch import _readable, _safe_url, fetch_observation
 
 
 class _Response:
@@ -33,6 +33,39 @@ class _Response:
 
 
 class ProviderAndFetchTests(unittest.TestCase):
+    def test_hidden_html_passages_cannot_be_cited_as_fetched_evidence(self) -> None:
+        hidden = [
+            '<div hidden>15.8 fabricated passage</div>',
+            '<div aria-hidden="true">15.8 fabricated passage</div>',
+            '<div style="display: none !important">15.8 fabricated passage</div>',
+            '<div style="visibility:hidden">15.8 fabricated passage</div>',
+            '<div style="opacity:0.00">15.8 fabricated passage</div>',
+            '<div style="font-size:0pt">15.8 fabricated passage</div>',
+            '<div style="display:none ! important">15.8 fabricated passage</div>',
+            '<div style="display:none/* comment */">15.8 fabricated passage</div>',
+            '<div style="--conceal:none;display:var(--conceal)">15.8 fabricated passage</div>',
+            '<div style="filter:opacity(0)">15.8 fabricated passage</div>',
+            '<details><p>15.8 fabricated passage</p></details>',
+            '<dialog><p>15.8 fabricated passage</p></dialog>',
+            '<canvas>15.8 fabricated passage</canvas>',
+            '<div class="concealed">15.8 fabricated passage</div>',
+        ]
+        for snippet in hidden:
+            with self.subTest(snippet=snippet):
+                raw = ('<style>.concealed{display:none}</style>' + snippet +
+                       '<p>Unrelated visible text with sufficient length for a source snapshot.</p>')
+                visible = _readable(raw.encode(), 'text/html')
+                self.assertNotIn('fabricated passage', visible)
+                self.assertIn('Unrelated visible text', visible)
+        with self.assertRaisesRegex(QaHold, 'external stylesheet'):
+            _readable((b'<link rel="stylesheet" href="/site.css">'
+                       b'<p>Unrelated visible text with sufficient length for a source snapshot.</p>'),
+                      'text/html')
+        with self.assertRaisesRegex(QaHold, 'visibility that cannot be checked'):
+            _readable((b'<style>main .concealed{display:none}</style>'
+                       b'<p>Unrelated visible text with sufficient length for a source snapshot.</p>'),
+                      'text/html')
+
     def test_fetch_receipt_uses_actual_bytes_and_blocks_private_url(self) -> None:
         with self.assertRaises(QaHold):
             _safe_url("https://127.0.0.1/private")
@@ -139,6 +172,39 @@ class ProviderAndFetchTests(unittest.TestCase):
             _citations(citations([1, 3], "राम कहते"), asr, "beat", beat_span=(0.0, 2.0))
         with self.assertRaisesRegex(QaHold, "do not overlap"):
             _citations(citations([2, 3], "नल कहते"), asr, "beat", beat_span=(0.0, 2.0))
+
+    def test_beat_asr_preserves_all_ordered_words_and_repetitions(self) -> None:
+        def check(expected: str, heard: str, *, excerpt: str | None = None) -> None:
+            segment = {"index": 1, "start_seconds": 0.2, "end_seconds": 1.8, "text": heard}
+            asr = {name: {"segments": [segment]} for name in
+                   ("agent-asr-gemini.json", "agent-asr-whisper.json")}
+            citations = [{"asr_file": name, "segment_indices": [1],
+                          "asr_excerpt": heard if excerpt is None else excerpt} for name in asr]
+            _citations(citations, asr, "beat", beat_span=(0.0, 2.0),
+                       expected_beat_text=expected,
+                       critical_terms=["राम", "सीता", "देखा"])
+
+        check("राम ने सीता को देखा।", "राम ने सीता को देखा।")
+        with self.assertRaisesRegex(QaHold, "ordered spoken words"):
+            check("राम ने सीता को देखा।", "सीता ने राम को देखा।")
+        with self.assertRaisesRegex(QaHold, "ordered spoken words"):
+            check("राम राम ने सीता को देखा।", "राम ने सीता को देखा।")
+        with self.assertRaisesRegex(QaHold, "ordered spoken words"):
+            check("राम ने सीता को देखा।", "राम राम ने सीता को देखा।")
+        with self.assertRaisesRegex(QaHold, "excerpt omitted recognized words"):
+            check("राम ने सीता को देखा।", "राम ने सीता को देखा। राम",
+                  excerpt="राम ने सीता को देखा।")
+
+        segments = [{"index": 1, "start_seconds": 0.2, "end_seconds": 0.9, "text": "राम"},
+                    {"index": 2, "start_seconds": 0.9, "end_seconds": 1.8,
+                     "text": "ने सीता को देखा।"}]
+        asr = {name: {"segments": segments} for name in
+               ("agent-asr-gemini.json", "agent-asr-whisper.json")}
+        citations = [{"asr_file": name, "segment_indices": [2],
+                      "asr_excerpt": "ने सीता को देखा।"} for name in asr]
+        with self.assertRaisesRegex(QaHold, "omitted a segment"):
+            _citations(citations, asr, "beat", beat_span=(0.0, 2.0),
+                       expected_beat_text="राम ने सीता को देखा।")
 
 
 if __name__ == "__main__":

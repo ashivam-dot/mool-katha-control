@@ -33,7 +33,9 @@ def candidate_fixture(root: Path, *, producer: str | None = PRODUCER_ID,
                       warning: str | None = None,
                       media_override: dict[str, bytes] | None = None,
                       extra_members: list[tarfile.TarInfo] | None = None,
-                      extra_internal_provenance: bool = False) -> tuple[Path, Path, str]:
+                      extra_internal_provenance: bool = False,
+                      external_rights: bool = False,
+                      include_animation: bool = False) -> tuple[Path, Path, str]:
     repo = root / "source"
     repo.mkdir()
     _run("git", "init", "-q", cwd=repo)
@@ -57,10 +59,13 @@ def candidate_fixture(root: Path, *, producer: str | None = PRODUCER_ID,
     }
     if media_override:
         media.update(media_override)
+    animation_name = f"content/episodes/{EPISODE}/work/assets/beat01-animation.mp4"
+    if include_animation:
+        media[animation_name] = b"synthetic generated animation bytes"
 
     def asset(identity: str, role: str, path: str, data: bytes) -> dict:
         digest = digest_bytes(data)
-        return {"id": identity, "role": role, "file": path, "sha256": digest,
+        record = {"id": identity, "role": role, "file": path, "sha256": digest,
                 "origin": f"internal:content/episodes/{EPISODE}/short.yaml",
                 "creator": "Mool Katha", "license": "Original",
                 "rights_url": f"internal:content/episodes/{EPISODE}/short.yaml",
@@ -69,12 +74,21 @@ def candidate_fixture(root: Path, *, producer: str | None = PRODUCER_ID,
                 "derivatives_allowed": True, "retrieved_at": "2026-10-03",
                 "rights_review": {"method": "human", "reviewer": "", "decision": "pending",
                                   "reviewed_at": "", "asset_sha256": digest}}
+        if external_rights:
+            object_id = f"synthetic-{identity.replace(':', '-')}-1234"
+            record.update({"origin": f"https://example.org/assets/{object_id}",
+                           "rights_url": f"https://example.org/rights/{object_id}",
+                           "source_object_id": object_id, "license": "CC0 1.0",
+                           "rights_basis": "Synthetic test-only object page ties this exact file to CC0 1.0."})
+        return record
 
     visual_name = f"content/episodes/{EPISODE}/work/assets/beat01.png"
     voice_name = f"content/episodes/{EPISODE}/work/narration.wav"
     assets = [asset("visual:one", "visual", visual_name, media[visual_name]),
               asset("voice:one", "voice", voice_name, media[voice_name]),
               asset("font:one", "font", "pipeline/assets/fonts/test.ttf", font.read_bytes())]
+    if include_animation:
+        assets.append(asset("animation:one", "animation", animation_name, media[animation_name]))
     if extra_internal_provenance:
         provenance = repo / "pipeline" / "src" / "ytc" / "test_provenance.txt"
         provenance.parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +100,8 @@ def candidate_fixture(root: Path, *, producer: str | None = PRODUCER_ID,
                 "asset_uses": uses, "narration_asset_id": "voice:one",
                 "font_asset_ids": ["font:one"], "music_asset_id": None, "sfx_asset_ids": [],
                 "beats": [{"start": 0.0, "end": 43.0, "text": spoken,
-                           "asset": {"asset_id": "visual:one"}, "derived_asset_ids": []}]}
+                           "asset": {"asset_id": "visual:one"},
+                           "derived_asset_ids": ["animation:one"] if include_animation else []}]}
     if producer is not None:
         manifest["production_agent_id"] = producer
     claim = {"id": "c1", "type": "scriptural", "risk": "low", "hindi": spoken,
@@ -140,6 +155,13 @@ def candidate_fixture(root: Path, *, producer: str | None = PRODUCER_ID,
 
 
 class CandidateBoundaryTests(unittest.TestCase):
+    def test_generated_animation_holds_until_dedicated_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo, archive, commit = candidate_fixture(root, include_animation=True)
+            with self.assertRaisesRegex(QaHold, "generated animation needs dedicated validation"):
+                load_candidate(repo, archive, root / "snapshot", EPISODE, commit, QA_ID)
+
     def test_valid_immutable_snapshot_and_asset_hashes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -19,7 +19,7 @@ from .common import (EPISODE, QA_REPOSITORY, QaHold, digest_file, json_object,
                      write_json_new)
 from .media import extract_full_final_audio, make_visual_evidence
 from .observations import collect_observations
-from .reviewer import gemini_independent_review
+from .reviewer import gemini_independent_review, gemini_review_frame_batches
 
 
 def github_run_context(env: dict[str, str] | None = None) -> tuple[dict[str, Any], str]:
@@ -141,7 +141,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         duration = extract_full_final_audio(candidate.video_path, audio_path, candidate.check["duration"])
         visual = make_visual_evidence(candidate.video_path, candidate.episode_dir,
                                       candidate.manifest["beats"], candidate.check["duration"],
-                                      candidate.hashes["video"])
+                                      candidate.hashes["video"], private)
         stage = "independent_asr"
         gemini = gemini_full_audio(audio_path, duration, video_hash, key=key,
                                    model=values.get("QA_GEMINI_ASR_MODEL", ""),
@@ -160,13 +160,17 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         quality = gemini_voice_quality(
             audio_path, duration, video_hash, candidate.episode_dir, private, key=key,
             model=values.get("QA_GEMINI_QUALITY_MODEL", ""))
+        stage = "frame_indexed_visual_review"
+        frame_review = gemini_review_frame_batches(
+            candidate, visual, private, key=key,
+            model=values.get("QA_GEMINI_REVIEW_MODEL", ""))
         stage = "independent_review"
         model = gemini_independent_review(candidate, observations, [gemini, whisper], visual,
-                                          quality, private, key=key,
+                                          quality, frame_review, private, key=key,
                                           model=values.get("QA_GEMINI_REVIEW_MODEL", ""))
         stage = "strict_review_validation"
         review = assemble_approved_review(candidate, observations, results, references,
-                                          visual, model, quality, run)
+                                          visual, frame_review, model, quality, run)
         path = save_unsigned_review(candidate, review)
         write_json_new(private / "run-result.json", {
             "status": "reviewed_unsigned", "episode_id": episode_id,

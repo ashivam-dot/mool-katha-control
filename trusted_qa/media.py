@@ -1,4 +1,4 @@
-"""Independently decode the whole final MP4 and save hash-bound visual samples."""
+"""Independently decode and inspect every final MP4 frame and saved visual sample."""
 
 from __future__ import annotations
 
@@ -6,13 +6,23 @@ import io
 import json
 import math
 import re
+import statistics
 import subprocess
+import tempfile
 import wave
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .common import QaHold, digest_bytes, digest_file, json_object, require, write_bytes_new
+from .common import (QaHold, digest_bytes, digest_file, json_object, require,
+                     write_bytes_new, write_json_new)
+
+
+FRAME_WIDTH = 120
+FRAME_HEIGHT = 214
+FRAME_BATCH_SIZE = 36
+MAX_REVIEW_BATCHES = 72
+MAX_REVIEW_FRAMES = FRAME_BATCH_SIZE * MAX_REVIEW_BATCHES
 
 
 def _command(args: list[str], timeout: int = 180) -> subprocess.CompletedProcess[bytes]:
@@ -133,6 +143,130 @@ def _frame_at(video: Path, seconds: float):
     return frame.convert("RGB")
 
 
+def _frame_timestamps(video: Path, count: int, duration: float) -> list[float]:
+    result = _command(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_frames",
+                       "-show_entries", "frame=best_effort_timestamp_time", "-of", "json",
+                       str(video)], timeout=120)
+    require(result.returncode == 0, "frame-indexed probe failed")
+    frames = json_object(result.stdout, "frame-indexed probe").get("frames")
+    require(isinstance(frames, list) and len(frames) == count,
+            "frame-indexed probe does not cover every decoded frame")
+    try:
+        stamps = [float(frame["best_effort_timestamp_time"]) for frame in frames]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise QaHold("decoded video has a frame without a measurable timestamp") from exc
+    require(all(math.isfinite(value) and 0 <= value <= duration + 0.5 for value in stamps) and
+            all(first < second for first, second in zip(stamps, stamps[1:])),
+            "decoded frame timestamps are missing or nonmonotonic")
+    if len(stamps) > 1:
+        intervals = [second - first for first, second in zip(stamps, stamps[1:])]
+        median = statistics.median(intervals)
+        require(median > 0 and all(gap <= max(0.12, 3 * median) for gap in intervals),
+                "decoded frames have a material temporal gap")
+    return stamps
+
+
+def _write_frame_batch(episode_dir: Path, frames: list[tuple[int, float, Any]]) -> dict[str, Any]:
+    from PIL import Image, ImageDraw
+
+    columns = 6
+    label_height = 20
+    rows = (len(frames) + columns - 1) // columns
+    sheet = Image.new("RGB", (columns * FRAME_WIDTH, rows * (FRAME_HEIGHT + label_height)), "#101820")
+    draw = ImageDraw.Draw(sheet)
+    for position, (index, seconds, frame) in enumerate(frames):
+        x = (position % columns) * FRAME_WIDTH
+        y = (position // columns) * (FRAME_HEIGHT + label_height)
+        draw.text((x + 3, y + 3), f"f{index:04d} {seconds:.2f}s", fill="white")
+        sheet.paste(frame, (x, y + label_height))
+    output = io.BytesIO()
+    sheet.save(output, format="JPEG", quality=88, optimize=True)
+    data = output.getvalue()
+    digest = digest_bytes(data)
+    name = f"agent-video-frames/{digest}.jpg"
+    path = episode_dir / name
+    if path.exists():
+        require(path.read_bytes() == data, "frame batch SHA-256 collision")
+    else:
+        write_bytes_new(path, data)
+    return {"file": name, "sha256": digest, "start_index": frames[0][0],
+            "end_index": frames[-1][0], "first_seconds": frames[0][1],
+            "last_seconds": frames[-1][1]}
+
+
+def audit_every_frame(video: Path, episode_dir: Path, private_audit_dir: Path,
+                      decoder: dict[str, Any], video_sha256: str) -> tuple[list[dict[str, Any]], Path, str]:
+    """Inspect every decoded pixel/timestamp and create numbered visual review batches."""
+    try:
+        from PIL import Image, ImageChops, ImageStat
+    except ImportError as exc:
+        raise QaHold("trusted QA needs Pillow for all-frame inspection") from exc
+    private_audit_dir.mkdir(parents=True, exist_ok=True)
+    frame_size = FRAME_WIDTH * FRAME_HEIGHT * 3
+    args = ["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-xerror",
+            "-err_detect", "explode", "-i", str(video), "-map", "0:v:0", "-an",
+            "-vf", f"scale={FRAME_WIDTH}:{FRAME_HEIGHT}:flags=bicubic,format=rgb24",
+            "-vsync", "0", "-f", "rawvideo", "-"]
+    with tempfile.TemporaryFile(dir=private_audit_dir) as raw_frames:
+        try:
+            result = subprocess.run(args, stdout=raw_frames, stderr=subprocess.PIPE,
+                                    timeout=240, check=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise QaHold("all-frame pixel decode is unavailable or timed out") from exc
+        require(result.returncode == 0, "all-frame pixel decode reported an error")
+        total_bytes = raw_frames.tell()
+        require(total_bytes > 0 and total_bytes % frame_size == 0,
+                "all-frame pixel decode has a truncated frame")
+        count = total_bytes // frame_size
+        require(1 <= count <= MAX_REVIEW_FRAMES and count == decoder["decoded_frame_count"],
+                "all-frame pixel decode count differs from the complete MP4 decode")
+        stamps = _frame_timestamps(video, count, decoder["decoded_duration_seconds"])
+        raw_frames.seek(0)
+        records: list[dict[str, Any]] = []
+        batches: list[dict[str, Any]] = []
+        pending: list[tuple[int, float, Any]] = []
+        previous = None
+        before_previous = None
+        previous_delta = 0.0
+        for index, seconds in enumerate(stamps, 1):
+            raw = raw_frames.read(frame_size)
+            require(len(raw) == frame_size, "all-frame pixel decode ended early")
+            frame = Image.frombytes("RGB", (FRAME_WIDTH, FRAME_HEIGHT), raw)
+            gray = frame.convert("L")
+            brightness, spread = ImageStat.Stat(gray).mean[0], ImageStat.Stat(gray).stddev[0]
+            require(spread >= 3,
+                    f"frame {index}: blank or uniform visual anomaly")
+            delta = (ImageStat.Stat(ImageChops.difference(previous, gray)).mean[0]
+                     if previous is not None else 0.0)
+            if before_previous is not None:
+                neighbor_delta = ImageStat.Stat(ImageChops.difference(before_previous, gray)).mean[0]
+                require(not (previous_delta > 4 and delta > 4 and
+                             neighbor_delta < min(previous_delta, delta) * 0.35),
+                        f"frame {index - 1}: isolated temporal visual anomaly")
+            records.append({"index": index, "seconds": round(seconds, 6),
+                            "rgb_sha256": digest_bytes(raw),
+                            "mean_luma": round(brightness, 3),
+                            "stddev_luma": round(spread, 3),
+                            "delta_previous": round(delta, 3)})
+            pending.append((index, round(seconds, 6), frame))
+            if len(pending) == FRAME_BATCH_SIZE:
+                batches.append(_write_frame_batch(episode_dir, pending))
+                pending = []
+            before_previous, previous = previous, gray
+            previous_delta = delta
+        if pending:
+            batches.append(_write_frame_batch(episode_dir, pending))
+    require(digest_file(video) == video_sha256, "video changed during all-frame visual inspection")
+    audit = {"kind": "all_frame_pixel_temporal_audit_v1", "input_video_sha256": video_sha256,
+             "decoded_frame_count": count, "scaled_width": FRAME_WIDTH,
+             "scaled_height": FRAME_HEIGHT, "frames": records, "frame_batches": batches,
+             "anomalies": []}
+    audit_path = episode_dir / "agent-video-frame-audit.json"
+    write_json_new(audit_path, audit)
+    write_json_new(private_audit_dir / "visual-frame-audit.json", audit)
+    return batches, audit_path, digest_file(audit_path)
+
+
 @dataclass(frozen=True)
 class VisualEvidence:
     contact_sheet_file: str
@@ -141,10 +275,14 @@ class VisualEvidence:
     beat_sample_times: dict[int, float]
     readable_crops: list[dict[str, Any]]
     decoder: dict[str, Any]
+    frame_batches: list[dict[str, Any]]
+    frame_audit_path: Path
+    frame_audit_sha256: str
 
 
 def make_visual_evidence(video: Path, episode_dir: Path, beats: list[dict],
-                         qc_duration: float, video_sha256: str) -> VisualEvidence:
+                         qc_duration: float, video_sha256: str,
+                         private_audit_dir: Path) -> VisualEvidence:
     """Create a contact sheet plus full-size source/caption crops from actual frames."""
     try:
         from PIL import Image, ImageDraw
@@ -194,6 +332,8 @@ def make_visual_evidence(video: Path, episode_dir: Path, beats: list[dict],
     save_crop(opening, times[0], "opening_source_bottom", (0, 800, 1080, 1920))
     for number, seconds in beat_times.items():
         save_crop(frames[seconds], seconds, f"beat_{number}_caption_and_label", (0, 820, 1080, 1920))
+    batches, audit_path, audit_sha256 = audit_every_frame(
+        video, episode_dir, private_audit_dir, decoder, video_sha256)
     require(digest_file(video) == video_sha256, "video changed during visual inspection")
     return VisualEvidence(contact_name, digest_bytes(contact_bytes), times, beat_times,
-                          crops, decoder)
+                          crops, decoder, batches, audit_path, audit_sha256)

@@ -6,7 +6,6 @@ import json
 import math
 import re
 import unicodedata
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -16,11 +15,10 @@ from .candidate import Candidate
 from .common import (QA_REPOSITORY, QaHold, digest_file, gemini_text_response,
                      json_object, require, timestamp, utc_now, valid_qa_workflow_ref,
                      write_json_new)
-from .fetch import FetchObservation
-from .media import VisualEvidence
-from .observations import ObservationSet
-from .reviewer import ReviewModelResult
-from .terms import contains_adjacent_words, required_beat_terms
+from .media import MAX_REVIEW_BATCHES, VisualEvidence
+from .observations import ObservationSet, VerifiedHttpAssetRights
+from .reviewer import FrameBatchReview, ReviewModelResult
+from .terms import contains_adjacent_words, require_exact_ordered_beat, required_beat_terms
 
 
 BASE = {"decision", "notes", "unresolved_items"}
@@ -88,7 +86,8 @@ def _phrase_in(phrase: str, excerpt: str) -> bool:
 
 def _citations(value: Any, asr: dict[str, dict], label: str,
                *, critical_terms: list[str] | None = None, expected_phrase: str | None = None,
-               beat_span: tuple[float, float] | None = None) -> list[dict]:
+               beat_span: tuple[float, float] | None = None,
+               expected_beat_text: str | None = None) -> list[dict]:
     require(isinstance(value, list) and len(value) == len(asr),
             f"{label}: cite both actual full-final-audio recognizers")
     citations: list[dict] = []
@@ -114,6 +113,12 @@ def _citations(value: Any, asr: dict[str, dict], label: str,
             require(all(segments[index - 1]["start_seconds"] < end and
                         segments[index - 1]["end_seconds"] > start for index in indices),
                     f"{label}: cited ASR segments do not overlap the frozen beat")
+            if expected_beat_text is not None:
+                overlapping = [segment["index"] for segment in segments
+                               if segment["start_seconds"] < end and
+                               segment["end_seconds"] > start]
+                require(indices == overlapping,
+                        f"{label}: ASR citation omitted a segment overlapping the frozen beat")
         excerpt = item["asr_excerpt"]
         joined = " ".join(segments[index - 1]["text"] for index in indices)
         require(isinstance(excerpt, str) and len(excerpt.strip()) >= 2 and excerpt in joined,
@@ -124,6 +129,10 @@ def _citations(value: Any, asr: dict[str, dict], label: str,
         if expected_phrase:
             require(_phrase_in(expected_phrase, excerpt),
                     f"{label}: cited recognizer omitted exact QC expected phrase")
+        if expected_beat_text is not None:
+            require(excerpt.strip() == joined.strip(),
+                    f"{label}: ASR beat excerpt omitted recognized words")
+            require_exact_ordered_beat(expected_beat_text, excerpt)
         citations.append({"asr_file": name, "segment_indices": indices,
                           "asr_excerpt": excerpt})
     require(seen == set(asr), f"{label}: both ASR files are required")
@@ -179,7 +188,7 @@ def _verify_raw_asr(result: dict, label: str) -> None:
 
 
 def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[str, str]],
-            completed_at: str) -> dict:
+            frame_batch_review: dict[str, Any], completed_at: str) -> dict:
     required = {"system", "repository", "workflow_ref", "workflow_sha", "run_id", "run_attempt"}
     require(set(run) == required and run["system"] == "github_actions" and
             run["repository"] == QA_REPOSITORY and
@@ -190,7 +199,7 @@ def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[st
     expected_id = f"agent:github_actions/{run['repository']}/{run['run_id']}/{run['run_attempt']}"
     require(candidate.qa_agent_id == expected_id and candidate.producer_agent_id != expected_id,
             "QA identity differs from the cloud run or producer")
-    require(isinstance(model_calls, list) and len(model_calls) == 2 and
+    require(isinstance(model_calls, list) and 3 <= len(model_calls) <= MAX_REVIEW_BATCHES + 2 and
             all(isinstance(call, dict) and
                 set(call) == {"provider", "model", "model_version", "request_id"} and
                 all(isinstance(value, str) and len(value.strip()) >= 4 for value in call.values())
@@ -198,17 +207,24 @@ def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[st
             len({call["request_id"] for call in model_calls}) == len(model_calls),
             "independent model call provenance is incomplete or repeated")
     timestamp(completed_at, "QA completion")
-    return {**run, "completed_at": completed_at, "review_model_calls": model_calls}
+    require(frame_batch_review.get("input_video_sha256") == candidate.hashes["video"] and
+            isinstance(frame_batch_review.get("batches"), list) and
+            [batch.get("model_call") for batch in frame_batch_review["batches"]] ==
+            model_calls[:-2], "signed frame-batch review differs from exact QA model calls")
+    return {**run, "completed_at": completed_at, "review_model_calls": model_calls,
+            "frame_batch_review": frame_batch_review}
 
 
 def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                              asr_results: dict[str, dict], asr_refs: list[dict],
-                             visual: VisualEvidence, model: ReviewModelResult,
+                             visual: VisualEvidence, frame_review: FrameBatchReview,
+                             model: ReviewModelResult,
                              quality: AudioQualityObservation,
                              run: dict[str, Any]) -> dict[str, Any]:
     """Reject any partial/model-authored provenance before writing a release review."""
     candidate.recheck()
     quality.recheck(candidate.hashes["video"])
+    frame_review.recheck(candidate, visual)
     require(quality.episode_record_path == candidate.episode_dir / EPISODE_OBSERVATION_FILE,
             "full-audio quality observation is outside the exact episode")
     require(abs(quality.record["audio_duration_seconds"] - candidate.check["duration"]) <= 0.5,
@@ -238,12 +254,12 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     "fetched source response changed after observation")
             require(digest_file(candidate.episode_dir / page.snapshot_ref) == page.snapshot_sha256,
                     "fetched source snapshot changed after observation")
-    for rights in observations.asset_rights.values():
-        if isinstance(rights, FetchObservation):
-            require(digest_file(candidate.episode_dir / rights.response_ref) == rights.response_sha256,
-                    "fetched rights response changed after observation")
-            require(digest_file(candidate.episode_dir / rights.snapshot_ref) == rights.snapshot_sha256,
-                    "fetched rights snapshot changed after observation")
+    require(set(observations.asset_rights) == set(candidate.assets),
+            "every used asset needs independent origin and rights evidence")
+    for identity, rights in observations.asset_rights.items():
+        require(isinstance(rights, VerifiedHttpAssetRights),
+                f"asset {identity}: unverified or self-attested rights cannot approve")
+        rights.recheck(candidate, candidate.assets[identity])
     decision = model.decision
     reviewed_at = utc_now()
     qa_id = candidate.qa_agent_id
@@ -293,23 +309,18 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     asset_findings: list[dict] = []
     for identity, asset in candidate.assets.items():
         rights = observations.asset_rights[identity]
-        keys = {"id"} | ASSET_CHECKS | ({"license_excerpt"} if isinstance(rights, FetchObservation) else set())
+        keys = {"id", "license_excerpt"} | ASSET_CHECKS
         item = _semantic(model_assets[identity], keys, f"asset {identity}")
         _checks(item, ASSET_CHECKS, f"asset {identity}")
-        if isinstance(rights, FetchObservation):
-            excerpt = item["license_excerpt"]
-            require(isinstance(excerpt, str) and len(excerpt.strip()) >= 10 and
-                    not INCOMPATIBLE.search(excerpt),
-                    f"asset {identity}: rights excerpt is unclear or incompatible")
-            rights_fetch = rights.rights_record(excerpt)
-        else:
-            rights_fetch = rights
-            require(len(rights_fetch["provenance_excerpt"].strip()) >= 20 and
-                    rights_fetch["content_sha256"] == asset["sha256"],
-                    f"asset {identity}: internal provenance is incomplete")
+        excerpt = item["license_excerpt"]
+        require(isinstance(excerpt, str) and len(excerpt.strip()) >= 10 and
+                not INCOMPATIBLE.search(excerpt),
+                f"asset {identity}: rights excerpt is unclear or incompatible")
+        rights_fetch = rights.rights_page.rights_record(excerpt)
         asset_findings.append({**_verdict(qa_id, "agent_checked_origin_and_rights", reviewed_at, item),
                                "id": identity, "sha256": asset["sha256"],
-                               **{name: True for name in ASSET_CHECKS}, "rights_fetch": rights_fetch})
+                               **{name: True for name in ASSET_CHECKS}, "rights_fetch": rights_fetch,
+                               "origin_proof": rights.signed_origin_proof(candidate, asset)})
 
     audio_keys = AUDIO_CHECKS | {"beat_reconciliation", "speech_difference_dispositions"}
     transformed = "narration_transform" in candidate.manifest
@@ -331,7 +342,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
         render_beat = candidate.manifest["beats"][index - 1]
         citations = _citations(item["asr_evidence"], asr_results, f"audio beat {index}",
                                critical_terms=terms,
-                               beat_span=(render_beat["start"], render_beat["end"]))
+                               beat_span=(render_beat["start"], render_beat["end"]),
+                               expected_beat_text=expected["text"])
         beat_reconciliation.append({**_verdict(qa_id, "agent_reconciled_asr_beat", reviewed_at, item),
                                     "beat": index, "expected_text": expected["text"],
                                     "critical_terms": terms, "asr_evidence": citations,
@@ -379,6 +391,10 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     "sample_times_seconds": visual.sample_times_seconds,
                     "readable_crops": visual.readable_crops, "critical_defects": [],
                     **{name: True for name in VIDEO_CHECKS}}
+    video_review["notes"] += (
+        f" Separate frame-indexed model review covered all {visual.decoder['decoded_frame_count']} "
+        f"decoded frames in {len(visual.frame_batches)} saved sheets; independent pixel and "
+        f"temporal audit SHA-256 {visual.frame_audit_sha256}. This is model inspection, not human viewing.")
 
     warnings = candidate.check["warnings"]
     raw_warnings = decision["qc_warning_dispositions"]
@@ -410,7 +426,10 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     review = {"kind": "agent_episode_qa_v1", "episode_id": candidate.episode_id,
               "production_agent_id": candidate.producer_agent_id,
               "qa_agent_id": qa_id,
-              "qa_run": _qa_run(candidate, run, [quality.model_call, model.model_call], completed_at),
+              "qa_run": _qa_run(candidate, run,
+                                 [*frame_review.model_calls, quality.model_call,
+                                  model.model_call],
+                                 frame_review.signed_summary(candidate, visual), completed_at),
               **{f"{name}_sha256": candidate.hashes[name] for name in
                  ("script", "spec", "video", "qc", "evidence", "manifest")},
               "claim_findings": claim_findings, "asset_findings": asset_findings,
@@ -419,6 +438,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
               "release_review": release_review}
     candidate.recheck()
     quality.recheck(candidate.hashes["video"])
+    frame_review.recheck(candidate, visual)
     return review
 
 

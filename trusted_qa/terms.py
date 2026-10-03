@@ -54,3 +54,13 @@ def contains_adjacent_words(term: str, excerpt: str) -> bool:
     heard = _words(excerpt, frozen_beat=False)
     return bool(expected) and any(heard[index:index + len(expected)] == expected
                                   for index in range(len(heard) - len(expected) + 1))
+
+
+def require_exact_ordered_beat(expected: str, recognized: str) -> None:
+    """Hold if either recognizer changes a word, its order, or its repetitions."""
+    require(isinstance(expected, str) and isinstance(recognized, str),
+            "ASR beat comparison needs two spoken Hindi strings")
+    frozen_words = _words(expected, frozen_beat=True)
+    recognized_words = _words(recognized, frozen_beat=True)
+    require(bool(frozen_words) and frozen_words == recognized_words,
+            "ASR beat differs in ordered spoken words or repetitions")

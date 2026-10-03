@@ -390,6 +390,8 @@ def load_candidate(repo: Path, archive: Path, destination: Path, episode_id: str
     internal_references: dict[str, str] = {}
     for identity, use in uses.items():
         asset = assets[identity]
+        require(asset.get("role") != "animation",
+                f"asset {identity}: generated animation needs dedicated validation before agent QA")
         for field in ("role", "file", "sha256"):
             require(use.get(field) == asset.get(field),
                     f"asset {identity} differs between ledger and final manifest")

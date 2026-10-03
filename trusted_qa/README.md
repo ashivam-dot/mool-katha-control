@@ -28,12 +28,31 @@ same Modal read itself. The Python API is `runner.discover_pending`,
 `archive.fetch_modal_archive`, and `runner.run_one`.
 
 The review appears only after committed candidate fields, every archived file,
-assets, source and rights pages, full MP4 decode, sampled frames, two complete
-audio recognizers, a separate full-audio quality observation, and the final
-semantic decisions validate. HTTP raw bodies live at
+assets, source and rights pages, full MP4 decode, every-frame pixel and model
+review, sampled readable frames, two complete audio recognizers, a separate
+full-audio quality observation, and the final semantic decisions validate.
+For every external asset, the runner fetches both the official origin and rights
+pages. They must identify the same `source_object_id`; the rights page must
+name the specific licence and connect to the origin or exact file. The origin
+must visibly print the exact used SHA-256 or link an `official_asset_url` whose
+downloaded bytes match the used file. A generic licence page cannot clear a
+specific asset. Each signed `asset_findings` item carries `origin_proof` with
+the ledger object ID and rights basis, a content-addressed origin response and
+snapshot, and either the visible file SHA-256 or an exact-byte official
+download reference. Hidden HTML text and links are excluded. External
+stylesheets and CSS hiding selectors the parser cannot check hold; ambiguous
+inline styles are excluded. Internal visual, voice, font,
+music, and sound-effect assets hold until a separate control-owned provenance
+verifier exists. Generated animation holds pending dedicated provenance and
+frame validation.
+
+HTTP raw bodies live at
 `agent-qa-responses/<sha256>.bin`; readable UTF-8 text/OCR snapshots live at
 `agent-qa-snapshots/<sha256>.txt`. Both are hashed again before assembly. Gemini
 and Whisper raw ASR results are inside their SHA-256-bound ASR JSON files.
+Each beat citation must include every overlapping recognizer segment in full;
+both recognizers must preserve every ordered Hindi word in the frozen beat,
+including grammatical words and repetitions.
 Provider requests/responses, the full WAV, audit receipts, and the audio-quality
 model observation are retained in the private output. A copy of the normalized
 quality observation is also saved as `agent-audio-quality-observation.json` in
@@ -41,6 +60,17 @@ the episode; `audio_review.quality_observation` binds its exact file and SHA-256
 The observation records the input video/audio hashes, provider request/response
 hashes, model call, and uncertainty. It is a model judgment, not human listening.
 Any voice-quality concern or material uncertainty holds the run.
+
+The pixel audit decodes every final MP4 frame at 120×214, checks frame count,
+timestamps, blank or uniform frames, and isolated temporal anomalies. It saves
+`agent-video-frame-audit.json` and numbered, content-addressed sheets of at
+most 36 frames in `agent-video-frames/`. A separate Gemini request judges each
+sheet. Every response must declare all indices in its sheet checked, with a
+clear decision, low uncertainty, and no defects. The signed
+`qa_run.frame_batch_review` binds the video hash, audit file/hash, frame count,
+sheet hashes and ranges, decisions, model calls, and private request/response
+hashes. The contact sheet and full-size crops separately support readable
+caption and source inspection. Runs exceeding 72 review sheets hold.
 
 ## Required configuration
 
@@ -72,15 +102,16 @@ step. Dispatching a workflow on the immutable `qa-v1` tag records that tag's
 for shadow QA while the release gate is disabled.
 
 The signed gate must accept and recheck the new
-`audio_review.quality_observation` reference before a live release. Raw model
+`audio_review.quality_observation` reference and `qa_run.frame_batch_review`
+with its audit and sheet files before a live release. Raw model
 request/response bodies stay private; their SHA-256 values are inside the
-observation, so the gate can verify the signed normalized file but cannot
+observations, so the gate can verify the signed normalized files but cannot
 independently rehash private raw bodies. The runner rechecks those private
-bytes itself. The unsigned review also records the quality model call and a
-labeled summary.
+bytes itself. The unsigned review records each model call and a labeled
+summary.
 Model assessments of accent or pronunciation do not replace native Hindi
-listening. Full video decoding verifies stream integrity; visual judgment uses
-the saved contact sheet and crops, so uncertain visuals hold.
+listening. Model inspection of numbered frames does not replace human viewing;
+uncertain visuals hold.
 
 ## Verification
 
@@ -89,6 +120,6 @@ trusted_qa/.venv/bin/python -m unittest discover -s trusted_qa/tests -v
 python3.12 -m compileall -q trusted_qa
 ```
 
-The tests use synthetic media and mocked provider output except one real
-two-second FFmpeg decode. Those fixtures check code and gate schema; they are
+The tests use synthetic media and mocked provider output plus short real
+FFmpeg decodes. Those fixtures check code and gate schema; they are
 never production QA evidence.
