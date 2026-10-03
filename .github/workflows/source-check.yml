@@ -1,0 +1,38 @@
+name: source check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checkout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read production source with the read-only deploy key
+        uses: actions/checkout@v7
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: main
+          path: production
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          persist-credentials: false
+      - name: Verify checkout identity without running production code
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from subprocess import check_output
+
+          root = Path('production')
+          channel = json.loads((root / 'kit/channel.json').read_text(encoding='utf-8'))
+          if channel.get('channel_id') != 'UCdqxVnoHDWXgA2ZVJWkSu8w':
+              raise SystemExit('production checkout has another YouTube channel')
+          commit = check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
+          if len(commit) != 40:
+              raise SystemExit('production checkout has no commit')
+          print(f'Checked Mool Katha source at {commit[:12]} with read-only deploy key')
+          PY
