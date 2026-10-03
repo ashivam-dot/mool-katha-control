@@ -1,9 +1,10 @@
 [project]
 name = "mool-katha-trusted-qa"
 version = "0.1.0"
-description = "Independent, unsigned QA artifacts for Mool Katha drafts"
+description = "Independent QA artifacts with optional trusted signing"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "cryptography==49.0.0",
   "faster-whisper==1.2.1",
   "huggingface-hub==1.33.0",
   "modal==1.5.5",

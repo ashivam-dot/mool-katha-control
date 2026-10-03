@@ -5,7 +5,8 @@ entry point, keys, destination IDs, enabled schedule, or deployment. Nothing
 in this branch can publish without a separately reviewed caller supplying a
 control-owned `ReleasePolicy`, `ReleasePlan`, private artifacts, exact Git
 checkout, cross-run durable store, Buffer and Cloudinary clients, and
-`execute=True`. This branch provides **no production durable store**.
+`execute=True`. `DynamoDBReleaseStore` is implemented, but no cloud table or
+IAM role has been provisioned or tested against AWS.
 `ep003` is explicitly excluded.
 
 ## Input contract
@@ -58,8 +59,11 @@ names `system`, `repository`, `workflow_ref`, `workflow_sha`, `run_id`, and
 `run_attempt`. The detached `release-gate-signature.json` has exact fields
 `kind: control_release_gate_signature_v1`, `algorithm: Ed25519`, `key_id`,
 `attestation_sha256`, and canonical base64 `signature`. The signer key and
-workflow are distinct from QA's. This module verifies the attestation; it
-does not produce one.
+workflow are distinct from QA's. `trusted_release.gate.sign_gate_attestation`
+produces the attestation after rechecking the signed QA review, exact source
+checkout and archive, candidate boundary, source and rights evidence, ASR
+references, visual artifacts, QC dispositions, and voice-quality observation.
+No workflow invokes it yet.
 
 The injected `DurableReleaseStore` must hold a lock across independent runner
 machines and synchronously fsync or equivalently confirm each journal write.
@@ -72,12 +76,40 @@ or metadata, or incomplete listing also raises `ReleaseHold`. Reconciliation
 of an unknown outcome requires a separate trusted operator action. No
 rollback or automatic retry can silently make a second post.
 
+## DynamoDB durable store
+
+`DynamoDBReleaseStore.from_aws(table_name, namespace)` uses the trusted release
+job's AWS identity. The table needs one string partition key named `pk`, on
+demand capacity, a single AWS region, and TTL disabled. Restrict the release
+role to that table and `GetItem`, `PutItem`, `DeleteItem`, and
+`TransactWriteItems`; provision and audit the role separately. The table and
+role must be owned by the control account, inaccessible to producer jobs.
+The namespace must be a reviewed, stable production identifier. Changing it
+changes lock and journal keys after a release attempt.
+
+The store uses a strongly consistent journal read and a DynamoDB transaction
+that checks ownership of the episode lock while conditionally writing the next
+journal revision. Each lock has a random owner and no TTL or lease expiry. A
+runner crash may leave the lock in place. An operator must inspect the exact
+journal and Buffer channels before removing that exact lock outside this
+module. Automatic stale-lock takeover is absent. A write timeout or
+conditional conflict stops release; it never confirms `create_started` on
+an uncertain write. `release_pair` reads its write back before a Buffer create.
+
+The QA runner can sign only its own just-assembled review when explicitly
+given a 32-byte Ed25519 seed and key ID. Its default remains unsigned.
+The gate key must be distinct from the QA key and available only to the gate
+job. Both public keys and tagged workflow identities must be pinned in a
+reviewed `ReleasePolicy`. The gate compares its supplied run context with the
+actual `GITHUB_REPOSITORY`, `GITHUB_WORKFLOW_REF`, `GITHUB_WORKFLOW_SHA`,
+`GITHUB_RUN_ID`, and `GITHUB_RUN_ATTEMPT` environment values before signing.
+
 ## Before any live release
 
-The QA runner currently emits an unsigned review. Implement and shadow-test
-the independent QA signer and complete trusted gate, including the new
-audio-quality artifact binding. Implement a real `DurableReleaseStore` with
-cross-run locking and durable writes; execution refuses a missing store.
+Provision the DynamoDB table and restricted role, then test the store against
+the real table from independent runner machines. Shadow-test the QA signer and
+gate as separate tagged control jobs against real private QA output; code
+paths are implemented but no workflow, keys, or cloud resources are installed.
 Confirm Buffer's `name` field is the canonical username and validate its
 YouTube and Instagram post-detail metadata schema against live read-only
 responses. Then shadow-test Cloudinary's canonical unversioned URL and Buffer
