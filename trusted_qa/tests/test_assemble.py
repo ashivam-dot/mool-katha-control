@@ -5,7 +5,9 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 from trusted_qa.assemble import assemble_approved_review, save_unsigned_review
 from trusted_qa.asr import _result, save_asr_results
@@ -15,7 +17,7 @@ from trusted_qa.common import (QaHold, digest_bytes, digest_file, utc_now,
                                write_bytes_new, write_json_new)
 from trusted_qa.fetch import FetchObservation
 from trusted_qa.media import VisualEvidence
-from trusted_qa.observations import ObservationSet
+from trusted_qa.observations import ObservationSet, collect_observations
 from trusted_qa.reviewer import ReviewModelResult
 from trusted_qa.tests.test_candidate import EPISODE, PRODUCER_ID, QA_ID, candidate_fixture
 
@@ -47,12 +49,19 @@ def _observation(candidate, source: dict) -> FetchObservation:
 def build_synthetic_approved_review(root: Path, *,
                                     tamper_source_snapshot: bool = False,
                                     tamper_source_response: bool = False,
-                                    tamper_quality_observation: bool = False) -> tuple[Path, dict, object]:
+                                    tamper_quality_observation: bool = False,
+                                    duplicate_source: str | None = None) -> tuple[Path, dict, object]:
     """Build test-only provider/model responses; never use this for an actual episode."""
     repo, archive, commit = candidate_fixture(root)
     candidate = load_candidate(repo, archive, root / "snapshot", EPISODE, commit, QA_ID)
     claim = candidate.ledger["claims"][0]
     pages = {key: _observation(candidate, claim[key]) for key in ("primary", "corroboration")}
+    if duplicate_source == "redirect":
+        pages["corroboration"] = replace(pages["corroboration"],
+                                         final_url=pages["primary"].final_url)
+    elif duplicate_source == "visible_text":
+        pages["corroboration"] = replace(pages["corroboration"],
+                                         snapshot_sha256=pages["primary"].snapshot_sha256)
     rights = {identity: {"origin": asset["origin"], "checked_at": utc_now(),
                          "content_sha256": asset["sha256"],
                          "provenance_excerpt": asset["rights_basis"]}
@@ -164,6 +173,43 @@ def build_synthetic_approved_review(root: Path, *,
 
 
 class AssemblyTests(unittest.TestCase):
+    def test_collection_holds_when_distinct_urls_resolve_to_one_page(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo, archive, commit = candidate_fixture(root)
+            candidate = load_candidate(repo, archive, root / "snapshot", EPISODE, commit, QA_ID)
+            claim = candidate.ledger["claims"][0]
+            primary = _observation(candidate, claim["primary"])
+            corroboration = _observation(candidate, claim["corroboration"])
+            redirected = replace(corroboration, final_url=primary.final_url)
+            pages = {primary.url: primary, corroboration.url: redirected}
+            with patch("trusted_qa.observations.fetch_observation",
+                       side_effect=lambda url, *_args: pages[url]):
+                with self.assertRaisesRegex(QaHold, "same final page"):
+                    collect_observations(candidate, root / "private")
+
+    def test_collection_holds_on_identical_visible_source_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo, archive, commit = candidate_fixture(root)
+            candidate = load_candidate(repo, archive, root / "snapshot", EPISODE, commit, QA_ID)
+            claim = candidate.ledger["claims"][0]
+            primary = _observation(candidate, claim["primary"])
+            corroboration = _observation(candidate, claim["corroboration"])
+            duplicate = replace(corroboration, snapshot_sha256=primary.snapshot_sha256)
+            pages = {primary.url: primary, corroboration.url: duplicate}
+            with patch("trusted_qa.observations.fetch_observation",
+                       side_effect=lambda url, *_args: pages[url]):
+                with self.assertRaisesRegex(QaHold, "identical visible text"):
+                    collect_observations(candidate, root / "private")
+
+    def test_assembly_rechecks_independent_source_pages(self) -> None:
+        for mode, message in (("redirect", "same final page"),
+                              ("visible_text", "identical visible text")):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(QaHold, message):
+                    build_synthetic_approved_review(Path(directory), duplicate_source=mode)
+
     def test_complete_synthetic_contract_and_snapshot_tamper(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path, review, candidate = build_synthetic_approved_review(Path(directory))

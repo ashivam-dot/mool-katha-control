@@ -18,6 +18,18 @@ class ObservationSet:
     review_packet: dict[str, Any]
 
 
+def require_distinct_claim_pages(identity: str, pages: dict[str, FetchObservation]) -> None:
+    """Different ledger URLs must resolve to different visible source pages."""
+    require(isinstance(pages, dict) and set(pages) == {"primary", "corroboration"} and
+            all(isinstance(page, FetchObservation) for page in pages.values()),
+            f"claim {identity}: primary and corroboration pages are incomplete")
+    primary, corroboration = pages["primary"], pages["corroboration"]
+    require(primary.final_url != corroboration.final_url,
+            f"claim {identity}: primary and corroboration resolve to the same final page")
+    require(primary.snapshot_sha256 != corroboration.snapshot_sha256,
+            f"claim {identity}: primary and corroboration have identical visible text")
+
+
 def _internal_text(candidate: Candidate, reference: str) -> str:
     from .candidate import _asset_file
     require(reference.startswith("internal:"), "internal provenance reference is malformed")
@@ -57,6 +69,7 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
             pages[key] = page
             visible[key] = {"ledger": source,
                             "fetch": {"url": page.url, "fetched_at": page.fetched_at,
+                                      "final_url": page.final_url,
                                       "http_status": page.http_status,
                                       "response_sha256": page.response_sha256,
                                       "response_ref": page.response_ref,
@@ -64,6 +77,7 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
                                       "snapshot_sha256": page.snapshot_sha256},
                             "fetched_context": text_window(page.text, [source["excerpt"],
                                                               source["printed_verse_label"]])}
+        require_distinct_claim_pages(identity, pages)
         claim_pages[identity] = pages
         claim_packet.append({"id": identity, "claim": claim.get("claim"), "hindi": claim.get("hindi"),
                              "tradition": claim.get("tradition"), "variant_caveat": claim.get("variant_caveat"),

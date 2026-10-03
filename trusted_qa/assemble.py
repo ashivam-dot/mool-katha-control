@@ -18,7 +18,7 @@ from .common import (QA_REPOSITORY, QaHold, digest_file, gemini_text_response,
                      write_json_new)
 from .fetch import FetchObservation
 from .media import VisualEvidence
-from .observations import ObservationSet
+from .observations import ObservationSet, require_distinct_claim_pages
 from .reviewer import ReviewModelResult
 from .terms import contains_adjacent_words, required_beat_terms
 
@@ -232,7 +232,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     for crop in visual.readable_crops:
         require(digest_file(candidate.episode_dir / crop["file"]) == crop["sha256"],
                 "readable crop changed after visual review")
-    for pages in observations.claim_pages.values():
+    for identity, pages in observations.claim_pages.items():
+        require_distinct_claim_pages(identity, pages)
         for page in pages.values():
             require(digest_file(candidate.episode_dir / page.response_ref) == page.response_sha256,
                     "fetched source response changed after observation")
