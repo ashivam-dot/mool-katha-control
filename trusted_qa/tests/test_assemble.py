@@ -194,12 +194,11 @@ class AssemblyTests(unittest.TestCase):
             repo, archive, commit = candidate_fixture(root)
             candidate = load_candidate(repo, archive, root / "snapshot", EPISODE, commit, QA_ID)
             claim = candidate.ledger["claims"][0]
-            primary = _observation(candidate, claim["primary"])
-            corroboration = _observation(candidate, claim["corroboration"])
-            duplicate = replace(corroboration, snapshot_sha256=primary.snapshot_sha256)
-            pages = {primary.url: primary, corroboration.url: duplicate}
-            with patch("trusted_qa.observations.fetch_observation",
-                       side_effect=lambda url, *_args: pages[url]):
+            same_page = (f"15.8 {claim['primary']['excerpt']} "
+                         f"{claim['corroboration']['excerpt']} "
+                         "One copied passage is served under two unrelated source URLs.").encode()
+            with patch("trusted_qa.fetch._request_once",
+                       return_value=(200, {"content-type": "text/plain"}, same_page)):
                 with self.assertRaisesRegex(QaHold, "identical visible text"):
                     collect_observations(candidate, root / "private")
 
