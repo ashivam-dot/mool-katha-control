@@ -62,14 +62,15 @@ dependencies and transitive hashes are in `pyproject.toml` and `uv.lock`.
 
 ## Workflow and trust boundary
 
-[`workflow-draft.yml`](workflow-draft.yml) is inert in this directory. In a
-future control repository, it can poll one pending candidate per manual dispatch,
-fetch each archive in a Modal-only job, and review it in a separate job with
-the model key and an immutable source commit. It uploads private archive and
-unsigned QA/hold artifacts with short retention. It has no release or signing
-step. Dispatching a workflow on the immutable `qa-v1` tag records that tag's
-`github.workflow_ref` and exact `github.workflow_sha`; branch dispatches are
-for shadow QA while the release gate is disabled.
+[`workflow-draft.yml`](workflow-draft.yml) remains an inert reference. The
+control repository's `.github/workflows/shadow-qa.yml` runs only on manual
+dispatch. It discovers at most one candidate, fetches its archive in a
+Modal-only job, and reviews it in a separate job with the model key and an
+immutable source commit. It uploads private discovery, archive, and unsigned
+QA/hold artifacts with short retention. It has no release or signing step.
+When discovery finds no eligible candidate, it saves a discovery hold and
+does not fetch media or call a model. Branch dispatches are for shadow QA
+while the release gate is disabled.
 
 The signed gate must accept and recheck the new
 `audio_review.quality_observation` reference before a live release. Raw model

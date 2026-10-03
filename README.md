@@ -13,10 +13,13 @@ credentials. Producer jobs have no write access here.
 - `source-check.yml` verifies the separate checkout and exact channel identity
   without executing source-repository code. It does not approve or publish a
   video.
-- `trusted_qa/` contains an unsigned, fail-closed QA runner prototype and an
-  inert workflow draft. Its synthetic tests pass, but independent review found
-  source/rights and full-frame coverage gaps that are being repaired before a
-  real cloud shadow run. No QA workflow is active.
+- `trusted_qa/` contains an unsigned, fail-closed QA runner prototype.
+  `.github/workflows/shadow-qa.yml` can be started manually to inspect one
+  eligible pending candidate. It keeps a short-lived private discovery result
+  when no candidate qualifies, and does not sign or release a review.
+- `ep001` and `ep002` are legacy pending drafts without a cloud
+  `production_agent_id`; strict discovery cannot treat them as eligible QA
+  candidates. A new producer-authenticated snapshot is needed for full QA.
 - QA signing, release credentials, and automatic publishing are **not enabled**.
   A draft, checkout, or unsigned QA result cannot release a post.
 
