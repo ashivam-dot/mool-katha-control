@@ -1,0 +1,188 @@
+# Inert draft: this file is outside .github/workflows. Copy only into the separate,
+# private ashivam-dot/mool-katha-control repository after owner review.
+name: Shadow independent QA (unsigned)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shadow-qa-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      candidates: ${{ steps.pending.outputs.candidates }}
+      has_pending: ${{ steps.pending.outputs.has_pending }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - id: pending
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(git -C source rev-parse HEAD)"
+          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1)"
+          printf 'candidates=%s\n' "$candidates" >> "$GITHUB_OUTPUT"
+          if [ "$candidates" = '[]' ]; then
+            printf 'has_pending=false\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'has_pending=true\n' >> "$GITHUB_OUTPUT"
+          fi
+
+  fetch_archive:
+    needs: discover
+    if: needs.discover.outputs.has_pending == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.discover.outputs.candidates) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare private fetch log
+        shell: bash
+        env:
+          QA_EPISODE: ${{ matrix.episode_id }}
+        run: |
+          mkdir -p fetch-output
+          printf 'episode_id=%s\n' "$QA_EPISODE" > fetch-output/context.txt
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install locked runner dependencies
+        run: |
+          python -m pip install uv==0.9.18
+          uv sync --frozen --project trusted_qa --python 3.12
+      - name: Fetch private draft archive
+        shell: bash
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          QA_EPISODE: ${{ matrix.episode_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p fetch-output
+          trusted_qa/.venv/bin/python -m trusted_qa fetch-archive \
+            --episode "$QA_EPISODE" --output fetch-output/draft.tar \
+            > fetch-output/fetch.log 2>&1
+      - name: Keep private archive or fetch failure log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: private-draft-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
+          path: fetch-output/
+          retention-days: 1
+          if-no-files-found: warn
+
+  review:
+    needs: [discover, fetch_archive]
+    if: ${{ always() && needs.discover.outputs.has_pending == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.discover.outputs.candidates) }}
+    env:
+      QA_GEMINI_ASR_MODEL: gemini-2.5-flash
+      QA_GEMINI_QUALITY_MODEL: gemini-2.5-flash
+      QA_GEMINI_REVIEW_MODEL: gemini-2.5-pro
+      QA_WHISPER_MODEL_REPO: Systran/faster-whisper-large-v3
+      QA_WHISPER_MODEL_REVISION: edaa852ec7e145841d8ffdb056a99866b5f0a478
+      QA_WHISPER_MODEL_SHA256: 69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1
+      QA_WHISPER_MODEL_DIR: whisper-model
+      GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
+      GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare private QA log
+        shell: bash
+        env:
+          QA_EPISODE: ${{ matrix.episode_id }}
+          QA_SOURCE_COMMIT: ${{ matrix.source_commit }}
+        run: |
+          mkdir -p qa-output
+          printf 'episode_id=%s\nsource_commit=%s\n' "$QA_EPISODE" "$QA_SOURCE_COMMIT" > qa-output/context.txt
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: ${{ matrix.source_commit }}
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install locked runner dependencies and media tools
+        run: |
+          python -m pip install uv==0.9.18
+          uv sync --frozen --project trusted_qa --python 3.12
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg poppler-utils tesseract-ocr tesseract-ocr-hin
+      - name: Download and verify pinned local Whisper model
+        run: |
+          trusted_qa/.venv/bin/python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+
+          directory = Path(os.environ['QA_WHISPER_MODEL_DIR'])
+          snapshot_download(
+              repo_id=os.environ['QA_WHISPER_MODEL_REPO'],
+              revision=os.environ['QA_WHISPER_MODEL_REVISION'],
+              local_dir=directory,
+              allow_patterns=['model.bin', 'config.json', 'tokenizer.json',
+                              'vocabulary.json', 'preprocessor_config.json'],
+          )
+          digest = hashlib.sha256()
+          with (directory / 'model.bin').open('rb') as source:
+              for block in iter(lambda: source.read(1024 * 1024), b''):
+                  digest.update(block)
+          if digest.hexdigest() != os.environ['QA_WHISPER_MODEL_SHA256']:
+              raise SystemExit('Pinned Whisper model.bin SHA-256 mismatch')
+          PY
+      - name: Download private draft archive
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: private-draft-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
+          path: fetch-output
+      - name: Review exact candidate without signing or publishing
+        shell: bash
+        env:
+          QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+          QA_EPISODE: ${{ matrix.episode_id }}
+          QA_SOURCE_COMMIT: ${{ matrix.source_commit }}
+        run: |
+          set -euo pipefail
+          mkdir -p qa-output
+          trusted_qa/.venv/bin/python -m trusted_qa run \
+            --source-repo source --source-commit "$QA_SOURCE_COMMIT" \
+            --episode "$QA_EPISODE" --archive fetch-output/draft.tar \
+            --output-dir qa-output/episode > qa-output/run.log 2>&1
+      - name: Keep private unsigned review or hold artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: private-qa-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
+          path: qa-output/
+          retention-days: 3
+          if-no-files-found: warn
