@@ -1,9 +1,10 @@
 # Control-owned analytics and watchdog
 
 [`control-monitor.yml`](../.github/workflows/control-monitor.yml) runs every three
-hours on GitHub Actions and can be dispatched manually. It uses only code from
-this private control repository. No producer checkout or local laptop is needed.
-Its token has read-only repository permissions. The job reads:
+hours on GitHub Actions and can be dispatched manually. It executes only code
+from this private control repository. A sparse, read-only producer checkout
+supplies signed episode receipts as data; no local laptop is needed. Its token
+has read-only repository permissions. The job reads:
 
 - The exact Buffer organization and pinned YouTube and Instagram channels, their
   readiness, recent post failures, and 30-day sent-post metric coverage. Instagram
@@ -19,6 +20,11 @@ Its token has read-only repository permissions. The job reads:
 - The six-hour QA dispatcher and its exact `qa-v2` run. An inactive workflow,
   a missing run for ten hours, or a failed latest completed run alerts. The
   dispatcher is checked separately so a manual QA run cannot hide its failure.
+- Every signed episode with a published due time that has passed. It checks the
+  saved control readback receipt and independently reads both exact Buffer post
+  IDs, destinations, hosted video URLs, sent times, and canonical public links.
+  Each missing or mismatched YouTube or Instagram receipt is reported by
+  episode. Source files are parsed as bounded JSON and never imported.
 
 The run summary and a 14-day JSON artifact hold only destination IDs, public
 links, aggregate metrics, status, and bounded operational messages. They contain
@@ -37,7 +43,7 @@ show up as failed QA runs in this monitor. The producer classifies editorially
 locked drafts outside its active review capacity; both repository changes are
 needed for a hold to free a producer slot.
 
-Required control Actions secrets: `BUFFER_API_KEY`,
+Required control Actions secrets: `SOURCE_READONLY_DEPLOY_KEY`, `BUFFER_API_KEY`,
 `BUFFER_YOUTUBE_CHANNEL_ID`, `BUFFER_INSTAGRAM_CHANNEL_ID`, `CLOUDINARY_URL`,
 `YTC_GOOGLE_CLIENT`, and `YTC_GOOGLE_TOKEN`. The nonsecret `BUFFER_ORG_ID` variable
 is pinned in code. Google credentials are optional for a degraded public-feed

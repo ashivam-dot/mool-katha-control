@@ -89,17 +89,19 @@ def _platform_link(value: object, service: str) -> bool:
         port = url.port
     except ValueError:
         return False
-    if (url.scheme != "https" or url.username or url.password or port
-            or url.query or url.fragment):
+    if url.scheme != "https" or url.username or url.password or port or url.fragment:
         return False
     parts = url.path.strip("/").split("/")
     if service == "youtube":
         return ((url.hostname in {"youtube.com", "www.youtube.com"}
-                 and len(parts) == 2 and parts[0] == "shorts"
+                 and not url.query and len(parts) == 2 and parts[0] == "shorts"
                  and re.fullmatch(r"[A-Za-z0-9_-]{11}", parts[1]) is not None)
-                or (url.hostname == "youtu.be" and len(parts) == 1
+                or (url.hostname in {"youtube.com", "www.youtube.com"}
+                    and url.path == "/watch"
+                    and re.fullmatch(r"v=[A-Za-z0-9_-]{11}", url.query) is not None)
+                or (url.hostname == "youtu.be" and not url.query and len(parts) == 1
                     and re.fullmatch(r"[A-Za-z0-9_-]{11}", parts[0]) is not None))
-    return (url.hostname in {"instagram.com", "www.instagram.com"}
+    return (not url.query and url.hostname in {"instagram.com", "www.instagram.com"}
             and len(parts) == 2 and parts[0] in {"reel", "p"}
             and re.fullmatch(r"[A-Za-z0-9_-]+", parts[1]) is not None)
 
