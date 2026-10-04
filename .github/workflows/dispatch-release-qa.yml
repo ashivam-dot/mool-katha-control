@@ -1,0 +1,28 @@
+# GitHub schedules run only on the default branch. Dispatch the immutable tag
+# so signed reviews have a fixed workflow_ref and workflow_sha.
+name: Dispatch pinned independent QA
+
+on:
+  schedule:
+    - cron: '10 0,6,12,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: dispatch-release-qa
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch immutable QA workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QA_REPOSITORY: ${{ github.repository }}
+        run: gh workflow run release-qa.yml --repo "$QA_REPOSITORY" --ref qa-v1

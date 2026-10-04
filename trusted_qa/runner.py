@@ -47,7 +47,8 @@ def github_run_context(env: dict[str, str] | None = None) -> tuple[dict[str, Any
              "run_id": run_id, "run_attempt": attempt}, identity)
 
 
-def discover_pending(repo: Path, source_commit: str, *, limit: int = 8) -> list[dict[str, str]]:
+def discover_pending(repo: Path, source_commit: str, *, limit: int = 8,
+                     unlocked_only: bool = False) -> list[dict[str, str]]:
     """List independent pending keys from one immutable private source commit."""
     require(re.fullmatch(r"[0-9a-f]{40}", source_commit) is not None,
             "pending discovery needs an immutable source commit")
@@ -67,6 +68,9 @@ def discover_pending(repo: Path, source_commit: str, *, limit: int = 8) -> list[
         try:
             if any(_git_blob(repo, source_commit, base + state, missing_ok=True) is not None
                    for state in FORBIDDEN_STATE):
+                continue
+            if (unlocked_only and _git_blob(repo, source_commit,
+                                             base + "editorial-lock.json", missing_ok=True) is not None):
                 continue
             marker_bytes = _git_blob(repo, source_commit, name)
             manifest_bytes = _git_blob(repo, source_commit, base + "work/manifest.json", missing_ok=True)
@@ -205,6 +209,8 @@ def main(argv: list[str] | None = None) -> int:
     pending.add_argument("--source-repo", type=Path, required=True)
     pending.add_argument("--source-commit", required=True)
     pending.add_argument("--limit", type=int, default=8)
+    pending.add_argument("--unlocked-only", action="store_true",
+                         help="skip candidates with a committed editorial lock")
     fetch = command.add_parser("fetch-archive", help="read one private Modal draft tar without QA secrets")
     fetch.add_argument("--episode", required=True)
     fetch.add_argument("--output", type=Path, required=True)
@@ -218,7 +224,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "discover":
             import json
-            print(json.dumps(discover_pending(args.source_repo, args.source_commit, limit=args.limit),
+            print(json.dumps(discover_pending(args.source_repo, args.source_commit,
+                                              limit=args.limit, unlocked_only=args.unlocked_only),
                              separators=(",", ":")))
         elif args.command == "fetch-archive":
             path = fetch_modal_archive(args.episode, args.output)

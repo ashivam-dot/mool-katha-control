@@ -199,6 +199,18 @@ class CandidateBoundaryTests(unittest.TestCase):
                 {"episode_id": EPISODE, "video_sha256": digest_bytes(
                     b"synthetic MP4 bytes for candidate boundary only"), "source_commit": commit}])
 
+    def test_release_discovery_skips_committed_editorial_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo, _, _ = candidate_fixture(root)
+            (repo / "content" / "episodes" / EPISODE / "editorial-lock.json").write_bytes(
+                _json({"episode_id": EPISODE, "reason": "curated draft"}))
+            _run("git", "add", ".", cwd=repo)
+            _run("git", "commit", "-q", "-m", "lock candidate", cwd=repo)
+            commit = _run("git", "rev-parse", "HEAD", cwd=repo)
+            self.assertEqual(len(discover_pending(repo, commit)), 1)
+            self.assertEqual(discover_pending(repo, commit, unlocked_only=True), [])
+
     def test_duplicate_tar_member_holds(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
