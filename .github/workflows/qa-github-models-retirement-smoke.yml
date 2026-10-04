@@ -17,9 +17,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
+          import json
           import os
+          import re
           import urllib.error
           import urllib.request
+          from urllib.parse import urlsplit
 
           token = os.environ.get('GITHUB_TOKEN', '')
           if not token:
@@ -30,7 +33,28 @@ jobs:
           )
           try:
               with urllib.request.urlopen(request, timeout=20) as response:
+                  raw = response.read(2 * 1024 * 1024 + 1)
                   print(f'catalog_http_status={response.status}')
+                  print(f'catalog_final_host={urlsplit(response.url).hostname}')
+                  print(f'catalog_content_type={response.headers.get("Content-Type", "").split(";", 1)[0]}')
+                  print(f'catalog_body_size_valid={len(raw) <= 2 * 1024 * 1024}')
+                  try:
+                      payload = json.loads(raw)
+                  except (UnicodeError, ValueError):
+                      print('catalog_json_valid=false')
+                  else:
+                      print('catalog_top_keys=' +
+                            json.dumps(sorted(payload) if isinstance(payload, dict) else []))
+                      items = payload if isinstance(payload, list) else payload.get('models', [])
+                      if not isinstance(items, list):
+                          items = []
+                      ids = sorted({item.get('id') for item in items if isinstance(item, dict)
+                                    and isinstance(item.get('id'), str)
+                                    and re.fullmatch(r'[A-Za-z0-9._/-]{1,100}', item['id'])})
+                      print(f'catalog_json_valid=true model_count={len(items)}')
+                      print('catalog_model_ids=' + json.dumps(ids, separators=(',', ':')))
+                      print('catalog_first_item_keys=' +
+                            json.dumps(sorted(items[0]) if items and isinstance(items[0], dict) else []))
           except urllib.error.HTTPError as exc:
               print(f'catalog_http_status={exc.code}')
           except (OSError, urllib.error.URLError) as exc:
