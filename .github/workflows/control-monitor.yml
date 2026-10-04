@@ -1,0 +1,47 @@
+name: Control analytics and watchdog
+
+on:
+  schedule:
+    - cron: '25 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: control-monitor
+  cancel-in-progress: false
+
+jobs:
+  read:
+    if: ${{ github.repository == 'ashivam-dot/mool-katha-control' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Read exact destinations and control release runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          YTC_ENABLE_CONTROL_RELEASE: ${{ vars.YTC_ENABLE_CONTROL_RELEASE }}
+          BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+          YTC_GOOGLE_CLIENT: ${{ secrets.YTC_GOOGLE_CLIENT }}
+          YTC_GOOGLE_TOKEN: ${{ secrets.YTC_GOOGLE_TOKEN }}
+        run: python -m trusted_monitor --out "$RUNNER_TEMP/control-monitor.json"
+      - name: Keep secret-free report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: control-monitor-${{ github.run_id }}
+          path: ${{ runner.temp }}/control-monitor.json
+          retention-days: 14
+          if-no-files-found: error

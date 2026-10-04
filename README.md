@@ -18,6 +18,10 @@ credentials. Producer jobs have no write access here.
 - `source-check.yml` verifies the separate checkout and exact channel identity
   without executing source-repository code. It does not approve or publish a
   video.
+- `control-monitor.yml` runs read-only analytics and privileged destination
+  checks from this repository every three hours. It keeps a secret-free report
+  artifact and watches this repository's release schedule. See
+  [`trusted_monitor/README.md`](trusted_monitor/README.md).
 - `trusted_qa/` contains the fail-closed QA runner. The manual `shadow-qa.yml`
   produces unsigned reviews. The separate `release-qa.yml` runs at the pinned
   `qa-v1` tag and can sign approved reviews; the latest observed run found no
@@ -32,8 +36,9 @@ credentials. Producer jobs have no write access here.
   Buffer organization variable, but its credentials and release path remain
   untested and its gate is off.
 
-The producer repository retains its cloud watchdog and other privileged read
-jobs until their credentials are migrated or removed.
+The producer repository's cloud watchdog still handles its unprivileged studio
+checks. Control-owned monitoring covers Buffer, Cloudinary, owned YouTube
+analytics, and this repository's signed-release runs.
 
 ## Planned trust boundary
 
