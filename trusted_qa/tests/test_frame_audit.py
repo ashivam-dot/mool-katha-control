@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import io
 import json
 import shutil
 import subprocess
 import tempfile
 import unittest
+import urllib.error
 from pathlib import Path
 from unittest.mock import patch
 
@@ -146,6 +148,30 @@ class FrameModelContractTests(unittest.TestCase):
                              digest_file(private / "frame-batch-001-request.json"))
             self.assertEqual(verdict["response_sha256"],
                              digest_file(private / "frame-batch-001-response.json"))
+
+    def test_rate_limited_batch_retries_then_holds_when_exhausted(self) -> None:
+        decision = {"decision": "clear", "uncertainty": "low", "checked_indices": [1, 2],
+                    "defect_indices": [],
+                    "notes": "Both indexed tiles are clear with consistent visual continuity."}
+        records = [{"index": 1, "seconds": 0.0}, {"index": 2, "seconds": 0.04}]
+        body = json.dumps({"error": {"code": 429, "details": [{"retryDelay": "12s"}]}}).encode()
+
+        def limited() -> urllib.error.HTTPError:
+            return urllib.error.HTTPError("https://example.invalid", 429, "Too Many Requests", {}, io.BytesIO(body))
+
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("urllib.request.urlopen", side_effect=[limited(), _Response(_provider(decision))]), \
+                 patch("trusted_qa.frame_audit.time.sleep") as slept:
+                verdict, _ = _model_batch(b"test sheet", records, Path(directory),
+                                          key="test-key", model="gemini-test-model", batch_number=1)
+            self.assertEqual(verdict["checked_indices"], [1, 2])
+            slept.assert_called_once_with(12.0)
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("urllib.request.urlopen", side_effect=[limited() for _ in range(5)]), \
+                 patch("trusted_qa.frame_audit.time.sleep"):
+                with self.assertRaisesRegex(QaHold, "frame batch model request failed"):
+                    _model_batch(b"test sheet", records, Path(directory),
+                                 key="test-key", model="gemini-test-model", batch_number=1)
 
     def test_uncertain_or_skipped_model_batch_holds(self) -> None:
         for decision in (

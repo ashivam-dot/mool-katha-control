@@ -8,6 +8,7 @@ import json
 import math
 import re
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -26,6 +27,18 @@ BATCH_SIZE = 35
 MAX_BATCHES = 112
 MAX_FRAMES = BATCH_SIZE * MAX_BATCHES
 MAX_RESPONSE_BYTES = 1024 * 1024
+# Free-tier Gemini answers a burst of batches with 429 and a suggested retry delay.
+RATE_LIMIT_ATTEMPTS = 5
+MAX_RETRY_SECONDS = 70.0
+
+
+def _retry_delay(exc: urllib.error.HTTPError) -> float:
+    try:
+        details = json.loads(exc.read(64 * 1024).decode("utf-8", "replace"))["error"].get("details", [])
+        delay = next(d["retryDelay"] for d in details if isinstance(d, dict) and "retryDelay" in d)
+        return min(MAX_RETRY_SECONDS, max(1.0, float(str(delay).rstrip("s"))))
+    except (ValueError, KeyError, TypeError, StopIteration, AttributeError, OSError):
+        return 30.0
 MODEL_SYSTEM = """You independently inspect every indexed frame tile from the exact final video.
 These are downscaled frames, so judge visual continuity, black/corrupt frames,
 flicker, frozen spans, abrupt glitches and gross layout only. Do not claim to
@@ -150,12 +163,18 @@ def _model_batch(sheet: bytes, records: list[dict], private_dir: Path,
     request = urllib.request.Request(endpoint, data=request_bytes,
                                      headers={"Content-Type": "application/json", "x-goog-api-key": key},
                                      method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=300) as response:
-            require(response.status == 200, "frame batch model did not return HTTP 200")
-            response_bytes = response.read(MAX_RESPONSE_BYTES + 1)
-    except (OSError, urllib.error.URLError) as exc:
-        raise QaHold("frame batch model request failed") from exc
+    for attempt in range(1, RATE_LIMIT_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=300) as response:
+                require(response.status == 200, "frame batch model did not return HTTP 200")
+                response_bytes = response.read(MAX_RESPONSE_BYTES + 1)
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == RATE_LIMIT_ATTEMPTS:
+                raise QaHold("frame batch model request failed") from exc
+            time.sleep(_retry_delay(exc))
+        except (OSError, urllib.error.URLError) as exc:
+            raise QaHold("frame batch model request failed") from exc
     require(len(response_bytes) <= MAX_RESPONSE_BYTES, "frame batch response is oversized")
     write_bytes_new(response_path, response_bytes)
     provider = json_object(response_bytes, "frame batch provider response")
