@@ -17,6 +17,7 @@ from .common import (QA_REPOSITORY, QaHold, digest_file, gemini_text_response,
                      json_object, require, timestamp, utc_now, valid_qa_workflow_ref,
                      write_json_new)
 from .fetch import FetchObservation
+from .frame_audit import FrameBatchEvidence
 from .media import VisualEvidence
 from .observations import ObservationSet, require_distinct_claim_pages
 from .reviewer import ReviewModelResult
@@ -178,8 +179,8 @@ def _verify_raw_asr(result: dict, label: str) -> None:
             f"{label}: normalized ASR was edited after recognition")
 
 
-def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[str, str]],
-            completed_at: str) -> dict:
+def _qa_run(candidate: Candidate, run: dict[str, Any], frame_batches: FrameBatchEvidence,
+            model_calls: list[dict[str, str]], completed_at: str) -> dict:
     required = {"system", "repository", "workflow_ref", "workflow_sha", "run_id", "run_attempt"}
     require(set(run) == required and run["system"] == "github_actions" and
             run["repository"] == QA_REPOSITORY and
@@ -190,7 +191,12 @@ def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[st
     expected_id = f"agent:github_actions/{run['repository']}/{run['run_id']}/{run['run_attempt']}"
     require(candidate.qa_agent_id == expected_id and candidate.producer_agent_id != expected_id,
             "QA identity differs from the cloud run or producer")
-    require(isinstance(model_calls, list) and len(model_calls) == 2 and
+    batches = frame_batches.review.get("batches")
+    require(isinstance(model_calls, list) and isinstance(batches, list) and
+            1 <= len(batches) <= 112 and
+            len(frame_batches.model_calls) == len(batches) and
+            model_calls[:len(batches)] == frame_batches.model_calls and
+            len(model_calls) == len(batches) + 2 and
             all(isinstance(call, dict) and
                 set(call) == {"provider", "model", "model_version", "request_id"} and
                 all(isinstance(value, str) and len(value.strip()) >= 4 for value in call.values())
@@ -198,12 +204,14 @@ def _qa_run(candidate: Candidate, run: dict[str, Any], model_calls: list[dict[st
             len({call["request_id"] for call in model_calls}) == len(model_calls),
             "independent model call provenance is incomplete or repeated")
     timestamp(completed_at, "QA completion")
-    return {**run, "completed_at": completed_at, "review_model_calls": model_calls}
+    return {**run, "completed_at": completed_at, "review_model_calls": model_calls,
+            "frame_batch_review": frame_batches.review}
 
 
 def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                              asr_results: dict[str, dict], asr_refs: list[dict],
-                             visual: VisualEvidence, model: ReviewModelResult,
+                             visual: VisualEvidence, frame_batches: FrameBatchEvidence,
+                             model: ReviewModelResult,
                              quality: AudioQualityObservation,
                              run: dict[str, Any]) -> dict[str, Any]:
     """Reject any partial/model-authored provenance before writing a release review."""
@@ -229,6 +237,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                 "ASR result changed after review")
     require(digest_file(candidate.episode_dir / visual.contact_sheet_file) == visual.contact_sheet_sha256,
             "contact sheet changed after visual review")
+    frame_batches.recheck(candidate.hashes["video"], visual.decoder["decoded_frame_count"])
     for crop in visual.readable_crops:
         require(digest_file(candidate.episode_dir / crop["file"]) == crop["sha256"],
                 "readable crop changed after visual review")
@@ -411,7 +420,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     review = {"kind": "agent_episode_qa_v1", "episode_id": candidate.episode_id,
               "production_agent_id": candidate.producer_agent_id,
               "qa_agent_id": qa_id,
-              "qa_run": _qa_run(candidate, run, [quality.model_call, model.model_call], completed_at),
+              "qa_run": _qa_run(candidate, run, frame_batches,
+                                [*frame_batches.model_calls, quality.model_call, model.model_call], completed_at),
               **{f"{name}_sha256": candidate.hashes[name] for name in
                  ("script", "spec", "video", "qc", "evidence", "manifest")},
               "claim_findings": claim_findings, "asset_findings": asset_findings,

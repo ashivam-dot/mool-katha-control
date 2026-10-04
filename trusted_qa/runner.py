@@ -17,6 +17,7 @@ from .candidate import FORBIDDEN_STATE, _git, _git_blob, _production_identity, l
 from .common import (EPISODE, QA_REPOSITORY, QaHold, digest_file, json_object,
                      expect_sha, require, utc_now, valid_qa_workflow_ref,
                      write_json_new)
+from .frame_audit import audit_and_review_frames
 from .media import extract_full_final_audio, make_visual_evidence
 from .observations import collect_observations
 from .reviewer import gemini_independent_review
@@ -142,6 +143,12 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         visual = make_visual_evidence(candidate.video_path, candidate.episode_dir,
                                       candidate.manifest["beats"], candidate.check["duration"],
                                       candidate.hashes["video"])
+        stage = "frame_batch_review"
+        frames = audit_and_review_frames(
+            candidate.video_path, candidate.episode_dir, private,
+            candidate.hashes["video"], visual.decoder["decoded_frame_count"],
+            candidate.check["duration"], key=key,
+            model=values.get("QA_GEMINI_QUALITY_MODEL", ""))
         stage = "independent_asr"
         gemini = gemini_full_audio(audio_path, duration, video_hash, key=key,
                                    model=values.get("QA_GEMINI_ASR_MODEL", ""),
@@ -166,7 +173,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
                                           model=values.get("QA_GEMINI_REVIEW_MODEL", ""))
         stage = "strict_review_validation"
         review = assemble_approved_review(candidate, observations, results, references,
-                                          visual, model, quality, run)
+                                          visual, frames, model, quality, run)
         path = save_unsigned_review(candidate, review)
         write_json_new(private / "run-result.json", {
             "status": "reviewed_unsigned", "episode_id": episode_id,

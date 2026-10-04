@@ -16,6 +16,7 @@ from trusted_qa.candidate import load_candidate
 from trusted_qa.common import (QaHold, digest_bytes, digest_file, utc_now,
                                write_bytes_new, write_json_new)
 from trusted_qa.fetch import FetchObservation
+from trusted_qa.frame_audit import FrameBatchEvidence
 from trusted_qa.media import VisualEvidence
 from trusted_qa.observations import ObservationSet, collect_observations
 from trusted_qa.reviewer import ReviewModelResult
@@ -50,6 +51,7 @@ def build_synthetic_approved_review(root: Path, *,
                                     tamper_source_snapshot: bool = False,
                                     tamper_source_response: bool = False,
                                     tamper_quality_observation: bool = False,
+                                    tamper_frame_sheet: bool = False,
                                     duplicate_source: str | None = None) -> tuple[Path, dict, object]:
     """Build test-only provider/model responses; never use this for an actual episode."""
     repo, archive, commit = candidate_fixture(root)
@@ -91,8 +93,36 @@ def build_synthetic_approved_review(root: Path, *,
     visual = VisualEvidence("agent-video-contact.jpg", digest_file(contact),
                             [0.1, 8.0, 16.0, 20.0, 24.0, 32.0, 40.0, 42.9], {1: 20.0}, [],
                             {"decode_tool": "synthetic ffmpeg fixture", "decode_exit_code": 0,
-                             "decoded_frame_count": 1000, "decoded_duration_seconds": 43.0,
+                             "decoded_frame_count": 2, "decoded_duration_seconds": 43.0,
                              "decoded_full_video": True})
+    sheet_bytes = b"synthetic indexed frame sheet, not actual decoded frames"
+    sheet_hash = digest_bytes(sheet_bytes)
+    sheet = candidate.episode_dir / f"agent-video-frames/{sheet_hash}.jpg"
+    write_bytes_new(sheet, sheet_bytes)
+    batch_identity = {"file": f"agent-video-frames/{sheet_hash}.jpg", "sha256": sheet_hash,
+                      "start_index": 1, "end_index": 2,
+                      "first_seconds": 0.0, "last_seconds": 0.04}
+    audit = candidate.episode_dir / "agent-video-frame-audit.json"
+    write_json_new(audit, {"kind": "all_frame_pixel_temporal_audit_v1",
+                           "input_video_sha256": candidate.hashes["video"],
+                           "decoded_frame_count": 2, "scaled_width": 120,
+                           "scaled_height": 214,
+                           "frames": [{"index": index, "seconds": seconds,
+                                       "rgb_sha256": "a" * 64, "mean_luma": 50.0,
+                                       "stddev_luma": 20.0, "delta_previous": 0.0}
+                                      for index, seconds in ((1, 0.0), (2, 0.04))],
+                           "frame_batches": [batch_identity], "anomalies": []})
+    frame_call = {"provider": "Google Gemini API", "model": "gemini-test-model",
+                  "model_version": "test-version", "request_id": "synthetic-frame-run"}
+    batch_review = {**batch_identity, "decision": "clear", "uncertainty": "low",
+                    "checked_indices": [1, 2], "defect_indices": [], "notes": NOTE,
+                    "model_call": frame_call, "request_sha256": "b" * 64,
+                    "response_sha256": "c" * 64}
+    frames = FrameBatchEvidence(
+        {"kind": "frame_indexed_visual_review_v1", "input_video_sha256": candidate.hashes["video"],
+         "all_frame_audit_file": audit.name, "all_frame_audit_sha256": digest_file(audit),
+         "decoded_frame_count": 2, "batches": [batch_review]},
+        [frame_call], audit, [sheet])
     citations = [{"asr_file": name, "segment_indices": [1], "asr_excerpt": utterance} for name in asr]
     decision = {
         "claim_findings": [{"id": claim["id"], "decision": "approved", "notes": NOTE,
@@ -167,7 +197,9 @@ def build_synthetic_approved_review(root: Path, *,
         (candidate.episode_dir / pages["primary"].response_ref).write_bytes(b"tampered raw response")
     if tamper_quality_observation:
         episode_quality_record.write_bytes(b"tampered model observation")
-    review = assemble_approved_review(candidate, observations, asr, refs, visual, model, quality, run)
+    if tamper_frame_sheet:
+        sheet.write_bytes(b"tampered indexed frame sheet")
+    review = assemble_approved_review(candidate, observations, asr, refs, visual, frames, model, quality, run)
     path = save_unsigned_review(candidate, review)
     return path, review, candidate
 
@@ -214,6 +246,8 @@ class AssemblyTests(unittest.TestCase):
             path, review, candidate = build_synthetic_approved_review(Path(directory))
             self.assertEqual(review["kind"], "agent_episode_qa_v1")
             self.assertEqual(review["qa_agent_id"], QA_ID)
+            self.assertEqual(len(review["qa_run"]["review_model_calls"]), 3)
+            self.assertEqual(review["qa_run"]["frame_batch_review"]["decoded_frame_count"], 2)
             self.assertEqual(set(review["claim_findings"][0]), {
                 "agent_id", "method", "reviewed_at", "decision", "unresolved_items", "notes", "id",
                 "primary_url", "corroboration_url", "primary_printed_label",
@@ -244,7 +278,12 @@ class AssemblyTests(unittest.TestCase):
     def test_quality_observation_tamper_before_assembly_holds(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(QaHold, "quality observation changed"):
-                build_synthetic_approved_review(Path(directory), tamper_quality_observation=True)
+                    build_synthetic_approved_review(Path(directory), tamper_quality_observation=True)
+
+    def test_frame_sheet_tamper_before_assembly_holds(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(QaHold, "indexed frame sheet changed"):
+                build_synthetic_approved_review(Path(directory), tamper_frame_sheet=True)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from trusted_qa.common import QaHold
@@ -85,7 +86,9 @@ class RunnerHoldTests(unittest.TestCase):
 
             with patch("trusted_qa.runner.collect_observations", return_value=None), \
                  patch("trusted_qa.runner.extract_full_final_audio", side_effect=fake_extract), \
-                 patch("trusted_qa.runner.make_visual_evidence", return_value=None), \
+                 patch("trusted_qa.runner.make_visual_evidence",
+                       return_value=SimpleNamespace(decoder={"decoded_frame_count": 2})), \
+                 patch("trusted_qa.runner.audit_and_review_frames", return_value=None), \
                  patch("urllib.request.urlopen", return_value=_Response(malformed)):
                 with self.assertRaisesRegex(QaHold, "partial or untracked"):
                     run_one(repo, EPISODE, commit, output, archive_path=archive, env=env)

@@ -42,13 +42,24 @@ The observation records the input video/audio hashes, provider request/response
 hashes, model call, and uncertainty. It is a model judgment, not human listening.
 Any voice-quality concern or material uncertainty holds the run.
 
+The visual stage also decodes every frame to a measured 120×214 RGB image and
+saves `agent-video-frame-audit.json` with consecutive indices, presentation
+times, pixel hashes, luminance statistics, and previous-frame differences.
+Flat frames and byte-identical spans longer than two seconds hold. Every frame
+appears once in a content-addressed JPEG sheet of at most 35 indexed tiles.
+The explicitly configured Flash quality model judges every sheet and must
+return a clear, low-uncertainty verdict naming every index. Raw batch requests
+and responses remain private; their hashes, actual model calls, and exact sheet
+references appear in `qa_run.frame_batch_review`. The later full-size contact
+sheet and crops still carry the separate caption/source visual judgment.
+
 ## Required configuration
 
 | Scope | Variables | Value or purpose |
 | --- | --- | --- |
 | Trusted Actions run | `GITHUB_REPOSITORY`, `GITHUB_WORKFLOW_REF`, `GITHUB_WORKFLOW_SHA`, `GITHUB_RUN_ID`, `GITHUB_RUN_ATTEMPT` | Actual GitHub context. Repository must be `ashivam-dot/mool-katha-control`; workflow ref may be a branch for shadow QA or `refs/tags/qa-v1`. Export `github.workflow_sha` as `GITHUB_WORKFLOW_SHA`. |
 | Model review job secret | `QA_GEMINI_API_KEY` | QA-only Gemini API credential; never present in the Modal fetch job. |
-| Explicit Gemini models | `QA_GEMINI_ASR_MODEL`, `QA_GEMINI_QUALITY_MODEL`, `QA_GEMINI_REVIEW_MODEL` | Draft: `gemini-2.5-flash`, `gemini-2.5-flash`, `gemini-2.5-pro`. Provider-returned model versions and request IDs are retained. Confirm access with a shadow run. |
+| Explicit Gemini models | `QA_GEMINI_ASR_MODEL`, `QA_GEMINI_QUALITY_MODEL`, `QA_GEMINI_REVIEW_MODEL` | Draft: `gemini-2.5-flash`, `gemini-2.5-flash`, `gemini-2.5-pro`. The quality model also reviews indexed frame sheets; the final model reviews sources, ASR, contact sheet and crops. Provider-returned model versions and request IDs are retained. Confirm access with a shadow run. |
 | Pinned local ASR | `QA_WHISPER_MODEL_REPO`, `QA_WHISPER_MODEL_REVISION`, `QA_WHISPER_MODEL_SHA256`, `QA_WHISPER_MODEL_DIR` | `Systran/faster-whisper-large-v3`, commit `edaa852ec7e145841d8ffdb056a99866b5f0a478`, `model.bin` SHA-256 `69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1`, and its downloaded local directory. |
 | Modal archive fetch job secret | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` | Separate credential for the existing archive-read function. The function path is read-only in code; the token's provider-side scope still needs verification. |
 | Source checkout secret | `SOURCE_READONLY_DEPLOY_KEY` | Existing read-only GitHub deploy key for `ashivam-dot/mool-katha`. Both checkouts use `ssh-key` and `persist-credentials: false`. |
@@ -72,8 +83,9 @@ When discovery finds no eligible candidate, it saves a discovery hold and
 does not fetch media or call a model. Branch dispatches are for shadow QA
 while the release gate is disabled.
 
-The signed gate must accept and recheck the new
-`audio_review.quality_observation` reference before a live release. Raw model
+The signed gate must accept and recheck the
+`audio_review.quality_observation` and `qa_run.frame_batch_review` references
+before a live release. Raw model
 request/response bodies stay private; their SHA-256 values are inside the
 observation, so the gate can verify the signed normalized file but cannot
 independently rehash private raw bodies. The runner rechecks those private
