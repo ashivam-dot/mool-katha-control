@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ashivam-dot/mool-katha
-          ref: b8bcd078788cfc35cd98c2dcfa45d168da166c9c
+          ref: 94f0dcfde75f805a6ea8ec67b969fec769b41617
           ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
           path: trusted
           persist-credentials: false
@@ -57,7 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git -C trusted rev-parse HEAD)" = 'b8bcd078788cfc35cd98c2dcfa45d168da166c9c'
+          test "$(git -C trusted rev-parse HEAD)" = '94f0dcfde75f805a6ea8ec67b969fec769b41617'
           test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
           test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
