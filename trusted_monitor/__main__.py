@@ -31,6 +31,8 @@ QA_DISPATCH_WORKFLOW = "dispatch-release-qa.yml"
 QA_WORKFLOW = "release-qa.yml"
 QA_WORKFLOW_SHA = "e6307460a8e3d83fda4664d09a7a44d8a3cfb40c"
 QA_QUIET_HOURS = 10
+QA_DISPATCH_HOURS = (0, 6, 12, 18)
+QA_DISPATCH_MINUTE = 10
 METRICS = ("views", "reach", "reactions", "comments", "shares", "saves", "follows")
 UTC = timezone.utc
 IST = ZoneInfo("Asia/Kolkata")
@@ -389,7 +391,32 @@ def qa(now: datetime, env: dict[str, str]) -> dict:
                           key=lambda run: run.get("created_at") or "", reverse=True)
         key = "dispatch" if workflow_name == QA_DISPATCH_WORKFLOW else "pinned_qa"
         if not relevant:
-            result["issues"].append(f"no {label} run found")
+            warming_up = False
+            if workflow_name == QA_DISPATCH_WORKFLOW and workflow.get("created_at"):
+                # A newly added or changed scheduled workflow cannot have a
+                # scheduled run before its first following cron slot. GitHub
+                # may delay that slot; retain the usual four-hour slack.
+                changed_url = (f"https://api.github.com/repos/{REPOSITORY}/commits?"
+                               f"path=.github%2Fworkflows%2F{QA_DISPATCH_WORKFLOW}&sha=main&per_page=1")
+                commits = json.loads(_request(changed_url, headers=headers))
+                if (not isinstance(commits, list) or len(commits) != 1
+                        or not isinstance(commits[0], dict)):
+                    raise MonitorError("QA dispatcher activation is unavailable")
+                changed = _time(((commits[0].get("commit") or {}).get("committer") or {}).get("date"))
+                activated = max(_time(workflow["created_at"]), changed)
+                start = activated.replace(minute=0, second=0, microsecond=0)
+                first_due = next((slot.replace(minute=QA_DISPATCH_MINUTE)
+                                  for hour in range(48)
+                                  if (slot := start + timedelta(hours=hour)).hour in QA_DISPATCH_HOURS
+                                  and slot.replace(minute=QA_DISPATCH_MINUTE) > activated), None)
+                if first_due is None:
+                    raise MonitorError("QA dispatcher first due time is unavailable")
+                warming_up = now <= first_due + timedelta(hours=QA_QUIET_HOURS - 6)
+                if warming_up:
+                    result[key] = {"workflow": workflow_name, "state": workflow.get("state"),
+                                   "status": "warming_up", "first_due": first_due.isoformat()}
+            if not warming_up:
+                result["issues"].append(f"no {label} run found")
             continue
         latest = relevant[0]
         created = _time(latest.get("created_at"))
