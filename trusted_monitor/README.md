@@ -3,8 +3,8 @@
 [`control-monitor.yml`](../.github/workflows/control-monitor.yml) runs every three
 hours on GitHub Actions and can be dispatched manually. It executes only code
 from this private control repository. A sparse, read-only producer checkout
-supplies signed episode receipts as data; no local laptop is needed. Its token
-has read-only repository permissions. The job reads:
+supplies signed episode receipts as data; no local laptop is needed. The read
+job's token has read-only repository permissions. The job reads:
 
 - The exact Buffer organization and pinned YouTube and Instagram channels, their
   readiness, recent post failures, and 30-day sent-post metric coverage. Instagram
@@ -32,7 +32,17 @@ The run summary and a 14-day JSON artifact hold only destination IDs, public
 links, aggregate metrics, status, and bounded operational messages. They contain
 no OAuth, Buffer, Cloudinary, or GitHub tokens. Operational alerts fail the job;
 Google or public-feed outages are warnings unless both YouTube sources fail.
-The workflow makes no mutation requests and publishes nothing.
+The read job makes no mutation requests and publishes nothing.
+
+A separate persistence job downloads only that run's report and writes an
+append-only snapshot to the private `analytics-data` branch under
+`analytics/snapshots/<IST date>/<run ID>-<attempt>.json`. Its allowlist retains
+YouTube and Instagram Buffer metric coverage and per-post metrics, owned YouTube
+daily Analytics rows, and the public video feed. It drops operational messages,
+raw provider data, and credentials. This job has control-repository write access
+but no Buffer, Google, Cloudinary, Modal, or producer key. The producer's
+learning automation remains disabled; the private snapshots are available for
+a reviewed feedback path later.
 
 [`control-alerts.yml`](../.github/workflows/control-alerts.yml) watches completed
 control monitor, pinned QA, dispatcher, and signed-release runs. Its hourly
