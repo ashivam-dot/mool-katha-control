@@ -8,7 +8,7 @@ from typing import Any
 
 from .candidate import Candidate
 from .common import QaHold, digest_file, require, utc_now, write_json_new
-from .fetch import FetchObservation, fetch_observation, text_window
+from .fetch import FetchObservation, _request_identity, fetch_observation, text_window
 
 
 @dataclass(frozen=True)
@@ -24,7 +24,7 @@ def require_distinct_claim_pages(identity: str, pages: dict[str, FetchObservatio
             all(isinstance(page, FetchObservation) for page in pages.values()),
             f"claim {identity}: primary and corroboration pages are incomplete")
     primary, corroboration = pages["primary"], pages["corroboration"]
-    require(primary.final_url != corroboration.final_url,
+    require(_request_identity(primary.final_url) != _request_identity(corroboration.final_url),
             f"claim {identity}: primary and corroboration resolve to the same final page")
     require(primary.snapshot_sha256 != corroboration.snapshot_sha256,
             f"claim {identity}: primary and corroboration have identical visible text")

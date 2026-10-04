@@ -16,7 +16,7 @@ import subprocess
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import quote, urljoin, urlsplit
 
 from .common import QaHold, digest_bytes, require, utc_now, write_bytes_new, write_json_new
 
@@ -24,6 +24,8 @@ from .common import QaHold, digest_bytes, require, utc_now, write_bytes_new, wri
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
 MAX_SNAPSHOT_BYTES = 2 * 1024 * 1024
 MAX_REDIRECTS = 4
+_PATH_SAFE = "/%:@!$&'()*+,;="
+_QUERY_SAFE = "/?%:@!$&'()*+,;="
 
 
 class _VisibleText(HTMLParser):
@@ -49,20 +51,43 @@ class _VisibleText(HTMLParser):
             self.chunks.append(data)
 
 
-def _safe_url(url: str) -> tuple[str, str]:
+def _request_url_parts(url: str) -> tuple[str, str]:
+    """Keep ledger URLs intact while encoding their path and query for HTTP."""
     require(isinstance(url, str) and len(url) < 4096 and
             not any(ord(character) < 32 for character in url), "source URL is malformed")
-    parts = urlsplit(url)
     try:
+        parts = urlsplit(url)
         port = parts.port
     except ValueError as exc:
         raise QaHold("source URL has an invalid port") from exc
     require(parts.scheme == "https" and parts.hostname is not None and
             parts.username is None and parts.password is None and port in (None, 443),
             "source URL must be public HTTPS on port 443")
-    host = parts.hostname
+    require(not any(re.search(r"%(?![0-9A-Fa-f]{2})", component)
+                    for component in (parts.path, parts.query)),
+            "source URL has a malformed percent escape")
+    try:
+        host = parts.hostname.encode("idna").decode("ascii")
+        path = quote(parts.path or "/", safe=_PATH_SAFE)
+        query = quote(parts.query, safe=_QUERY_SAFE)
+    except UnicodeError as exc:
+        raise QaHold("source URL cannot be encoded for HTTPS") from exc
     require(host not in ("localhost", "localhost.localdomain") and
             not host.endswith((".local", ".internal")), "source URL names a local host")
+    target = path
+    if parts.query:
+        target += "?" + query
+    return host, target
+
+
+def _request_identity(url: str) -> tuple[str, str]:
+    """Compare final pages after UTF-8 escaping and percent-hex case folding."""
+    host, target = _request_url_parts(url)
+    return host, re.sub(r"%[0-9A-Fa-f]{2}", lambda match: match[0].upper(), target)
+
+
+def _safe_url(url: str) -> tuple[str, str]:
+    host, target = _request_url_parts(url)
     try:
         addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
     except OSError as exc:
@@ -70,9 +95,6 @@ def _safe_url(url: str) -> tuple[str, str]:
     ips = {result[4][0] for result in addresses}
     require(bool(ips) and all(ipaddress.ip_address(ip).is_global for ip in ips),
             "source URL resolves to a private or reserved address")
-    target = parts.path or "/"
-    if parts.query:
-        target += "?" + parts.query
     return host, target
 
 
@@ -94,7 +116,9 @@ def _request_once(url: str) -> tuple[int, dict[str, str], bytes]:
             "source host changed to a private address")
     connection = _PinnedHTTPS(host, sorted(ips)[0])
     try:
-        connection.request("GET", target, headers={"Host": host, "User-Agent": "MoolKathaTrustedQA/1.0",
+        host_header = f"[{host}]" if ":" in host else host
+        connection.request("GET", target, headers={"Host": host_header,
+                                                   "User-Agent": "MoolKathaTrustedQA/1.0",
                                                    "Accept": "text/html,text/plain,application/pdf,image/*",
                                                    "Accept-Encoding": "identity"})
         response = connection.getresponse()

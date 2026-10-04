@@ -2,18 +2,23 @@
 
 from __future__ import annotations
 
+import http.client
 import json
+import socket
 import tempfile
 import unittest
 import wave
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+from urllib.parse import unquote
 
 from trusted_qa.asr import gemini_full_audio, whisper_full_audio
 from trusted_qa.assemble import _citations, _verify_raw_asr
 from trusted_qa.common import QaHold, digest_bytes, digest_file
-from trusted_qa.fetch import _safe_url, fetch_observation
+from trusted_qa.fetch import FetchObservation, _request_once, _safe_url, fetch_observation
+from trusted_qa.observations import require_distinct_claim_pages
 
 
 class _Response:
@@ -33,9 +38,62 @@ class _Response:
 
 
 class ProviderAndFetchTests(unittest.TestCase):
+    def test_unicode_source_path_and_query_are_ascii_on_the_http_wire(self) -> None:
+        url = ("https://sa.wikisource.org/wiki/रामायणम्/सुन्दरकाण्डम्/सर्गः_१७"
+               "?first=%E0%A4%95&next=नल#viewer")
+        public_address = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("8.8.8.8", 443))]
+
+        class RecordedConnection:
+            target = ""
+
+            def request(self, method: str, target: str, **_kwargs) -> None:
+                # This is the stdlib call that failed in the cloud run, without a socket.
+                http.client.HTTPConnection("sa.wikisource.org").putrequest(method, target)
+                self.target = target
+
+            def getresponse(self):
+                return SimpleNamespace(status=200, getheaders=lambda: [], read=lambda _size: b"ok")
+
+            def close(self) -> None:
+                pass
+
+        connection = RecordedConnection()
+        with patch("trusted_qa.fetch.socket.getaddrinfo", return_value=public_address), \
+             patch("trusted_qa.fetch._PinnedHTTPS", return_value=connection):
+            self.assertEqual(_request_once(url), (200, {}, b"ok"))
+        self.assertEqual(unquote(connection.target),
+                         "/wiki/रामायणम्/सुन्दरकाण्डम्/सर्गः_१७?first=क&next=नल")
+        self.assertIn("?first=%E0%A4%95&next=%E0%A4%A8%E0%A4%B2", connection.target)
+        self.assertTrue(connection.target.isascii())
+
+    def test_percent_encoded_and_unicode_final_urls_compare_as_one_source(self) -> None:
+        primary = FetchObservation(
+            "https://sa.wikisource.org/wiki/राम?next=नल", "2026-10-04T00:00:00Z", 200,
+            "a" * 64, "primary.bin", "primary.txt", "b" * 64, "primary text",
+            "https://sa.wikisource.org/wiki/राम?next=नल", "text/plain")
+        corroboration = replace(
+            primary, url="https://other.example/independent", snapshot_sha256="c" * 64,
+            final_url=("https://sa.wikisource.org:443/wiki/%e0%a4%b0%e0%a4%be%e0%a4%ae"
+                       "?next=%E0%A4%A8%E0%A4%B2"))
+        with self.assertRaisesRegex(QaHold, "same final page"):
+            require_distinct_claim_pages("claim-1", {"primary": primary,
+                                                      "corroboration": corroboration})
+
+    def test_redirect_to_private_host_holds_before_second_request(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch("trusted_qa.fetch._request_once", return_value=(
+                302, {"location": "https://127.0.0.1/private"}, b"")) as requested:
+                with self.assertRaisesRegex(QaHold, "private or reserved"):
+                    fetch_observation("https://example.org/verse", root / "episode", root / "audit")
+            requested.assert_called_once()
+            self.assertFalse((root / "episode").exists())
+
     def test_fetch_receipt_uses_actual_bytes_and_blocks_private_url(self) -> None:
         with self.assertRaises(QaHold):
             _safe_url("https://127.0.0.1/private")
+        with self.assertRaisesRegex(QaHold, "malformed percent escape"):
+            _safe_url("https://example.org/verse%not-an-escape")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             text = "1.1 राम ने नल से कहा। The printed passage independently supports the claim."
