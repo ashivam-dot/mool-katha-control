@@ -67,7 +67,11 @@ sheet and crops still carry the separate caption/source visual judgment.
 The local Whisper directory must contain regular `model.bin`, `config.json`,
 `tokenizer.json`, and `vocabulary.json` files. The runner checks the pinned
 `model.bin` hash before loading CTranslate2 and records the installed
-`faster-whisper` version in the ASR result. System tools: `ffmpeg`, `ffprobe`,
+`faster-whisper` version in the ASR result. The dependency lock pins PyAV
+15.1.0, whose WAV decoder is compatible with faster-whisper 1.2.1. Whisper
+uses 15-second internal windows over the complete WAV with VAD off; the
+shorter windows recovered ep022 beats omitted by the observed 30-second
+decode. System tools: `ffmpeg`, `ffprobe`,
 `pdftotext`, and `tesseract` with Hindi and English data. Direct Python
 dependencies and transitive hashes are in `pyproject.toml` and `uv.lock`.
 

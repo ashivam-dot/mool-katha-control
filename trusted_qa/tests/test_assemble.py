@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from trusted_qa.assemble import assemble_approved_review, save_unsigned_review
-from trusted_qa.asr import _result, save_asr_results
+from trusted_qa.asr import WHISPER_CHUNK_SECONDS, _result, save_asr_results
 from trusted_qa.audio_quality import EPISODE_OBSERVATION_FILE, AudioQualityObservation
 from trusted_qa.candidate import load_candidate
 from trusted_qa.common import (QaHold, digest_bytes, digest_file, utc_now,
@@ -81,7 +81,8 @@ def build_synthetic_approved_review(root: Path, *,
                      43.0, segments, utterance, gemini_raw, utc_now())
     whisper_raw = {"segments": [{"id": 0, "start": 0.2, "end": 42.0, "text": utterance}],
                    "info": {"language": "hi", "duration": 43.0},
-                   "settings": {"vad_filter": False}}
+                   "settings": {"vad_filter": False,
+                                "chunk_length_seconds": WHISPER_CHUNK_SECONDS}}
     whisper = _result("local faster-whisper", "OpenAI Whisper", "synthetic-whisper-model",
                       "synthetic-whisper-version", "synthetic-whisper-run",
                       candidate.hashes["video"], 43.0, segments, utterance,

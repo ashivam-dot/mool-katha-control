@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Independent, unsigned QA artifacts for Mool Katha drafts"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "av==15.1.0",
   "cryptography==50.0.1",
   "faster-whisper==1.2.1",
   "huggingface-hub==1.33.0",

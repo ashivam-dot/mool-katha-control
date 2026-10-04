@@ -10,7 +10,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from .asr import _asr_segments
+from .asr import WHISPER_CHUNK_SECONDS, _asr_segments
 from .audio_quality import EPISODE_OBSERVATION_FILE, AudioQualityObservation
 from .candidate import Candidate
 from .common import (QA_REPOSITORY, QaHold, digest_file, gemini_text_response,
@@ -169,6 +169,7 @@ def _verify_raw_asr(result: dict, label: str) -> None:
         info = raw.get("info")
         reported_duration = info.get("duration") if isinstance(info, dict) else None
         require(isinstance(settings, dict) and settings.get("vad_filter") is False and
+                settings.get("chunk_length_seconds") == WHISPER_CHUNK_SECONDS and
                 isinstance(info, dict) and info.get("language") == "hi" and
                 isinstance(reported_duration, (int, float)) and
                 not isinstance(reported_duration, bool) and math.isfinite(reported_duration) and

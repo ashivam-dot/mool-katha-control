@@ -14,7 +14,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from urllib.parse import unquote
 
-from trusted_qa.asr import gemini_full_audio, whisper_full_audio
+from faster_whisper.audio import decode_audio
+
+from trusted_qa.asr import WHISPER_CHUNK_SECONDS, gemini_full_audio, whisper_full_audio
 from trusted_qa.assemble import _citations, _verify_raw_asr
 from trusted_qa.common import QaHold, digest_bytes, digest_file
 from trusted_qa.fetch import FetchObservation, _request_once, _safe_url, fetch_observation
@@ -38,6 +40,18 @@ class _Response:
 
 
 class ProviderAndFetchTests(unittest.TestCase):
+    def test_locked_pyav_decodes_the_whole_pcm_wav(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            wav = Path(directory) / "whole.wav"
+            with wave.open(str(wav), "wb") as output:
+                output.setnchannels(1)
+                output.setsampwidth(2)
+                output.setframerate(16000)
+                output.writeframes(b"\x01\x00" * 32000)
+            decoded = decode_audio(str(wav), sampling_rate=16000)
+            self.assertEqual(len(decoded), 32000)
+            self.assertGreater(float(decoded[0]), 0)
+
     def test_unicode_source_path_and_query_are_ascii_on_the_http_wire(self) -> None:
         url = ("https://sa.wikisource.org/wiki/रामायणम्/सुन्दरकाण्डम्/सर्गः_१७"
                "?first=%E0%A4%95&next=नल#viewer")
@@ -222,6 +236,7 @@ class ProviderAndFetchTests(unittest.TestCase):
 
                 def transcribe(self, *_args, **kwargs):
                     self_test.assertIs(kwargs["vad_filter"], False)
+                    self_test.assertEqual(kwargs["chunk_length"], WHISPER_CHUNK_SECONDS)
                     return iter([segment]), info
 
             self_test = self
@@ -237,7 +252,13 @@ class ProviderAndFetchTests(unittest.TestCase):
                                    model_sha256="0" * 64,
                                    github_run_id=123, github_run_attempt=1)
             self.assertEqual(result["run_id"], "local-whisper-gha-123-1-aaaaaaaaaaaaaaaa")
+            self.assertEqual(result["raw_response"]["settings"]["chunk_length_seconds"],
+                             WHISPER_CHUNK_SECONDS)
             _verify_raw_asr(result, "whisper")
+            result["raw_response"]["settings"]["chunk_length_seconds"] = 30
+            with self.assertRaisesRegex(QaHold, "whole Hindi audio"):
+                _verify_raw_asr(result, "whisper")
+            result["raw_response"]["settings"]["chunk_length_seconds"] = WHISPER_CHUNK_SECONDS
             asr = {"agent-asr-gemini.json": result, "agent-asr-whisper.json": result}
             cited = [{"asr_file": name, "segment_indices": [1],
                       "asr_excerpt": "राम नल से कहते हैं।"} for name in asr]
