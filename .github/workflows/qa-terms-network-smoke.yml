@@ -23,10 +23,12 @@ jobs:
           host = 'ai.google.dev'
           target = '/gemini-api/terms'
           answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-          ips = sorted({row[4][0] for row in answers})
+          ips = list(dict.fromkeys(row[4][0] for row in answers))
           if not ips or not all(ipaddress.ip_address(ip).is_global for ip in ips):
               raise SystemExit('official terms host DNS is unsafe or unavailable')
-          print(f'public_ip_count={len(ips)} proxy_configured={bool(urllib.request.getproxies())}')
+          versions = [ipaddress.ip_address(ip).version for ip in ips]
+          print(f'public_ip_count={len(ips)} ipv4_count={versions.count(4)} '
+                f'ipv6_count={versions.count(6)} proxy_configured={bool(urllib.request.getproxies())}')
 
           class Pinned(http.client.HTTPSConnection):
               def __init__(self, ip):
@@ -37,7 +39,7 @@ jobs:
                   sock = socket.create_connection((self.ip, 443), self.timeout)
                   self.sock = self._context.wrap_socket(sock, server_hostname=host)
 
-          for index, ip in enumerate(ips[:4], 1):
+          for index, ip in enumerate(ips[:10], 1):
               connection = Pinned(ip)
               try:
                   connection.request('GET', target, headers={
@@ -46,9 +48,12 @@ jobs:
                   })
                   response = connection.getresponse()
                   response.read(1024)
-                  print(f'direct_attempt_{index}=http_{response.status}')
+                  print(f'direct_attempt_{index}=ipv{ipaddress.ip_address(ip).version}:http_{response.status}')
+                  if response.status == 200:
+                      break
               except (OSError, TimeoutError, http.client.HTTPException) as exc:
-                  print(f'direct_attempt_{index}={type(exc).__name__}')
+                  print(f'direct_attempt_{index}=ipv{ipaddress.ip_address(ip).version}:'
+                        f'{type(exc).__name__}:errno_{getattr(exc, "errno", None)}')
               finally:
                   connection.close()
 
