@@ -129,7 +129,12 @@ def verify_sampled_frame_record(review: dict[str, Any], audit: dict[str, Any],
     """Recompute selected indices and check every model-reviewed sheet's claim."""
     require(type(decoded_count) is int and 1 <= decoded_count <= MAX_FRAMES,
             "sampled visual review decoded count is invalid")
-    require(isinstance(audit, dict) and audit.get("kind") == "all_frame_pixel_temporal_audit_v2" and
+    audit_fields = {"kind", "input_video_sha256", "decoded_frame_count", "scaled_width",
+                    "scaled_height", "qc_duration_seconds", "audit_policy",
+                    "audit_policy_sha256", "frames", "frame_batches", "anomalies",
+                    "sample_plan_sha256"}
+    require(isinstance(audit, dict) and set(audit) == audit_fields and
+            audit.get("kind") == "all_frame_pixel_temporal_audit_v2" and
             audit.get("input_video_sha256") == video_sha256 and
             audit.get("decoded_frame_count") == decoded_count and
             audit.get("scaled_width") == WIDTH and audit.get("scaled_height") == HEIGHT and
@@ -145,7 +150,11 @@ def verify_sampled_frame_record(review: dict[str, Any], audit: dict[str, Any],
     require(audit.get("anomalies") == plan["anomalies"] and
             audit.get("sample_plan_sha256") == canonical_sha256(plan),
             "full-frame anomalies or sample plan changed")
-    require(isinstance(review, dict) and review.get("kind") == "frame_sampled_visual_review_v1" and
+    review_fields = {"kind", "input_video_sha256", "all_frame_audit_file",
+                     "all_frame_audit_sha256", "decoded_frame_count", "sample_plan",
+                     "sample_plan_sha256", "model_visual_coverage", "batches"}
+    require(isinstance(review, dict) and set(review) == review_fields and
+            review.get("kind") == "frame_sampled_visual_review_v1" and
             review.get("input_video_sha256") == video_sha256 and
             review.get("decoded_frame_count") == decoded_count and
             review.get("all_frame_audit_file") == "agent-video-frame-audit.json" and
