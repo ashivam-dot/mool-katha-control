@@ -100,6 +100,53 @@ jobs:
               publish._require_channel(channel_id, service, ready=True)
           print("Both exact Buffer destinations are ready")
           PY
+      - name: Probe live legacy pair readback schema
+        if: ${{ inputs.mode == 'verify-only' }}
+        working-directory: trusted/pipeline
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+          BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+          SOURCE_CHECKOUT: ${{ github.workspace }}/source
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from ytc import publish
+
+          try:
+              record = json.loads((Path(os.environ['SOURCE_CHECKOUT']) /
+                                   'content/episodes/ep003/publish.json').read_text())
+              for service, channel_env, post_id, due in (
+                  ('youtube', 'BUFFER_YOUTUBE_CHANNEL_ID', record['buffer_post_id'], record['due_at']),
+                  ('instagram', 'BUFFER_INSTAGRAM_CHANNEL_ID', record['crossposts']['instagram']['id'],
+                   record['crossposts']['instagram']['due_at']),
+              ):
+                  channel = os.environ[channel_env]
+                  rows = publish.posts(channel_id=channel)
+                  exact = [row for row in rows if row.get('id') == post_id]
+                  twins = publish.episode_posts(rows, 'ep003', channel)
+                  row = exact[0] if len(exact) == 1 else {}
+                  twin = next((item for item in twins if item.get('id') == post_id), {})
+                  assets = row.get('assets')
+                  sources = [item.get('source') for item in assets if isinstance(item, dict)] if isinstance(assets, list) else []
+                  print(json.dumps({'service': service, 'post_id': post_id,
+                                    'exact_id_count': len(exact), 'episode_post_count': len(twins),
+                                    'channel_service_matches': row.get('channelService') == service,
+                                    'status': row.get('status'), 'text_present': bool(row.get('text')),
+                                    'due_matches': (publish.buffer_due_at(row).astimezone(timezone.utc) ==
+                                                    datetime.fromisoformat(due).astimezone(timezone.utc)),
+                                    'asset_source_matches': sources == [record['media_url']],
+                                    'video_matches': twin.get('video') == record['media_url'],
+                                    'external_link_present': bool(row.get('externalLink')),
+                                    'sent_at_present': bool(row.get('sentAt'))}, sort_keys=True))
+          except Exception:
+              raise RuntimeError('sanitized Buffer readback probe failed') from None
+          PY
       - name: Release at most one exact signed candidate
         if: ${{ vars.YTC_ENABLE_CONTROL_RELEASE == '1' && inputs.mode != 'verify-only' }}
         working-directory: trusted/pipeline
