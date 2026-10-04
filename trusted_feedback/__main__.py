@@ -8,6 +8,7 @@ code, then rechecks the current producer tree before committing a lock.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -21,6 +22,10 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 POSITIVE_INT = re.compile(r"[1-9][0-9]*\Z")
 IDENTITY = r"[A-Za-z0-9_:-]+"
+CANDIDATE_RIGHTS_HOLD = re.compile(
+    rf"asset {IDENTITY} has incompatible or undocumented rights\Z"
+)
+MAX_VIDEO_BYTES = 260 * 1024 * 1024
 REASON_MESSAGES = {
     "duplicate_source": "Independent QA found duplicate primary and corroborating source pages",
     "source_passage": "Independent QA could not find the cited passage on its source page",
@@ -73,6 +78,8 @@ def candidate(path: Path) -> dict[str, str] | None:
 
 def _hold_reason(stage: str, reason: str) -> str | None:
     """Leave infrastructure, provider, decoder, and unknown failures retryable."""
+    if stage == "candidate" and CANDIDATE_RIGHTS_HOLD.fullmatch(reason):
+        return "rights_evidence"
     if stage == "source_and_rights":
         if re.fullmatch(
             rf"claim {IDENTITY}: primary and corroboration "
@@ -112,8 +119,32 @@ def _hold_reason(stage: str, reason: str) -> str | None:
     return None
 
 
+def _candidate_video_matches(path: Path, episode: str, expected_sha: str) -> bool:
+    """Bind a pre-media hold to the downloaded, exact QA snapshot MP4."""
+    if path.name != "agent-qa-hold.json" or path.parent.name != "private":
+        return False
+    episode_dir = path.parent.parent
+    video = episode_dir / "snapshot" / "content" / "episodes" / episode / f"{episode}.mp4"
+    if any(part.is_symlink() for part in (episode_dir, video.parent.parent.parent.parent,
+                                          video.parent.parent.parent, video.parent.parent,
+                                          video.parent, video)):
+        return False
+    if not video.is_file() or not 0 < video.stat().st_size <= MAX_VIDEO_BYTES:
+        return False
+    digest = hashlib.sha256()
+    with video.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest() == expected_sha
+
+
 def inspect_hold(path: Path, expected: dict[str, str]) -> str | None:
     """An absent or operational hold never writes to the producer repository."""
+    if (set(expected) != {"episode_id", "source_commit", "video_sha256"} or
+            type(expected["episode_id"]) is not str or not EPISODE.fullmatch(expected["episode_id"]) or
+            type(expected["source_commit"]) is not str or not COMMIT.fullmatch(expected["source_commit"]) or
+            type(expected["video_sha256"]) is not str or not SHA256.fullmatch(expected["video_sha256"])):
+        raise FeedbackError("discovered candidate identity is malformed")
     if not path.is_file():
         return None
     value = _object(path)
@@ -122,10 +153,14 @@ def inspect_hold(path: Path, expected: dict[str, str]) -> str | None:
         raise FeedbackError("QA hold artifact has an unexpected schema")
     if (value["status"] != "hold" or value["episode_id"] != expected["episode_id"] or
             value["source_commit"] != expected["source_commit"] or
-            value["video_sha256"] != expected["video_sha256"] or
             type(value["stage"]) is not str or type(value["reason"]) is not str or
             len(value["reason"]) > 500 or type(value["held_at"]) is not str):
         raise FeedbackError("QA hold artifact differs from the discovered candidate")
+    if value["video_sha256"] != expected["video_sha256"]:
+        if (value["video_sha256"] is not None or value["stage"] != "candidate" or
+                not CANDIDATE_RIGHTS_HOLD.fullmatch(value["reason"]) or
+                not _candidate_video_matches(path, expected["episode_id"], expected["video_sha256"])):
+            raise FeedbackError("QA hold artifact differs from the discovered candidate")
     return _hold_reason(value["stage"], value["reason"])
 
 

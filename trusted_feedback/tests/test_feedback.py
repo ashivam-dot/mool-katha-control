@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -26,6 +27,38 @@ def _git(*args: str, cwd: Path) -> str:
 
 
 class ArtifactTests(unittest.TestCase):
+    def test_pre_media_rights_hold_requires_exact_discovery_and_snapshot_video(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            video = root / "episode" / "snapshot" / "content" / "episodes" / EPISODE / f"{EPISODE}.mp4"
+            video.parent.mkdir(parents=True)
+            video.write_bytes(b"exact private QA snapshot video")
+            expected = {"episode_id": EPISODE,
+                        "video_sha256": hashlib.sha256(video.read_bytes()).hexdigest(),
+                        "source_commit": "b" * 40}
+            hold = root / "episode" / "private" / "agent-qa-hold.json"
+            record = {"status": "hold", "stage": "candidate",
+                      "reason": "asset visual:9ae76d61bf5c12b12dd7 has incompatible or undocumented rights",
+                      "episode_id": EPISODE, "video_sha256": None,
+                      "source_commit": expected["source_commit"],
+                      "held_at": "2026-10-04T10:45:07+00:00"}
+            _json(hold, record)
+            self.assertEqual(inspect_hold(hold, expected), "rights_evidence")
+            for field, wrong in (("episode_id", "ep013"), ("source_commit", "c" * 40),
+                                 ("video_sha256", "c" * 64)):
+                with self.subTest(field=field), self.assertRaises(FeedbackError):
+                    inspect_hold(hold, {**expected, field: wrong})
+            for stage, reason in (("source_and_rights", record["reason"]),
+                                  ("candidate", "private draft archive is unavailable"),
+                                  ("candidate", "asset visual:other has no inspectable rights evidence")):
+                _json(hold, {**record, "stage": stage, "reason": reason})
+                with self.subTest(stage=stage, reason=reason), self.assertRaises(FeedbackError):
+                    inspect_hold(hold, expected)
+            _json(hold, record)
+            video.write_bytes(b"different video")
+            with self.assertRaises(FeedbackError):
+                inspect_hold(hold, expected)
+
     def test_discovery_and_content_hold_require_matching_exact_candidate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
