@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           source_commit="$(git -C source rev-parse HEAD)"
-          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1)"
+          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1 --unlocked-only)"
           printf 'candidates=%s\n' "$candidates" >> "$GITHUB_OUTPUT"
           if [ "$candidates" = '[]' ]; then
             printf 'has_pending=false\n' >> "$GITHUB_OUTPUT"

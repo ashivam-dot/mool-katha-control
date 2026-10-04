@@ -37,7 +37,7 @@ jobs:
           set -euo pipefail
           mkdir -p discovery-output
           source_commit="$(git -C source rev-parse HEAD)"
-          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1)"
+          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1 --unlocked-only)"
           printf 'candidates=%s\n' "$candidates" >> "$GITHUB_OUTPUT"
           QA_SOURCE_COMMIT="$source_commit" QA_CANDIDATES="$candidates" python - <<'PY'
           import json
