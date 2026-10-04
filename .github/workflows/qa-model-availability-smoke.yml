@@ -1,0 +1,111 @@
+name: Check independent QA Gemini model availability
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: List usable model IDs and test one Flash request
+        env:
+          QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          key = os.environ.get('QA_GEMINI_API_KEY', '')
+          if not key:
+              raise SystemExit('QA model credential is unavailable')
+          base = 'https://generativelanguage.googleapis.com/v1beta/models'
+          headers = {'x-goog-api-key': key}
+          names = []
+          page_token = ''
+          for _ in range(10):
+              query = {'pageSize': '1000'}
+              if page_token:
+                  query['pageToken'] = page_token
+              url = base + '?' + urllib.parse.urlencode(query)
+              request = urllib.request.Request(url, headers=headers)
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      raw = response.read(2 * 1024 * 1024 + 1)
+                      status = response.status
+              except urllib.error.HTTPError as exc:
+                  print(f'models_http_status={exc.code}')
+                  raise SystemExit(0)
+              except (OSError, urllib.error.URLError) as exc:
+                  print(f'models_transport_class={type(exc).__name__}')
+                  raise SystemExit(0)
+              if status != 200 or len(raw) > 2 * 1024 * 1024:
+                  print(f'models_http_status={status} response_size_valid=false')
+                  raise SystemExit(0)
+              try:
+                  payload = json.loads(raw)
+              except (UnicodeError, ValueError):
+                  raise SystemExit('model list JSON is invalid') from None
+              for item in payload.get('models', []):
+                  name = item.get('name')
+                  methods = item.get('supportedGenerationMethods', [])
+                  if (isinstance(name, str) and
+                          re.fullmatch(r'models/[A-Za-z0-9._-]+', name) and
+                          isinstance(methods, list) and 'generateContent' in methods):
+                      names.append(name.removeprefix('models/'))
+              page_token = payload.get('nextPageToken', '')
+              if not page_token:
+                  break
+          else:
+              raise SystemExit('model list exceeded ten pages')
+
+          names = sorted(set(names))
+          print('generate_content_models=' + json.dumps(names, separators=(',', ':')))
+          flash = []
+          for name in names:
+              match = re.fullmatch(r'gemini-(\d+)(?:\.(\d+))?-flash(?:-(.*))?', name)
+              if not match:
+                  continue
+              suffix = match.group(3) or ''
+              if any(word in suffix for word in ('lite', 'image', 'audio', 'tts', 'live', 'exp')):
+                  continue
+              flash.append((int(match.group(1)), int(match.group(2) or 0),
+                            suffix == '', suffix == 'preview', name))
+          if not flash:
+              print('flash_test=none_available')
+              raise SystemExit(0)
+          chosen = max(flash)[-1]
+          print(f'flash_test_model={chosen}')
+          body = json.dumps({
+              'contents': [{'role': 'user', 'parts': [{'text': 'Reply with only OK.'}]}],
+              'generationConfig': {'temperature': 0, 'maxOutputTokens': 32},
+          }, separators=(',', ':')).encode('utf-8')
+          request = urllib.request.Request(
+              base + '/' + chosen + ':generateContent', data=body,
+              headers={**headers, 'Content-Type': 'application/json'}, method='POST')
+          try:
+              with urllib.request.urlopen(request, timeout=120) as response:
+                  raw = response.read(65537)
+                  status = response.status
+          except urllib.error.HTTPError as exc:
+              print(f'flash_test_http_status={exc.code}')
+              raise SystemExit(0)
+          except (OSError, urllib.error.URLError) as exc:
+              print(f'flash_test_transport_class={type(exc).__name__}')
+              raise SystemExit(0)
+          print(f'flash_test_http_status={status}')
+          if status == 200 and len(raw) <= 65536:
+              try:
+                  payload = json.loads(raw)
+              except (UnicodeError, ValueError):
+                  print('flash_test_valid_json=false')
+              else:
+                  print(f'flash_test_has_candidate={bool(payload.get("candidates"))}')
+          PY
