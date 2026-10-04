@@ -1,0 +1,51 @@
+# This static default-branch workflow has no producer, Buffer, or publisher key.
+# It watches immutable QA and release runs and retries one alert per incident.
+name: Control owner alerts
+
+on:
+  workflow_run:
+    workflows:
+      - Control analytics and watchdog
+      - Dispatch pinned independent QA
+      - Signed independent QA
+      - Signed release from independent control
+    types: [completed]
+  schedule:
+    - cron: '55 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: control-owner-alerts
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: ${{ github.repository == 'ashivam-dot/mool-katha-control' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Notify owner once per current workflow failure or missed slot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          YTC_NTFY_TOPIC: ${{ secrets.YTC_NTFY_TOPIC }}
+          YTC_ENABLE_CONTROL_RELEASE: ${{ vars.YTC_ENABLE_CONTROL_RELEASE }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = workflow_run ]; then
+            python -m trusted_alerts workflow-run --event "$GITHUB_EVENT_PATH"
+          else
+            python -m trusted_alerts missed
+          fi

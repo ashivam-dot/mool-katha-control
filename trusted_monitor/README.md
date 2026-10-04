@@ -20,6 +20,8 @@ has read-only repository permissions. The job reads:
 - The six-hour QA dispatcher and its exact `qa-v2` run. An inactive workflow,
   a missing run for ten hours, or a failed latest completed run alerts. The
   dispatcher is checked separately so a manual QA run cannot hide its failure.
+  A newly changed dispatcher waits for its first following cron slot and the
+  normal four-hour scheduling slack before a missing slot alerts.
 - Every signed episode with a published due time that has passed. It checks the
   saved control readback receipt and independently reads both exact Buffer post
   IDs, destinations, hosted video URLs, sent times, and canonical public links.
@@ -31,6 +33,14 @@ links, aggregate metrics, status, and bounded operational messages. They contain
 no OAuth, Buffer, Cloudinary, or GitHub tokens. Operational alerts fail the job;
 Google or public-feed outages are warnings unless both YouTube sources fail.
 The workflow makes no mutation requests and publishes nothing.
+
+[`control-alerts.yml`](../.github/workflows/control-alerts.yml) watches completed
+control monitor, pinned QA, dispatcher, and signed-release runs. Its hourly
+check also catches missed control, QA, and enabled-release schedules. It sends
+one owner phone notification per active incident through the control
+`YTC_NTFY_TOPIC` secret and keeps one private control issue as a durable
+fallback. A failed phone send leaves the issue pending and is retried; a
+recovered workflow closes its issue. It has no producer or publisher key.
 
 [`qa-failure-feedback.yml`](../.github/workflows/qa-failure-feedback.yml)
 inspects failed `qa-v2` run artifacts in a separate job. It recognizes only
@@ -45,7 +55,7 @@ needed for a hold to free a producer slot.
 
 Required control Actions secrets: `SOURCE_READONLY_DEPLOY_KEY`, `BUFFER_API_KEY`,
 `BUFFER_YOUTUBE_CHANNEL_ID`, `BUFFER_INSTAGRAM_CHANNEL_ID`, `CLOUDINARY_URL`,
-`YTC_GOOGLE_CLIENT`, and `YTC_GOOGLE_TOKEN`. The nonsecret `BUFFER_ORG_ID` variable
+`YTC_GOOGLE_CLIENT`, `YTC_GOOGLE_TOKEN`, and `YTC_NTFY_TOPIC`. The nonsecret `BUFFER_ORG_ID` variable
 is pinned in code. Google credentials are optional for a degraded public-feed
 read, but both missing Google and an unavailable public feed alert. No Modal
 credential is mounted: the release workflow and its Modal reads need separate
