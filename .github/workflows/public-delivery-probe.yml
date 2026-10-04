@@ -1,0 +1,53 @@
+name: Check public Mool Katha delivery from a cloud runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      youtube_video_id:
+        description: Exact public YouTube video ID
+        required: true
+        default: sfsvKGd5j1Q
+        type: string
+      instagram_shortcode:
+        description: Exact public Instagram Reel shortcode
+        required: true
+        default: DeCLARCCcgC
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    if: github.repository == 'ashivam-dot/mool-katha-control' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact IDs on both owned public pages
+        env:
+          YOUTUBE_VIDEO_ID: ${{ inputs.youtube_video_id }}
+          INSTAGRAM_SHORTCODE: ${{ inputs.instagram_shortcode }}
+        run: |
+          python - <<'PY'
+          import os
+          from trusted_monitor import public
+          from trusted_monitor.__main__ import youtube_public
+
+          youtube_id = os.environ['YOUTUBE_VIDEO_ID']
+          instagram_code = os.environ['INSTAGRAM_SHORTCODE']
+          if not public.VIDEO_ID.fullmatch(youtube_id) or not public.SHORTCODE.fullmatch(instagram_code):
+              raise SystemExit('Public video IDs are invalid')
+          feed = youtube_public()
+          if feed['channel_id'] != public.YOUTUBE_CHANNEL_ID or sum(
+                  item['id'] == youtube_id for item in feed['recent_videos']) != 1:
+              raise SystemExit('Exact video is absent from Mool Katha public YouTube feed')
+          if not public.instagram_visible('reel', instagram_code):
+              raise SystemExit('Exact Reel is absent from Mool Katha public Instagram page')
+          print('Exact Mool Katha YouTube and Instagram public IDs are visible from Actions')
+          PY
