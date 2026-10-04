@@ -144,6 +144,23 @@ class ProcessBoundaryTests(unittest.TestCase):
         self.assertEqual(result["exit_code"], 3)
 
 
+    def test_malformed_model_stdout_is_bounded_in_the_private_receipt(self) -> None:
+        reference = probe.SCENE_REFERENCES[0]
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            binary = folder / "fake-cli"
+            binary.write_text("#!/usr/bin/env python3\nprint('{broken')\n")
+            binary.chmod(0o755)
+            with patch.object(probe, "_rss_bytes", return_value=1024), patch.object(
+                    probe.resource, "getrusage", return_value=SimpleNamespace(ru_maxrss=1024)):
+                result = probe._run_sheet(binary, folder / "model", folder / "mmproj",
+                                          folder / "sheet.jpg", 1, 35, reference, folder)
+        self.assertEqual(result["status"], "held")
+        self.assertEqual(result["reason"], "model_json_malformed")
+        self.assertIn("{broken", result["stdout_text"])
+        self.assertLessEqual(len(result["stdout_text"]), probe.MAX_DIAGNOSTIC_BYTES)
+
+
 class ExactSourceAndReceiptTests(unittest.TestCase):
     def test_sheet_selection_cannot_skip_or_reorder_an_index(self) -> None:
         indices = list(range(1, 64))

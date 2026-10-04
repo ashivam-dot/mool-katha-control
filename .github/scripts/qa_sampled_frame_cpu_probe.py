@@ -47,6 +47,8 @@ OUTER_LIMIT_S = 930
 JOB_LIMIT_MIN = 22
 MAX_CHILD_RSS_BYTES = int(5.5 * 1024**3)
 MAX_OUTPUT_BYTES = 1024 * 1024
+MAX_DIAGNOSTIC_BYTES = 16 * 1024
+GENERATION_TOKENS = 768
 
 # Independently read from the locally regenerated exact sheets. These coarse
 # scene changes test image use; they do not judge text, timing, or editorial fit.
@@ -92,6 +94,7 @@ def _base_receipt() -> dict[str, Any]:
         "llama_zip_sha256": LLAMA_ZIP_SHA256,
         "download_limit_seconds": DOWNLOAD_LIMIT_S,
         "inference_limit_each_seconds": INFERENCE_LIMIT_S,
+        "max_generation_tokens_each": GENERATION_TOKENS,
         "outer_limit_seconds": OUTER_LIMIT_S,
         "job_limit_minutes": JOB_LIMIT_MIN,
         "max_child_rss_gib": round(MAX_CHILD_RSS_BYTES / 1024**3, 2),
@@ -314,7 +317,8 @@ def _run_sheet(binary: Path, model: Path, mmproj: Path, image: Path,
     stderr_path = folder / f"sheet-{number}.stderr"
     args = [str(binary), "-m", str(model), "--mmproj", str(mmproj),
             "--image", str(image), "-p", _prompt(count), "-t", "2", "-c", "8192",
-            "-n", "512", "--temp", "0", "--seed", "0", "--json-schema", _json_schema()]
+            "-n", str(GENERATION_TOKENS), "--temp", "0", "--seed", "0",
+            "--json-schema", _json_schema()]
     env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"),
            "LD_LIBRARY_PATH": str(binary.parent), "LANG": "C.UTF-8",
            "LLAMA_LOG_COLORS": "0", "OMP_NUM_THREADS": "2", "OPENBLAS_NUM_THREADS": "2"}
@@ -366,6 +370,14 @@ def _run_sheet(binary: Path, model: Path, mmproj: Path, image: Path,
         entry["status"] = "coarse_scene_sequence_matched"
     except Exception as error:
         entry["reason"] = str(error) if isinstance(error, ProbeHold) else f"unexpected_{type(error).__name__}"
+        # These bounded diagnostics remain only in the private artifact. They let
+        # a human distinguish grammar truncation from weak visual inspection.
+        if stdout_path.is_file() and stdout_path.stat().st_size <= MAX_DIAGNOSTIC_BYTES:
+            entry["stdout_text"] = stdout_path.read_text(encoding="utf-8", errors="replace")
+        if stderr_path.is_file():
+            with stderr_path.open("rb") as errors:
+                errors.seek(max(0, stderr_path.stat().st_size - 2048))
+                entry["stderr_tail"] = errors.read(2048).decode("utf-8", errors="replace")
     finally:
         entry["peak_observed_rss_gib"] = round(peak_rss / 1024**3, 2)
         # Ubuntu reports ru_maxrss in KiB. The live sampler also enforces the cap.
