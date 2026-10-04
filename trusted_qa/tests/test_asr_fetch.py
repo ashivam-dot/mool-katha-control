@@ -68,7 +68,7 @@ class ProviderAndFetchTests(unittest.TestCase):
 
     def test_https_transport_failure_tries_another_validated_public_address(self) -> None:
         addresses = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (ip, 443))
-                     for ip in ("8.8.8.8", "9.9.9.9")]
+                     for ip in ("9.9.9.9", "8.8.8.8")]
 
         class Connection:
             def __init__(self, *, fail: bool) -> None:
@@ -91,7 +91,7 @@ class ProviderAndFetchTests(unittest.TestCase):
              patch("trusted_qa.fetch.time.sleep") as paused:
             self.assertEqual(_request_once("https://example.org/rights"), (200, {}, b"fresh page"))
         self.assertEqual([call.args for call in connected.call_args_list],
-                         [("example.org", "8.8.8.8"), ("example.org", "9.9.9.9")])
+                         [("example.org", "9.9.9.9"), ("example.org", "8.8.8.8")])
         self.assertEqual(resolved.call_count, 3)  # initial URL check plus each connection
         paused.assert_called_once()
         self.assertTrue(first.closed and second.closed)

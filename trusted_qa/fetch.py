@@ -121,7 +121,9 @@ def _request_once(url: str) -> tuple[int, dict[str, str], bytes]:
             addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
         except OSError as exc:
             raise QaHold("source host cannot be resolved") from exc
-        ips = sorted({result[4][0] for result in addresses})
+        # Resolver order accounts for the runner's usable network routes.
+        # Sorting the addresses sent this runner to unreachable Google hosts.
+        ips = list(dict.fromkeys(result[4][0] for result in addresses))
         require(bool(ips) and all(ipaddress.ip_address(ip).is_global for ip in ips),
                 "source host changed to a private address")
         ip = next((value for value in ips if value not in attempted), ips[attempt % len(ips)])
