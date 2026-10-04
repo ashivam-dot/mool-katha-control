@@ -27,12 +27,13 @@ The source checkout is not placed on `PYTHONPATH`, installed, or executed.
    the producer repository, then test checkout and a harmless push before live
    release. The existing `SOURCE_READONLY_DEPLOY_KEY` remains read-only for QA
    and the code checkout.
-3. Verify the independent release workflow on a manual dispatch while its
-   gate remains disabled, then enable it only after a signed QA transfer exists
-   and the source write credential and both Buffer destinations have been
-   validated. A skipped dispatch only tests the gate; an enabled run with no
-   candidate tests credential and storage access, and an approved candidate is
-   required for end-to-end release proof.
+3. Manually dispatch `signed-release.yml` on `main` with `mode=verify-only`.
+   This runs the pinned code checkout, a source write-key dry-run push, the
+   locked dependency install, and live exact Buffer destination checks. It
+   cannot call release code or push a receipt, even if the release gate is on.
+   Inspect that run before setting `YTC_ENABLE_CONTROL_RELEASE=1`. A later
+   enabled run with no candidate tests storage access, and an approved signed
+   candidate is required for end-to-end release proof.
 4. After control release credentials work, remove the producer repository's
    `BUFFER_API_KEY`, `CLOUDINARY_URL`, and Google OAuth publishing secrets. Its
    `watchdog`, `daily-analytics`, and `verify-ep003-publication` workflows also

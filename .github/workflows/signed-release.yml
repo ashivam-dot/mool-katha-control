@@ -7,6 +7,13 @@ on:
   schedule:
     - cron: '17 */2 * * *'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Verify pinned code, source write access, and Buffer destinations without releasing'
+        type: choice
+        required: true
+        default: verify-only
+        options: [verify-only, release]
 
 permissions:
   contents: read
@@ -17,7 +24,11 @@ concurrency:
 
 jobs:
   release:
-    if: ${{ github.ref == 'refs/heads/main' && vars.YTC_ENABLE_CONTROL_RELEASE == '1' }}
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.mode == 'verify-only') ||
+       (vars.YTC_ENABLE_CONTROL_RELEASE == '1' &&
+        (github.event_name == 'schedule' || inputs.mode == 'release')))
     runs-on: ubuntu-24.04
     timeout-minutes: 65
     env:
@@ -83,6 +94,7 @@ jobs:
           print("Both exact Buffer destinations are ready")
           PY
       - name: Release at most one exact signed candidate
+        if: ${{ vars.YTC_ENABLE_CONTROL_RELEASE == '1' && inputs.mode != 'verify-only' }}
         working-directory: trusted/pipeline
         env:
           SOURCE_CHECKOUT: ${{ github.workspace }}/source
@@ -105,7 +117,7 @@ jobs:
           print(json.dumps(result, ensure_ascii=False, sort_keys=True))
           PY
       - name: Save signed evidence and post receipts to the producer data branch
-        if: always()
+        if: ${{ always() && vars.YTC_ENABLE_CONTROL_RELEASE == '1' && inputs.mode != 'verify-only' }}
         working-directory: source
         shell: bash
         run: |
