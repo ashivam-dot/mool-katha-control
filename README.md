@@ -1,5 +1,10 @@
 # Mool Katha control
 
+The independent signed-release migration is staged in
+[`RELEASE-MIGRATION.md`](RELEASE-MIGRATION.md). Keep its gate disabled until the
+publisher credentials and source write key are configured in this repository
+and removed from producer-writable jobs.
+
 Private cloud control for independent episode QA and release. The producer lives
 in [`ashivam-dot/mool-katha`](https://github.com/ashivam-dot/mool-katha) and can
 write drafts, so this repository holds the decision code and later release
@@ -13,19 +18,20 @@ credentials. Producer jobs have no write access here.
 - `source-check.yml` verifies the separate checkout and exact channel identity
   without executing source-repository code. It does not approve or publish a
   video.
-- `trusted_qa/` contains an unsigned, fail-closed QA runner prototype.
-  `.github/workflows/shadow-qa.yml` can be started manually to inspect one
-  eligible pending candidate. It keeps a short-lived private discovery result
-  when no candidate qualifies, and does not sign or release a review.
+- `trusted_qa/` contains the fail-closed QA runner. The manual `shadow-qa.yml`
+  produces unsigned reviews. The separate `release-qa.yml` runs at the pinned
+  `qa-v1` tag and can sign approved reviews; the latest observed run found no
+  eligible pending candidate and did not enter its fetch, review, or sign jobs.
 - `ep001` and `ep002` are legacy pending drafts without a cloud
   `production_agent_id`; strict discovery cannot treat them as eligible QA
   candidates. A new producer-authenticated snapshot is needed for full QA.
-- QA signing, release credentials, and automatic publishing are **not enabled**.
-  A draft, checkout, or unsigned QA result cannot release a post.
+- QA signing is configured here. Four publisher credential names have been
+  staged as control-repository secrets, while copies still exist in the
+  producer repository. Its signed-release gate is disabled. The proposed
+  control-side release still needs a source write key and remains gated off.
 
-The first reviewed pilot, `ep003`, is scheduled independently of this control
-repository for 2026-10-03 19:00 IST. Its publication verifier and cloud
-watchdog remain in the production repository until the pilot finishes.
+The producer repository retains its cloud watchdog and other privileged read
+jobs until their credentials are migrated or removed.
 
 ## Planned trust boundary
 
@@ -40,5 +46,5 @@ watchdog remain in the production repository until the pilot finishes.
 
 Each cloud job must fail closed on missing evidence, source/rights ambiguity,
 speech disagreement, destination mismatch, changed bytes, or uncertain prior
-post state. Release enablement needs a separate tested change here; adding a
-file to the producer repository cannot enable it.
+post state. The current producer repository still has publisher-capable secrets;
+complete the migration before enabling unattended production.

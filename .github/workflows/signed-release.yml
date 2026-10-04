@@ -1,0 +1,117 @@
+# Publisher credentials live only in this independent repository. The mutable
+# producer checkout is data; the executable release implementation is pinned to
+# an exact reviewed commit and never imports Python from source/.
+name: Signed release from independent control
+
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: independent-signed-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ github.ref == 'refs/heads/main' && vars.YTC_ENABLE_CONTROL_RELEASE == '1' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      YTC_ENABLE_SIGNED_RELEASE: '1'
+      YTC_ENABLE_AUTOMATION: '0'
+      BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out immutable release code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: 760a740687249b2b6b79fbb073ab2c00b1ce00bf
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: trusted
+          persist-credentials: false
+      - name: Check out producer data and receipt destination
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: main
+          ssh-key: ${{ secrets.SOURCE_WRITE_DEPLOY_KEY }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify exact trusted code and source branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C trusted rev-parse HEAD)" = '760a740687249b2b6b79fbb073ab2c00b1ce00bf'
+          test "$(git -C source branch --show-current)" = 'main'
+          test -z "$(git -C source status --porcelain)"
+          test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          working-directory: trusted/pipeline
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install pinned release dependencies
+        working-directory: trusted/pipeline
+        run: uv sync --frozen
+      - name: Verify exact Buffer destinations
+        working-directory: trusted/pipeline
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+        run: |
+          uv run --no-sync python - <<'PY'
+          import os
+          from pathlib import Path
+          from ytc import publish
+
+          if Path(publish.__file__).resolve() != Path.cwd().resolve() / "src/ytc/publish.py":
+              raise RuntimeError("publisher module is outside the pinned checkout")
+          for service, name in (("youtube", "BUFFER_YOUTUBE_CHANNEL_ID"),
+                                ("instagram", "BUFFER_INSTAGRAM_CHANNEL_ID")):
+              channel_id = os.environ.get(name, "").strip()
+              if not channel_id:
+                  raise RuntimeError(f"{name} is missing")
+              publish._require_channel(channel_id, service, ready=True)
+          print("Both exact Buffer destinations are ready")
+          PY
+      - name: Release at most one exact signed candidate
+        working-directory: trusted/pipeline
+        env:
+          SOURCE_CHECKOUT: ${{ github.workspace }}/source
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from ytc import qa_release
+
+          if Path(qa_release.__file__).resolve() != Path.cwd().resolve() / "src/ytc/qa_release.py":
+              raise RuntimeError("release module is outside the pinned checkout")
+          result = qa_release.run_once(Path(os.environ["SOURCE_CHECKOUT"]).resolve())
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+          PY
+      - name: Save signed evidence and post receipts to the producer data branch
+        if: always()
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Mool Katha independent release'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A content/episodes
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "release: independent signed QA run $GITHUB_RUN_ID"
+          git push origin HEAD:main
