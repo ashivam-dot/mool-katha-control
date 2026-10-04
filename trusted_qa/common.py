@@ -27,7 +27,7 @@ def valid_qa_workflow_ref(repository: str, workflow_ref: str) -> bool:
     if repository != QA_REPOSITORY or not isinstance(workflow_ref, str):
         return False
     pattern = (re.escape(QA_REPOSITORY) +
-               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v6)\Z")
+               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v7)\Z")
     return re.fullmatch(pattern, workflow_ref) is not None
 
 
@@ -140,9 +140,14 @@ GEMINI_MAX_RETRY_SECONDS = 70.0
 GEMINI_RETRY_CODES = frozenset({429, 500, 502, 503, 504})
 
 
-def _retry_delay(exc: urllib.error.HTTPError) -> float:
+def _retry_delay(exc: urllib.error.HTTPError) -> float | None:
+    """Seconds to wait before retrying, or None when a daily quota is spent and waiting can't help."""
     try:
         details = json.loads(exc.read(64 * 1024).decode("utf-8", "replace"))["error"].get("details", [])
+        quotas = [v.get("quotaId", "") for d in details if isinstance(d, dict)
+                  for v in d.get("violations", []) if isinstance(v, dict)]
+        if any("PerDay" in str(quota) for quota in quotas):
+            return None
         delay = next(d["retryDelay"] for d in details if isinstance(d, dict) and "retryDelay" in d)
         return min(GEMINI_MAX_RETRY_SECONDS, max(1.0, float(str(delay).rstrip("s"))))
     except (ValueError, KeyError, TypeError, StopIteration, AttributeError, OSError):
@@ -160,7 +165,10 @@ def gemini_post(request: urllib.request.Request, *, timeout: float, max_bytes: i
         except urllib.error.HTTPError as exc:
             if exc.code not in GEMINI_RETRY_CODES or attempt == GEMINI_ATTEMPTS:
                 raise QaHold(f"{failure} (HTTP {exc.code})") from exc
-            time.sleep(_retry_delay(exc))
+            delay = _retry_delay(exc)
+            if delay is None:
+                raise QaHold(f"{failure} (HTTP {exc.code}, daily quota spent)") from exc
+            time.sleep(delay)
         except (OSError, urllib.error.URLError) as exc:
             raise QaHold(failure) from exc
     raise QaHold(failure)

@@ -172,6 +172,17 @@ class FrameModelContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(QaHold, "frame batch model request failed"):
                     _model_batch(b"test sheet", records, Path(directory),
                                  key="test-key", model="gemini-test-model", batch_number=1)
+        daily = json.dumps({"error": {"code": 429, "details": [
+            {"violations": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier"}]},
+            {"retryDelay": "29849s"}]}}).encode()
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("urllib.request.urlopen", side_effect=[urllib.error.HTTPError(
+                    "https://example.invalid", 429, "Too Many Requests", {}, io.BytesIO(daily))]), \
+                 patch("trusted_qa.common.time.sleep") as slept:
+                with self.assertRaisesRegex(QaHold, "daily quota spent"):
+                    _model_batch(b"test sheet", records, Path(directory),
+                                 key="test-key", model="gemini-test-model", batch_number=1)
+            slept.assert_not_called()
 
     def test_uncertain_or_skipped_model_batch_holds(self) -> None:
         for decision in (
