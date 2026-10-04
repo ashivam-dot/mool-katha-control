@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .candidate import MAX_ARCHIVE_BYTES
 from .common import QaHold, EPISODE, require, write_bytes_new
+from .modal_workspace import require_modal_workspace
 
 
 MODAL_APP = "mool-katha"
@@ -27,6 +28,7 @@ def fetch_modal_archive(episode_id: str, output: Path) -> Path:
         import modal
     except ImportError as exc:
         raise QaHold("Modal client is unavailable to fetch the private draft archive") from exc
+    require_modal_workspace(modal)
     try:
         function = modal.Function.from_name(MODAL_APP, MODAL_READ_FUNCTION)
         data = function.remote(episode_id)

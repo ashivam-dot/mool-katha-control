@@ -1,4 +1,4 @@
-# Frozen, independently reviewed candidate QA. Only the qa-v1 tag may sign.
+# Frozen, independently reviewed candidate QA. Only the qa-v2 tag may sign.
 # The final job transfers signed evidence to untrusted Modal storage; it has
 # neither the signing key nor any publisher credential.
 name: Signed independent QA
@@ -24,7 +24,7 @@ jobs:
       - name: Require pinned release tag
         shell: bash
         run: |
-          test "$GITHUB_REF" = 'refs/tags/qa-v1'
+          test "$GITHUB_REF" = 'refs/tags/qa-v2'
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
@@ -311,6 +311,11 @@ jobs:
         run: |
           set -euo pipefail
           remote="qa/$QA_EPISODE/$QA_VIDEO_SHA.tar"
+          trusted_qa/.venv/bin/python - <<'PY'
+          import modal
+          if modal.Workspace.from_context().hydrate().name != 'mool-katha-producer':
+              raise SystemExit('Modal token does not belong to mool-katha-producer')
+          PY
           trusted_qa/.venv/bin/modal volume put -f mool-katha-signed-qa \
             "transfer-output/$QA_EPISODE.tar" "$remote"
           trusted_qa/.venv/bin/modal volume get mool-katha-signed-qa \

@@ -109,8 +109,11 @@ jobs:
           import json
           import os
           from pathlib import Path
+          import modal
           from ytc import qa_release
 
+          if modal.Workspace.from_context().hydrate().name != 'mool-katha-producer':
+              raise RuntimeError('Modal token does not belong to mool-katha-producer')
           if Path(qa_release.__file__).resolve() != Path.cwd().resolve() / "src/ytc/qa_release.py":
               raise RuntimeError("release module is outside the pinned checkout")
           result = qa_release.run_once(Path(os.environ["SOURCE_CHECKOUT"]).resolve())
