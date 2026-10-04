@@ -1,4 +1,4 @@
-name: Check independent QA frame model capacity
+name: Probe exact ep022 sampled frame capacity
 
 on:
   workflow_dispatch:
@@ -18,16 +18,16 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
-      - name: Install image decoder for one smaller batch
+      - name: Install exact frame decoder
         run: python -m pip install Pillow==11.3.0
-      - name: Download exact failed frame request
+      - name: Download exact held QA artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: private-qa-ep022-90e61a514265a54e45a76b919f21cce563599365816933ab1cf101590946d70b
           path: qa-output
           run-id: 37200191200
           github-token: ${{ github.token }}
-      - name: Compare exact and smaller indexed frame requests
+      - name: Regenerate samples and probe at most two calls
         env:
           QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
-        run: python .github/scripts/qa_frame_model_capacity.py
+        run: python .github/scripts/qa_sampled_frame_probe.py
