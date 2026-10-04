@@ -17,7 +17,7 @@ job's token has read-only repository permissions. The job reads:
   `YTC_ENABLE_CONTROL_RELEASE=1`, a missing scheduled run for five hours, a
   failed latest scheduled run, or an inactive workflow alerts. While the release
   gate is off, skipped runs are expected.
-- The six-hour QA dispatcher and its exact `qa-v7` run. An inactive workflow,
+- The six-hour QA dispatcher and its exact `qa-v8` run. An inactive workflow,
   a missing run for ten hours, or a failed latest completed run alerts. The
   dispatcher is checked separately so a manual QA run cannot hide its failure.
   A newly changed dispatcher waits for its first following cron slot and the
@@ -64,7 +64,7 @@ fallback. A failed phone send leaves the issue pending and is retried; a
 recovered workflow closes its issue. It has no producer or publisher key.
 
 [`qa-failure-feedback.yml`](../.github/workflows/qa-failure-feedback.yml)
-inspects failed `qa-v7` run artifacts in a separate job. It recognizes only
+inspects failed `qa-v8` run artifacts in a separate job. It recognizes only
 specific content and evidence holds from the pinned runner. A second job, with
 the producer write key but no QA artifact or signing key, checks that the
 entire tracked episode tree still matches QA's source commit before committing

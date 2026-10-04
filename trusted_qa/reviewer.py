@@ -19,7 +19,7 @@ from typing import Any
 from .audio_quality import AudioQualityObservation
 from .candidate import Candidate
 from .common import (QaHold, digest_file, gemini_post, gemini_text_response, json_object,
-                     require, write_bytes_new)
+                     require, valid_gemini_models, write_bytes_new)
 from .media import VisualEvidence
 from .observations import ObservationSet
 from .terms import required_beat_terms
@@ -169,8 +169,7 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
                               quality: AudioQualityObservation,
                               private_audit_dir: Path, *, key: str, model: str) -> ReviewModelResult:
     require(isinstance(key, str) and bool(key.strip()), "independent Gemini reviewer key is unavailable")
-    require(isinstance(model, str) and re.fullmatch(r"gemini-[A-Za-z0-9._-]+", model) is not None,
-            "independent reviewer model must be explicitly named")
+    require(valid_gemini_models(model), "independent reviewer model must be explicitly named")
     candidate.recheck()
     quality.recheck(candidate.hashes["video"])
     packet = _prompt_packet(candidate, observations, asr_results, visual, quality)
@@ -203,13 +202,10 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
     require(len(raw_request) <= MAX_REVIEW_REQUEST_BYTES,
             "independent reviewer request exceeds single-call evidence limit")
     write_bytes_new(private_audit_dir / "review-model-request.json", raw_request)
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    request = urllib.request.Request(endpoint, data=raw_request,
-                                     headers={"Content-Type": "application/json", "x-goog-api-key": key},
-                                     method="POST")
-    raw_response = gemini_post(request, timeout=300, max_bytes=MAX_REVIEW_RESPONSE_BYTES,
-                               failure="independent reviewer API request failed",
-                               not_ok="independent reviewer did not return HTTP 200")
+    raw_response, model = gemini_post(model, raw_request, key=key, timeout=300,
+                                      max_bytes=MAX_REVIEW_RESPONSE_BYTES,
+                                      failure="independent reviewer API request failed",
+                                      not_ok="independent reviewer did not return HTTP 200")
     require(len(raw_response) <= MAX_REVIEW_RESPONSE_BYTES,
             "independent reviewer response is oversized")
     write_bytes_new(private_audit_dir / "review-model-response.json", raw_response)

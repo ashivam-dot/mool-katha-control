@@ -183,6 +183,17 @@ class FrameModelContractTests(unittest.TestCase):
                     _model_batch(b"test sheet", records, Path(directory),
                                  key="test-key", model="gemini-test-model", batch_number=1)
             slept.assert_not_called()
+        with tempfile.TemporaryDirectory() as directory:
+            spent = urllib.error.HTTPError("https://example.invalid", 429, "Too Many Requests", {},
+                                           io.BytesIO(daily))
+            with patch("urllib.request.urlopen", side_effect=[spent, _Response(_provider(decision))]) as opened, \
+                 patch("trusted_qa.common.time.sleep") as slept:
+                verdict, call = _model_batch(b"test sheet", records, Path(directory), key="test-key",
+                                             model="gemini-first,gemini-second", batch_number=1)
+            self.assertEqual(call["model"], "gemini-second")
+            self.assertEqual(verdict["model_call"]["model"], "gemini-second")
+            self.assertIn("/gemini-second:generateContent", opened.call_args_list[1].args[0].full_url)
+            slept.assert_not_called()
 
     def test_uncertain_or_skipped_model_batch_holds(self) -> None:
         for decision in (

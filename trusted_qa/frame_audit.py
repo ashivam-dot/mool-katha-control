@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from .common import (QaHold, digest_bytes, digest_file, gemini_post, gemini_text_response,
-                     json_object, require, write_bytes_new, write_json_new)
+                     json_object, require, valid_gemini_models, write_bytes_new, write_json_new)
 from .media import _command
 
 
@@ -145,13 +145,10 @@ def _model_batch(sheet: bytes, records: list[dict], private_dir: Path,
     request_path = private_dir / f"frame-batch-{batch_number:03d}-request.json"
     response_path = private_dir / f"frame-batch-{batch_number:03d}-response.json"
     write_bytes_new(request_path, request_bytes)
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    request = urllib.request.Request(endpoint, data=request_bytes,
-                                     headers={"Content-Type": "application/json", "x-goog-api-key": key},
-                                     method="POST")
-    response_bytes = gemini_post(request, timeout=300, max_bytes=MAX_RESPONSE_BYTES,
-                                 failure="frame batch model request failed",
-                                 not_ok="frame batch model did not return HTTP 200")
+    response_bytes, model = gemini_post(model, request_bytes, key=key, timeout=300,
+                                        max_bytes=MAX_RESPONSE_BYTES,
+                                        failure="frame batch model request failed",
+                                        not_ok="frame batch model did not return HTTP 200")
     require(len(response_bytes) <= MAX_RESPONSE_BYTES, "frame batch response is oversized")
     write_bytes_new(response_path, response_bytes)
     provider = json_object(response_bytes, "frame batch provider response")
@@ -185,8 +182,7 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
     except ImportError as exc:
         raise QaHold("all-frame visual QA needs Pillow") from exc
     require(isinstance(key, str) and bool(key.strip()), "frame batch model key is unavailable")
-    require(isinstance(model, str) and re.fullmatch(r"gemini-[A-Za-z0-9._-]+", model) is not None,
-            "frame batch model must be explicitly named")
+    require(valid_gemini_models(model), "frame batch model must be explicitly named")
     require(isinstance(decoded_count, int) and not isinstance(decoded_count, bool) and
             1 <= decoded_count <= MAX_FRAMES, "complete decode exceeds indexed review capacity")
     require(digest_file(video) == video_sha256, "final MP4 changed before all-frame audit")

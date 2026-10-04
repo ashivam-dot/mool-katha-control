@@ -15,7 +15,7 @@ from .audio_quality import gemini_voice_quality
 from .assemble import assemble_approved_review, save_unsigned_review
 from .candidate import FORBIDDEN_STATE, _git, _git_blob, _production_identity, load_candidate
 from .common import (EPISODE, QA_REPOSITORY, QaHold, digest_file, json_object,
-                     expect_sha, require, utc_now, valid_qa_workflow_ref,
+                     expect_sha, require, utc_now, valid_gemini_models, valid_qa_workflow_ref,
                      write_json_new)
 from .frame_audit import audit_and_review_frames
 from .media import extract_full_final_audio, make_visual_evidence
@@ -110,9 +110,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         key = values.get("QA_GEMINI_API_KEY", "")
         require(isinstance(key, str) and bool(key.strip()), "QA Gemini credential is unavailable")
         for name in ("QA_GEMINI_ASR_MODEL", "QA_GEMINI_QUALITY_MODEL", "QA_GEMINI_REVIEW_MODEL"):
-            value = values.get(name, "")
-            require(isinstance(value, str) and re.fullmatch(r"gemini-[A-Za-z0-9._-]+", value) is not None,
-                    f"{name} must be explicitly named")
+            require(valid_gemini_models(values.get(name, "")), f"{name} must be explicitly named")
         require(bool(values.get("QA_WHISPER_MODEL_DIR", "")),
                 "QA_WHISPER_MODEL_DIR is unavailable")
         whisper_repo = values.get("QA_WHISPER_MODEL_REPO", "")

@@ -27,7 +27,7 @@ def valid_qa_workflow_ref(repository: str, workflow_ref: str) -> bool:
     if repository != QA_REPOSITORY or not isinstance(workflow_ref, str):
         return False
     pattern = (re.escape(QA_REPOSITORY) +
-               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v7)\Z")
+               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v8)\Z")
     return re.fullmatch(pattern, workflow_ref) is not None
 
 
@@ -154,23 +154,57 @@ def _retry_delay(exc: urllib.error.HTTPError) -> float | None:
         return 30.0
 
 
-def gemini_post(request: urllib.request.Request, *, timeout: float, max_bytes: int,
-                failure: str, not_ok: str) -> bytes:
-    """POST to Gemini, waiting out rate limits and transient errors before holding."""
+GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
+GEMINI_MODELS = re.compile(r"gemini-[A-Za-z0-9._-]+(?:,gemini-[A-Za-z0-9._-]+)*\Z")
+
+
+def valid_gemini_models(value: Any) -> bool:
+    """One explicitly named model, or a comma-separated preference list of them."""
+    return isinstance(value, str) and GEMINI_MODELS.fullmatch(value) is not None
+
+
+class _NextModel(Exception):
+    pass
+
+
+def _post_once(request: urllib.request.Request, *, timeout: float, max_bytes: int,
+               failure: str, not_ok: str) -> bytes:
     for attempt in range(1, GEMINI_ATTEMPTS + 1):
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 require(response.status == 200, not_ok)
                 return response.read(max_bytes + 1)
         except urllib.error.HTTPError as exc:
+            if exc.code == 404:
+                raise _NextModel(f"{failure} (HTTP 404, model unavailable)") from exc
             if exc.code not in GEMINI_RETRY_CODES or attempt == GEMINI_ATTEMPTS:
                 raise QaHold(f"{failure} (HTTP {exc.code})") from exc
             delay = _retry_delay(exc)
             if delay is None:
-                raise QaHold(f"{failure} (HTTP {exc.code}, daily quota spent)") from exc
+                raise _NextModel(f"{failure} (HTTP {exc.code}, daily quota spent)") from exc
             time.sleep(delay)
         except (OSError, urllib.error.URLError) as exc:
             raise QaHold(failure) from exc
+    raise QaHold(failure)
+
+
+def gemini_post(models: str, body: bytes, *, key: str, timeout: float, max_bytes: int,
+                failure: str, not_ok: str) -> tuple[bytes, str]:
+    """POST to the first listed Gemini model that can answer; return the response and that model.
+
+    Rate limits and transient errors are waited out on the same model. A model whose daily quota is
+    spent, or that no longer exists, passes the request to the next one; the last one's failure holds."""
+    require(valid_gemini_models(models), "Gemini model list is not explicitly named")
+    names = models.split(",")
+    for index, model in enumerate(names):
+        request = urllib.request.Request(f"{GEMINI_ENDPOINT}/{model}:generateContent", data=body,
+                                         headers={"Content-Type": "application/json", "x-goog-api-key": key},
+                                         method="POST")
+        try:
+            return _post_once(request, timeout=timeout, max_bytes=max_bytes, failure=failure, not_ok=not_ok), model
+        except _NextModel as exc:
+            if index == len(names) - 1:
+                raise QaHold(str(exc)) from exc.__cause__
     raise QaHold(failure)
 
 

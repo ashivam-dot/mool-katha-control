@@ -14,7 +14,8 @@ from typing import Any
 
 from .asr import GEMINI_ENDPOINT, MAX_GEMINI_AUDIO_BYTES
 from .common import (QaHold, digest_bytes, digest_file, gemini_post, gemini_text_response,
-                     json_object, require, utc_now, write_bytes_new, write_json_new)
+                     json_object, require, utc_now, valid_gemini_models, write_bytes_new,
+                     write_json_new)
 
 
 ASPECTS = frozenset({"natural_indian_hindi", "clarity", "cadence", "sacred_names", "artifacts"})
@@ -109,8 +110,7 @@ def gemini_voice_quality(audio_path: Path, duration: float, video_sha256: str,
                          model: str) -> AudioQualityObservation:
     """Save raw evidence and hold unless the full-audio model observation is clear."""
     require(isinstance(key, str) and bool(key.strip()), "Gemini audio-quality key is unavailable")
-    require(isinstance(model, str) and re.fullmatch(r"gemini-[A-Za-z0-9._-]+", model) is not None,
-            "Gemini audio-quality model must be explicitly named")
+    require(valid_gemini_models(model), "Gemini audio-quality model must be explicitly named")
     require(isinstance(duration, (int, float)) and not isinstance(duration, bool) and
             math.isfinite(duration) and duration > 0,
             "audio-quality observation needs a measured full-audio duration")
@@ -130,12 +130,10 @@ def gemini_voice_quality(audio_path: Path, duration: float, video_sha256: str,
     response_path = private_audit_dir / "audio-quality-response.json"
     record_path = private_audit_dir / "audio-quality-observation.json"
     write_bytes_new(request_path, request_bytes)
-    request = urllib.request.Request(
-        f"{GEMINI_ENDPOINT}/{model}:generateContent", data=request_bytes,
-        headers={"Content-Type": "application/json", "x-goog-api-key": key}, method="POST")
-    raw_response = gemini_post(request, timeout=240, max_bytes=MAX_QUALITY_RESPONSE_BYTES,
-                               failure="Gemini full-audio quality request failed",
-                               not_ok="Gemini full-audio quality request did not succeed")
+    raw_response, model = gemini_post(model, request_bytes, key=key, timeout=240,
+                                      max_bytes=MAX_QUALITY_RESPONSE_BYTES,
+                                      failure="Gemini full-audio quality request failed",
+                                      not_ok="Gemini full-audio quality request did not succeed")
     require(len(raw_response) <= MAX_QUALITY_RESPONSE_BYTES,
             "Gemini full-audio quality response is oversized")
     write_bytes_new(response_path, raw_response)

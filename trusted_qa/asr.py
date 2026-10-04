@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from .common import (QaHold, digest_file, expect_sha, gemini_post, gemini_text_response, json_object,
-                     require, utc_now, write_bytes_new, write_json_new)
+                     require, utc_now, valid_gemini_models, write_bytes_new, write_json_new)
 
 
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
@@ -70,8 +70,7 @@ def _result(provider: str, family: str, model: str, version: str, run_id: str,
 def gemini_full_audio(audio_path: Path, duration: float, video_sha256: str,
                       *, key: str, model: str, audit_path: Path | None = None) -> dict:
     require(isinstance(key, str) and bool(key.strip()), "Gemini ASR key is unavailable")
-    require(isinstance(model, str) and re.fullmatch(r"gemini-[A-Za-z0-9._-]+", model) is not None,
-            "Gemini ASR model must be explicitly named")
+    require(valid_gemini_models(model), "Gemini ASR model must be explicitly named")
     require(audio_path.is_file() and 0 < audio_path.stat().st_size <= MAX_GEMINI_AUDIO_BYTES,
             "whole final WAV is missing or too large for the single Gemini request")
     wav = audio_path.read_bytes()
@@ -90,13 +89,10 @@ def gemini_full_audio(audio_path: Path, duration: float, video_sha256: str,
         {"inlineData": {"mimeType": "audio/wav", "data": base64.b64encode(wav).decode("ascii")}},
     ]}], "generationConfig": {"temperature": 0, "responseMimeType": "application/json",
                               "maxOutputTokens": 8192}}
-    endpoint = f"{GEMINI_ENDPOINT}/{model}:generateContent"
-    request = urllib.request.Request(endpoint, data=json.dumps(body, separators=(",", ":")).encode("utf-8"),
-                                     headers={"Content-Type": "application/json",
-                                              "x-goog-api-key": key}, method="POST")
-    raw = gemini_post(request, timeout=240, max_bytes=MAX_GEMINI_RESPONSE_BYTES,
-                      failure="Gemini full-audio ASR request failed",
-                      not_ok="Gemini ASR request did not succeed")
+    raw, model = gemini_post(model, json.dumps(body, separators=(",", ":")).encode("utf-8"), key=key,
+                             timeout=240, max_bytes=MAX_GEMINI_RESPONSE_BYTES,
+                             failure="Gemini full-audio ASR request failed",
+                             not_ok="Gemini ASR request did not succeed")
     require(len(raw) <= MAX_GEMINI_RESPONSE_BYTES, "Gemini ASR response is oversized")
     if audit_path is not None:
         write_bytes_new(audit_path, raw)
