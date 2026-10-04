@@ -112,7 +112,11 @@ jobs:
           import modal
           from ytc import qa_release
 
-          if modal.Workspace.from_context().hydrate().name != 'mool-katha-producer':
+          try:
+              workspace = modal.Workspace.from_context().hydrate().name
+          except Exception:
+              raise RuntimeError('Modal workspace could not be verified') from None
+          if workspace != 'mool-katha-producer':
               raise RuntimeError('Modal token does not belong to mool-katha-producer')
           if Path(qa_release.__file__).resolve() != Path.cwd().resolve() / "src/ytc/qa_release.py":
               raise RuntimeError("release module is outside the pinned checkout")

@@ -313,7 +313,11 @@ jobs:
           remote="qa/$QA_EPISODE/$QA_VIDEO_SHA.tar"
           trusted_qa/.venv/bin/python - <<'PY'
           import modal
-          if modal.Workspace.from_context().hydrate().name != 'mool-katha-producer':
+          try:
+              workspace = modal.Workspace.from_context().hydrate().name
+          except Exception:
+              raise SystemExit('Modal workspace could not be verified') from None
+          if workspace != 'mool-katha-producer':
               raise SystemExit('Modal token does not belong to mool-katha-producer')
           PY
           trusted_qa/.venv/bin/modal volume put -f mool-katha-signed-qa \
