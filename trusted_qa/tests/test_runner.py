@@ -39,7 +39,7 @@ class RunnerHoldTests(unittest.TestCase):
         _, identity = github_run_context(values)
         self.assertEqual(identity, "agent:github_actions/ashivam-dot/mool-katha-control/123/1")
         values["GITHUB_WORKFLOW_REF"] = (
-            "ashivam-dot/mool-katha-control/.github/workflows/qa.yml@refs/tags/qa-v3")
+            "ashivam-dot/mool-katha-control/.github/workflows/qa.yml@refs/tags/qa-v4")
         self.assertEqual(github_run_context(values)[1], identity)
         values["GITHUB_REPOSITORY"] = "ashivam-dot/mool-katha"
         with self.assertRaisesRegex(QaHold, "mool-katha-control"):

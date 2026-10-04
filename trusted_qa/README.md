@@ -57,7 +57,7 @@ sheet and crops still carry the separate caption/source visual judgment.
 
 | Scope | Variables | Value or purpose |
 | --- | --- | --- |
-| Trusted Actions run | `GITHUB_REPOSITORY`, `GITHUB_WORKFLOW_REF`, `GITHUB_WORKFLOW_SHA`, `GITHUB_RUN_ID`, `GITHUB_RUN_ATTEMPT` | Actual GitHub context. Repository must be `ashivam-dot/mool-katha-control`; workflow ref may be a branch for shadow QA or `refs/tags/qa-v3`. Export `github.workflow_sha` as `GITHUB_WORKFLOW_SHA`. |
+| Trusted Actions run | `GITHUB_REPOSITORY`, `GITHUB_WORKFLOW_REF`, `GITHUB_WORKFLOW_SHA`, `GITHUB_RUN_ID`, `GITHUB_RUN_ATTEMPT` | Actual GitHub context. Repository must be `ashivam-dot/mool-katha-control`; workflow ref may be a branch for shadow QA or `refs/tags/qa-v4`. Export `github.workflow_sha` as `GITHUB_WORKFLOW_SHA`. |
 | Model review job secret | `QA_GEMINI_API_KEY` | QA-only Gemini API credential; never present in the Modal fetch job. |
 | Explicit Gemini models | `QA_GEMINI_ASR_MODEL`, `QA_GEMINI_QUALITY_MODEL`, `QA_GEMINI_REVIEW_MODEL` | Draft: `gemini-2.5-flash`, `gemini-2.5-flash`, `gemini-2.5-pro`. The quality model also reviews indexed frame sheets; the final model reviews sources, ASR, contact sheet and crops. Provider-returned model versions and request IDs are retained. Confirm access with a shadow run. |
 | Pinned local ASR | `QA_WHISPER_MODEL_REPO`, `QA_WHISPER_MODEL_REVISION`, `QA_WHISPER_MODEL_SHA256`, `QA_WHISPER_MODEL_DIR` | `Systran/faster-whisper-large-v3`, commit `edaa852ec7e145841d8ffdb056a99866b5f0a478`, `model.bin` SHA-256 `69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1`, and its downloaded local directory. |

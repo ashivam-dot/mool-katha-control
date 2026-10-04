@@ -1,4 +1,4 @@
-# Frozen, independently reviewed candidate QA. Only the qa-v3 tag may sign.
+# Frozen, independently reviewed candidate QA. Only the qa-v4 tag may sign.
 # The final job transfers signed evidence to untrusted Modal storage; it has
 # neither the signing key nor any publisher credential.
 name: Signed independent QA
@@ -24,7 +24,7 @@ jobs:
       - name: Require pinned release tag
         shell: bash
         run: |
-          test "$GITHUB_REF" = 'refs/tags/qa-v3'
+          test "$GITHUB_REF" = 'refs/tags/qa-v4'
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
@@ -134,9 +134,9 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.discover.outputs.candidates) }}
     env:
-      QA_GEMINI_ASR_MODEL: gemini-2.5-flash
-      QA_GEMINI_QUALITY_MODEL: gemini-2.5-flash
-      QA_GEMINI_REVIEW_MODEL: gemini-2.5-pro
+      QA_GEMINI_ASR_MODEL: gemini-3.8-flash
+      QA_GEMINI_QUALITY_MODEL: gemini-3.5-flash-lite
+      QA_GEMINI_REVIEW_MODEL: gemini-3.8-flash
       QA_WHISPER_MODEL_REPO: Systran/faster-whisper-large-v3
       QA_WHISPER_MODEL_REVISION: edaa852ec7e145841d8ffdb056a99866b5f0a478
       QA_WHISPER_MODEL_SHA256: 69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1
