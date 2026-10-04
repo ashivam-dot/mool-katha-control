@@ -66,6 +66,73 @@ class ProviderAndFetchTests(unittest.TestCase):
         self.assertIn("?first=%E0%A4%95&next=%E0%A4%A8%E0%A4%B2", connection.target)
         self.assertTrue(connection.target.isascii())
 
+    def test_https_transport_failure_tries_another_validated_public_address(self) -> None:
+        addresses = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (ip, 443))
+                     for ip in ("8.8.8.8", "9.9.9.9")]
+
+        class Connection:
+            def __init__(self, *, fail: bool) -> None:
+                self.fail = fail
+                self.closed = False
+
+            def request(self, *_args, **_kwargs) -> None:
+                if self.fail:
+                    raise ConnectionResetError("test transport failure")
+
+            def getresponse(self):
+                return SimpleNamespace(status=200, getheaders=lambda: [], read=lambda _size: b"fresh page")
+
+            def close(self) -> None:
+                self.closed = True
+
+        first, second = Connection(fail=True), Connection(fail=False)
+        with patch("trusted_qa.fetch.socket.getaddrinfo", return_value=addresses) as resolved, \
+             patch("trusted_qa.fetch._PinnedHTTPS", side_effect=[first, second]) as connected, \
+             patch("trusted_qa.fetch.time.sleep") as paused:
+            self.assertEqual(_request_once("https://example.org/rights"), (200, {}, b"fresh page"))
+        self.assertEqual([call.args for call in connected.call_args_list],
+                         [("example.org", "8.8.8.8"), ("example.org", "9.9.9.9")])
+        self.assertEqual(resolved.call_count, 3)  # initial URL check plus each connection
+        paused.assert_called_once()
+        self.assertTrue(first.closed and second.closed)
+
+    def test_https_retry_refuses_dns_rebinding_to_a_private_address(self) -> None:
+        public = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("8.8.8.8", 443))]
+        private = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 443))]
+
+        class FailingConnection:
+            def request(self, *_args, **_kwargs) -> None:
+                raise ConnectionResetError("test transport failure")
+
+            def close(self) -> None:
+                pass
+
+        with patch("trusted_qa.fetch.socket.getaddrinfo", side_effect=[public, public, private]), \
+             patch("trusted_qa.fetch._PinnedHTTPS", return_value=FailingConnection()) as connected, \
+             patch("trusted_qa.fetch.time.sleep"):
+            with self.assertRaisesRegex(QaHold, "private address"):
+                _request_once("https://example.org/rights")
+        connected.assert_called_once_with("example.org", "8.8.8.8")
+
+    def test_https_transport_retries_are_bounded_without_a_cached_page(self) -> None:
+        public = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("8.8.8.8", 443))]
+
+        class FailingConnection:
+            def request(self, *_args, **_kwargs) -> None:
+                raise ConnectionResetError("test transport failure")
+
+            def close(self) -> None:
+                pass
+
+        with patch("trusted_qa.fetch.socket.getaddrinfo", return_value=public) as resolved, \
+             patch("trusted_qa.fetch._PinnedHTTPS", side_effect=lambda *_: FailingConnection()) as connected, \
+             patch("trusted_qa.fetch.time.sleep") as paused:
+            with self.assertRaisesRegex(QaHold, "source HTTPS fetch failed"):
+                _request_once("https://example.org/rights")
+        self.assertEqual(connected.call_count, 4)
+        self.assertEqual(resolved.call_count, 5)  # every retry rechecks public DNS
+        self.assertEqual(paused.call_count, 3)
+
     def test_percent_encoded_and_unicode_final_urls_compare_as_one_source(self) -> None:
         primary = FetchObservation(
             "https://sa.wikisource.org/wiki/राम?next=नल", "2026-10-04T00:00:00Z", 200,

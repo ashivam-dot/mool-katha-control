@@ -13,6 +13,7 @@ import re
 import socket
 import ssl
 import subprocess
+import time
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
@@ -24,6 +25,8 @@ from .common import QaHold, digest_bytes, require, utc_now, write_bytes_new, wri
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
 MAX_SNAPSHOT_BYTES = 2 * 1024 * 1024
 MAX_REDIRECTS = 4
+MAX_CONNECT_ATTEMPTS = 4
+CONNECT_RETRY_DELAY_SECONDS = 0.25
 _PATH_SAFE = "/%:@!$&'()*+,;="
 _QUERY_SAFE = "/?%:@!$&'()*+,;="
 
@@ -110,28 +113,40 @@ class _PinnedHTTPS(http.client.HTTPSConnection):
 
 def _request_once(url: str) -> tuple[int, dict[str, str], bytes]:
     host, target = _safe_url(url)
-    addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-    ips = {result[4][0] for result in addresses}
-    require(bool(ips) and all(ipaddress.ip_address(ip).is_global for ip in ips),
-            "source host changed to a private address")
-    connection = _PinnedHTTPS(host, sorted(ips)[0])
-    try:
-        host_header = f"[{host}]" if ":" in host else host
-        connection.request("GET", target, headers={"Host": host_header,
-                                                   "User-Agent": "MoolKathaTrustedQA/1.0",
-                                                   "Accept": "text/html,text/plain,application/pdf,image/*",
-                                                   "Accept-Encoding": "identity"})
-        response = connection.getresponse()
-        headers = {key.lower(): value for key, value in response.getheaders()}
-        require(headers.get("content-encoding", "identity").lower() == "identity",
-                "source response used unsupported content encoding")
-        raw = response.read(MAX_RESPONSE_BYTES + 1)
-        require(len(raw) <= MAX_RESPONSE_BYTES, "source response is oversized")
-        return response.status, headers, raw
-    except (OSError, TimeoutError, http.client.HTTPException) as exc:
-        raise QaHold("source HTTPS fetch failed") from exc
-    finally:
-        connection.close()
+    attempted: set[str] = set()
+    for attempt in range(MAX_CONNECT_ATTEMPTS):
+        # DNS may change between attempts. Never use an address before checking
+        # that the entire fresh answer is public, including after a failure.
+        try:
+            addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        except OSError as exc:
+            raise QaHold("source host cannot be resolved") from exc
+        ips = sorted({result[4][0] for result in addresses})
+        require(bool(ips) and all(ipaddress.ip_address(ip).is_global for ip in ips),
+                "source host changed to a private address")
+        ip = next((value for value in ips if value not in attempted), ips[attempt % len(ips)])
+        attempted.add(ip)
+        connection = _PinnedHTTPS(host, ip)
+        try:
+            host_header = f"[{host}]" if ":" in host else host
+            connection.request("GET", target, headers={"Host": host_header,
+                                                       "User-Agent": "MoolKathaTrustedQA/1.0",
+                                                       "Accept": "text/html,text/plain,application/pdf,image/*",
+                                                       "Accept-Encoding": "identity"})
+            response = connection.getresponse()
+            headers = {key.lower(): value for key, value in response.getheaders()}
+            require(headers.get("content-encoding", "identity").lower() == "identity",
+                    "source response used unsupported content encoding")
+            raw = response.read(MAX_RESPONSE_BYTES + 1)
+            require(len(raw) <= MAX_RESPONSE_BYTES, "source response is oversized")
+            return response.status, headers, raw
+        except (OSError, TimeoutError, http.client.HTTPException) as exc:
+            if attempt == MAX_CONNECT_ATTEMPTS - 1:
+                raise QaHold("source HTTPS fetch failed") from exc
+        finally:
+            connection.close()
+        time.sleep(CONNECT_RETRY_DELAY_SECONDS * (attempt + 1))
+    raise QaHold("source HTTPS fetch failed")
 
 
 def _readable(raw: bytes, content_type: str) -> str:
