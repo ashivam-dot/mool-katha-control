@@ -151,7 +151,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         frames = audit_and_review_frames(
             candidate.video_path, candidate.episode_dir, private,
             candidate.hashes["video"], visual.decoder["decoded_frame_count"],
-            candidate.check["duration"], key=key,
+            candidate.check["duration"], candidate.manifest["beats"], key=key,
             model=values.get("QA_GEMINI_QUALITY_MODEL", ""))
         stage = "independent_asr"
         gemini = gemini_full_audio(audio_path, duration, video_hash, key=key,
@@ -173,7 +173,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
             model=values.get("QA_GEMINI_QUALITY_MODEL", ""))
         stage = "independent_review"
         model = gemini_independent_review(candidate, observations, [gemini, whisper], visual,
-                                          quality, private, key=key,
+                                          frames, quality, private, key=key,
                                           model=values.get("QA_GEMINI_REVIEW_MODEL", ""))
         stage = "strict_review_validation"
         review = assemble_approved_review(candidate, observations, results, references,

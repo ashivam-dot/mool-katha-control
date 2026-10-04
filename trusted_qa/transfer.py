@@ -21,6 +21,7 @@ from pathlib import Path
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from .common import EPISODE, QA_REPOSITORY, QaHold, digest_file, json_object, require
+from .frame_audit import verify_sampled_frame_record
 
 
 KIND = "mool_katha_qa_transfer_v1"
@@ -85,8 +86,8 @@ def _check_review(qa_output: Path, episode_id: str, source_commit: str,
             and run.get("run_attempt") == attempt,
             "QA review did not come from this pinned release workflow run")
     require(isinstance(run.get("frame_batch_review"), dict)
-            and run["frame_batch_review"].get("kind") == "frame_indexed_visual_review_v1",
-            "QA review lacks indexed all-frame inspection")
+            and run["frame_batch_review"].get("kind") == "frame_sampled_visual_review_v1",
+            "QA review lacks disclosed sampled visual inspection")
     for field, name in (("script_sha256", "script.json"), ("spec_sha256", "short.yaml"),
                         ("video_sha256", f"{episode_id}.mp4"), ("qc_sha256", "qc.json"),
                         ("evidence_sha256", "evidence.json"),
@@ -95,6 +96,30 @@ def _check_review(qa_output: Path, episode_id: str, source_commit: str,
         require(review.get(field) == digest_file(path), f"QA review {field} differs from exact candidate")
     require(result.get("video_sha256") == review["video_sha256"],
             "QA result and review name different final video bytes")
+    frame_review = run["frame_batch_review"]
+    audit_path = root / "agent-video-frame-audit.json"
+    audit = _json(audit_path, "all-frame audit")
+    require(frame_review.get("all_frame_audit_sha256") == digest_file(audit_path),
+            "QA review names different all-frame audit bytes")
+    manifest = _json(root / "work/manifest.json", "render manifest")
+    qc = _json(root / "qc.json", "candidate QC")
+    check = qc.get("check")
+    require(isinstance(check, dict) and isinstance(manifest.get("beats"), list) and
+            isinstance(frame_review.get("decoded_frame_count"), int) and
+            not isinstance(frame_review["decoded_frame_count"], bool),
+            "sampled frame verification inputs are incomplete")
+    verify_sampled_frame_record(frame_review, audit, manifest["beats"],
+                                check.get("duration"), review["video_sha256"],
+                                frame_review["decoded_frame_count"])
+    require(isinstance(review.get("video_review"), dict) and
+            review["video_review"].get("model_visual_coverage") ==
+            frame_review["model_visual_coverage"],
+            "video verdict omits sampled model visual coverage")
+    for batch in frame_review["batches"]:
+        path = root / batch["file"]
+        _regular(path, "sampled frame sheet")
+        require(digest_file(path) == batch["sha256"],
+                "sampled frame sheet changed after model review")
     _approved(review.get("release_review"), "release verdict")
     _approved(review.get("audio_review"), "audio verdict")
     _approved(review.get("video_review"), "video verdict")

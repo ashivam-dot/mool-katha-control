@@ -16,10 +16,11 @@ from trusted_qa.candidate import load_candidate
 from trusted_qa.common import (QaHold, digest_bytes, digest_file, utc_now,
                                write_bytes_new, write_json_new)
 from trusted_qa.fetch import FetchObservation
-from trusted_qa.frame_audit import FrameBatchEvidence
+from trusted_qa.frame_audit import AUDIT_POLICY, HEIGHT, WIDTH, FrameBatchEvidence
 from trusted_qa.media import VisualEvidence
 from trusted_qa.observations import ObservationSet, collect_observations
 from trusted_qa.reviewer import ReviewModelResult
+from trusted_qa.sample_plan import SAMPLE_POLICY, canonical_sha256, plan_sampled_frames
 from trusted_qa.tests.test_candidate import EPISODE, PRODUCER_ID, QA_ID, candidate_fixture
 
 
@@ -93,35 +94,59 @@ def build_synthetic_approved_review(root: Path, *,
     visual = VisualEvidence("agent-video-contact.jpg", digest_file(contact),
                             [0.1, 8.0, 16.0, 20.0, 24.0, 32.0, 40.0, 42.9], {1: 20.0}, [],
                             {"decode_tool": "synthetic ffmpeg fixture", "decode_exit_code": 0,
-                             "decoded_frame_count": 2, "decoded_duration_seconds": 43.0,
+                             "decoded_frame_count": 1290, "decoded_duration_seconds": 43.0,
                              "decoded_full_video": True})
     sheet_bytes = b"synthetic indexed frame sheet, not actual decoded frames"
     sheet_hash = digest_bytes(sheet_bytes)
     sheet = candidate.episode_dir / f"agent-video-frames/{sheet_hash}.jpg"
     write_bytes_new(sheet, sheet_bytes)
+    frame_records = [{"index": index, "seconds": round((index - 1) / 30, 6),
+                      "rgb_sha256": f"{index:064x}", "mean_luma": 50.0,
+                      "stddev_luma": 20.0, "dark_fraction": 0.1,
+                      "bright_fraction": 0.0,
+                      "delta_previous": 0.5 if index > 1 else 0.0,
+                      "rgb_delta_previous": 0.5 if index > 1 else 0.0,
+                      "rgb_delta_two_back": 0.5 if index > 2 else 0.0}
+                     for index in range(1, 1291)]
+    plan = plan_sampled_frames(frame_records, candidate.manifest["beats"],
+                               candidate.check["duration"])
+    indices = plan["sampled_indices"]
     batch_identity = {"file": f"agent-video-frames/{sheet_hash}.jpg", "sha256": sheet_hash,
-                      "start_index": 1, "end_index": 2,
-                      "first_seconds": 0.0, "last_seconds": 0.04}
+                      "indices": indices, "start_index": indices[0], "end_index": indices[-1],
+                      "first_seconds": frame_records[indices[0] - 1]["seconds"],
+                      "last_seconds": frame_records[indices[-1] - 1]["seconds"]}
     audit = candidate.episode_dir / "agent-video-frame-audit.json"
-    write_json_new(audit, {"kind": "all_frame_pixel_temporal_audit_v1",
+    write_json_new(audit, {"kind": "all_frame_pixel_temporal_audit_v2",
                            "input_video_sha256": candidate.hashes["video"],
-                           "decoded_frame_count": 2, "scaled_width": 120,
-                           "scaled_height": 214,
-                           "frames": [{"index": index, "seconds": seconds,
-                                       "rgb_sha256": "a" * 64, "mean_luma": 50.0,
-                                       "stddev_luma": 20.0, "delta_previous": 0.0}
-                                      for index, seconds in ((1, 0.0), (2, 0.04))],
-                           "frame_batches": [batch_identity], "anomalies": []})
+                           "decoded_frame_count": 1290, "scaled_width": WIDTH,
+                           "scaled_height": HEIGHT, "qc_duration_seconds": 43.0,
+                           "audit_policy": AUDIT_POLICY,
+                           "audit_policy_sha256": canonical_sha256(AUDIT_POLICY),
+                           "frames": frame_records,
+                           "frame_batches": [batch_identity],
+                           "anomalies": plan["anomalies"],
+                           "sample_plan_sha256": canonical_sha256(plan)})
     frame_call = {"provider": "Google Gemini API", "model": "gemini-test-model",
                   "model_version": "test-version", "request_id": "synthetic-frame-run"}
     batch_review = {**batch_identity, "decision": "clear", "uncertainty": "low",
-                    "checked_indices": [1, 2], "defect_indices": [], "notes": NOTE,
+                    "checked_indices": indices, "defect_indices": [], "notes": NOTE,
                     "model_call": frame_call, "request_sha256": "b" * 64,
                     "response_sha256": "c" * 64}
+    coverage = {"mode": "sampled", "selected_frames": len(indices),
+                "decoded_frames": 1290, "unsampled_frames": 1290 - len(indices),
+                "fraction": round(len(indices) / 1290, 6), "sheets": 1,
+                "selection_rule": SAMPLE_POLICY["kind"],
+                "selection_rule_sha256": plan["selection_rule_sha256"],
+                "selection_sha256": canonical_sha256(plan),
+                "max_gap_seconds": plan["max_gap_seconds"],
+                "reason": "Capacity-bounded model sample; unselected frames received deterministic pixel and temporal checks only.",
+                "provider_errors": []}
     frames = FrameBatchEvidence(
-        {"kind": "frame_indexed_visual_review_v1", "input_video_sha256": candidate.hashes["video"],
+        {"kind": "frame_sampled_visual_review_v1", "input_video_sha256": candidate.hashes["video"],
          "all_frame_audit_file": audit.name, "all_frame_audit_sha256": digest_file(audit),
-         "decoded_frame_count": 2, "batches": [batch_review]},
+         "decoded_frame_count": 1290, "sample_plan": plan,
+         "sample_plan_sha256": canonical_sha256(plan),
+         "model_visual_coverage": coverage, "batches": [batch_review]},
         [frame_call], audit, [sheet])
     citations = [{"asr_file": name, "segment_indices": [1], "asr_excerpt": utterance} for name in asr]
     decision = {
@@ -247,7 +272,7 @@ class AssemblyTests(unittest.TestCase):
             self.assertEqual(review["kind"], "agent_episode_qa_v1")
             self.assertEqual(review["qa_agent_id"], QA_ID)
             self.assertEqual(len(review["qa_run"]["review_model_calls"]), 3)
-            self.assertEqual(review["qa_run"]["frame_batch_review"]["decoded_frame_count"], 2)
+            self.assertEqual(review["qa_run"]["frame_batch_review"]["decoded_frame_count"], 1290)
             self.assertEqual(set(review["claim_findings"][0]), {
                 "agent_id", "method", "reviewed_at", "decision", "unresolved_items", "notes", "id",
                 "primary_url", "corroboration_url", "primary_printed_label",

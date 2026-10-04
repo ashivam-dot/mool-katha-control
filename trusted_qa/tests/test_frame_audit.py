@@ -11,7 +11,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from trusted_qa.common import QaHold, digest_file
-from trusted_qa.frame_audit import FRAME_BYTES, _model_batch, _reject_long_identical_span, audit_and_review_frames
+from trusted_qa.frame_audit import (FRAME_BYTES, _model_batch, _reject_long_identical_span,
+                                    audit_and_review_frames, validate_full_frame_metrics)
 
 
 class _Response:
@@ -63,6 +64,7 @@ class FrameAuditTests(unittest.TestCase):
         episode.mkdir()
         private.mkdir()
         video_hash = digest_file(self.video)
+        beats = [{"start": 0.0, "end": 1.0}]
 
         def fake_model(_sheet, records, _private, *, key, model, batch_number):
             self.assertEqual((key, model, batch_number), ("test-key", "gemini-test-model", 1))
@@ -78,22 +80,31 @@ class FrameAuditTests(unittest.TestCase):
 
         with patch("trusted_qa.frame_audit._model_batch", side_effect=fake_model):
             evidence = audit_and_review_frames(self.video, episode, private, video_hash,
-                                               10, 1.0, key="test-key", model="gemini-test-model")
+                                               10, 1.0, beats,
+                                               key="test-key", model="gemini-test-model")
         audit = json.loads(evidence.audit_path.read_text())
-        self.assertEqual(audit["kind"], "all_frame_pixel_temporal_audit_v1")
+        self.assertEqual(audit["kind"], "all_frame_pixel_temporal_audit_v2")
         self.assertEqual(audit["decoded_frame_count"], 10)
-        self.assertEqual(audit["anomalies"], [])
+        self.assertEqual(audit["anomalies"], evidence.review["sample_plan"]["anomalies"])
         self.assertEqual([row["index"] for row in audit["frames"]], list(range(1, 11)))
         self.assertTrue(all(3 <= row["stddev_luma"] <= 128 for row in audit["frames"]))
         self.assertEqual(audit["frame_batches"], [{key: evidence.review["batches"][0][key]
-                                                    for key in ("file", "sha256", "start_index", "end_index",
+                                                    for key in ("file", "sha256", "indices", "start_index", "end_index",
                                                                 "first_seconds", "last_seconds")}])
-        self.assertEqual(evidence.review["batches"][0]["checked_indices"], list(range(1, 11)))
+        self.assertEqual(evidence.review["kind"], "frame_sampled_visual_review_v1")
+        self.assertEqual(evidence.review["batches"][0]["checked_indices"],
+                         evidence.review["sample_plan"]["sampled_indices"])
         self.assertEqual(digest_file(evidence.audit_path), evidence.review["all_frame_audit_sha256"])
-        evidence.recheck(video_hash, 10)
+        evidence.recheck(video_hash, 10, beats, 1.0)
+        original_plan = evidence.review["sample_plan"]
+        evidence.review["sample_plan"] = {**original_plan,
+                                          "sampled_indices": original_plan["sampled_indices"][:-1]}
+        with self.assertRaisesRegex(QaHold, "sampled visual review changed its plan"):
+            evidence.recheck(video_hash, 10, beats, 1.0)
+        evidence.review["sample_plan"] = original_plan
         evidence.sheet_paths[0].write_bytes(b"tampered sheet")
         with self.assertRaisesRegex(QaHold, "indexed frame sheet changed"):
-            evidence.recheck(video_hash, 10)
+            evidence.recheck(video_hash, 10, beats, 1.0)
 
     def test_frame_count_mismatch_holds_before_model(self) -> None:
         episode = self.root / "ep012"
@@ -103,7 +114,8 @@ class FrameAuditTests(unittest.TestCase):
         with patch("trusted_qa.frame_audit._model_batch") as model:
             with self.assertRaisesRegex(QaHold, "times differ"):
                 audit_and_review_frames(self.video, episode, private, digest_file(self.video),
-                                        11, 1.0, key="test-key", model="gemini-test-model")
+                                        11, 1.0, [{"start": 0.0, "end": 1.0}],
+                                        key="test-key", model="gemini-test-model")
         model.assert_not_called()
 
     def test_flat_decoded_frames_hold_before_model(self) -> None:
@@ -119,11 +131,53 @@ class FrameAuditTests(unittest.TestCase):
              patch("trusted_qa.frame_audit._model_batch") as model:
             with self.assertRaisesRegex(QaHold, "flat"):
                 audit_and_review_frames(self.video, episode, private, digest_file(self.video),
-                                        10, 1.0, key="test-key", model="gemini-test-model")
+                                        10, 1.0, [{"start": 0.0, "end": 1.0}],
+                                        key="test-key", model="gemini-test-model")
         model.assert_not_called()
 
 
 class FrameModelContractTests(unittest.TestCase):
+    @staticmethod
+    def _metrics(count: int, *, interval: float = 0.1) -> list[dict]:
+        return [{"index": index, "seconds": round((index - 1) * interval, 6),
+                 "rgb_sha256": f"{index:064x}", "mean_luma": 100.0,
+                 "stddev_luma": 20.0, "dark_fraction": 0.1,
+                 "bright_fraction": 0.0, "delta_previous": 0.5 if index > 1 else 0.0,
+                 "rgb_delta_previous": 0.5 if index > 1 else 0.0,
+                 "rgb_delta_two_back": 0.5 if index > 2 else 0.0}
+                for index in range(1, count + 1)]
+
+    def test_near_freeze_timestamp_gap_and_single_frame_spike_hold(self) -> None:
+        frozen = self._metrics(23)
+        for frame in frozen[1:]:
+            frame["rgb_delta_previous"] = 0.1
+        with self.assertRaisesRegex(QaHold, "near-frozen"):
+            validate_full_frame_metrics(frozen, 2.3)
+
+        gap = self._metrics(10)
+        gap[5]["seconds"] = 0.7
+        with self.assertRaisesRegex(QaHold, "timestamp gap"):
+            validate_full_frame_metrics(gap, 1.0)
+
+        short_tail = self._metrics(10)
+        with self.assertRaisesRegex(QaHold, "terminal timestamp gap"):
+            validate_full_frame_metrics(short_tail, 2.0)
+
+        spike = self._metrics(4)
+        spike[1]["rgb_delta_previous"] = 10.0
+        spike[2]["rgb_delta_previous"] = 10.0
+        spike[2]["rgb_delta_two_back"] = 0.1
+        with self.assertRaisesRegex(QaHold, "one-frame visual spike"):
+            validate_full_frame_metrics(spike, 0.4)
+
+    def test_black_or_white_frame_holds(self) -> None:
+        for mean in (7.9, 247.1):
+            with self.subTest(mean=mean):
+                frames = self._metrics(3)
+                frames[1]["mean_luma"] = mean
+                with self.assertRaisesRegex(QaHold, "black, white"):
+                    validate_full_frame_metrics(frames, 0.3)
+
     def test_long_identical_frame_span_holds(self) -> None:
         frames = [{"index": index + 1, "seconds": index * 0.1, "rgb_sha256": "a" * 64}
                   for index in range(23)]
@@ -146,6 +200,18 @@ class FrameModelContractTests(unittest.TestCase):
                              digest_file(private / "frame-batch-001-request.json"))
             self.assertEqual(verdict["response_sha256"],
                              digest_file(private / "frame-batch-001-response.json"))
+
+    def test_provider_checked_indices_must_match_noncontiguous_samples(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            records = [{"index": 1, "seconds": 0.0},
+                       {"index": 4, "seconds": 0.3}]
+            clear = {"decision": "clear", "uncertainty": "low",
+                     "checked_indices": [1, 4], "defect_indices": [],
+                     "notes": "Both displayed sampled tiles are clear and individually inspectable."}
+            with patch("urllib.request.urlopen", return_value=_Response(_provider(clear))):
+                verdict, _ = _model_batch(b"sampled sheet", records, Path(directory),
+                                          key="test-key", model="gemini-test-model", batch_number=1)
+            self.assertEqual(verdict["checked_indices"], [1, 4])
 
     def test_uncertain_or_skipped_model_batch_holds(self) -> None:
         for decision in (
