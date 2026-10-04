@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .asr import GEMINI_ENDPOINT, MAX_GEMINI_AUDIO_BYTES
-from .common import (QaHold, digest_bytes, digest_file, gemini_text_response,
+from .common import (QaHold, digest_bytes, digest_file, gemini_post, gemini_text_response,
                      json_object, require, utc_now, write_bytes_new, write_json_new)
 
 
@@ -133,12 +133,9 @@ def gemini_voice_quality(audio_path: Path, duration: float, video_sha256: str,
     request = urllib.request.Request(
         f"{GEMINI_ENDPOINT}/{model}:generateContent", data=request_bytes,
         headers={"Content-Type": "application/json", "x-goog-api-key": key}, method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=240) as response:
-            require(response.status == 200, "Gemini full-audio quality request did not succeed")
-            raw_response = response.read(MAX_QUALITY_RESPONSE_BYTES + 1)
-    except (OSError, urllib.error.URLError) as exc:
-        raise QaHold("Gemini full-audio quality request failed") from exc
+    raw_response = gemini_post(request, timeout=240, max_bytes=MAX_QUALITY_RESPONSE_BYTES,
+                               failure="Gemini full-audio quality request failed",
+                               not_ok="Gemini full-audio quality request did not succeed")
     require(len(raw_response) <= MAX_QUALITY_RESPONSE_BYTES,
             "Gemini full-audio quality response is oversized")
     write_bytes_new(response_path, raw_response)

@@ -19,7 +19,7 @@ QA_SHA = "75828e846b4a18f23064ace2c064b4aa574177c0"
 WATCHES = {
     "Control analytics and watchdog": ("control-monitor", "control-monitor.yml", "main", None),
     "Dispatch pinned independent QA": ("qa-dispatch", "dispatch-release-qa.yml", "main", None),
-    "Signed independent QA": ("pinned-qa", "release-qa.yml", "qa-v5", QA_SHA),
+    "Signed independent QA": ("pinned-qa", "release-qa.yml", "qa-v6", QA_SHA),
     "Independent QA failure feedback": ("qa-feedback", "qa-failure-feedback.yml", "main", None),
     "Signed release from independent control": ("signed-release", "signed-release.yml", "main", None),
 }

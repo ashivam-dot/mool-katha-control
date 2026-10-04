@@ -161,14 +161,14 @@ class FrameModelContractTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             with patch("urllib.request.urlopen", side_effect=[limited(), _Response(_provider(decision))]), \
-                 patch("trusted_qa.frame_audit.time.sleep") as slept:
+                 patch("trusted_qa.common.time.sleep") as slept:
                 verdict, _ = _model_batch(b"test sheet", records, Path(directory),
                                           key="test-key", model="gemini-test-model", batch_number=1)
             self.assertEqual(verdict["checked_indices"], [1, 2])
             slept.assert_called_once_with(12.0)
         with tempfile.TemporaryDirectory() as directory:
             with patch("urllib.request.urlopen", side_effect=[limited() for _ in range(5)]), \
-                 patch("trusted_qa.frame_audit.time.sleep"):
+                 patch("trusted_qa.common.time.sleep"):
                 with self.assertRaisesRegex(QaHold, "frame batch model request failed"):
                     _model_batch(b"test sheet", records, Path(directory),
                                  key="test-key", model="gemini-test-model", batch_number=1)

@@ -7,6 +7,9 @@ import json
 import os
 import re
 import stat
+import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -24,7 +27,7 @@ def valid_qa_workflow_ref(repository: str, workflow_ref: str) -> bool:
     if repository != QA_REPOSITORY or not isinstance(workflow_ref, str):
         return False
     pattern = (re.escape(QA_REPOSITORY) +
-               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v5)\Z")
+               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v6)\Z")
     return re.fullmatch(pattern, workflow_ref) is not None
 
 
@@ -129,6 +132,38 @@ def gemini_text_response(provider: dict[str, Any], label: str) -> tuple[str, str
             isinstance(parts[0].get("text"), str) and bool(parts[0]["text"].strip()),
             f"{label}: expected one text response")
     return response_id, model_version, parts[0]["text"]
+
+
+# Free-tier Gemini answers a burst of QA calls with 429 and a suggested retry delay.
+GEMINI_ATTEMPTS = 5
+GEMINI_MAX_RETRY_SECONDS = 70.0
+GEMINI_RETRY_CODES = frozenset({429, 500, 502, 503, 504})
+
+
+def _retry_delay(exc: urllib.error.HTTPError) -> float:
+    try:
+        details = json.loads(exc.read(64 * 1024).decode("utf-8", "replace"))["error"].get("details", [])
+        delay = next(d["retryDelay"] for d in details if isinstance(d, dict) and "retryDelay" in d)
+        return min(GEMINI_MAX_RETRY_SECONDS, max(1.0, float(str(delay).rstrip("s"))))
+    except (ValueError, KeyError, TypeError, StopIteration, AttributeError, OSError):
+        return 30.0
+
+
+def gemini_post(request: urllib.request.Request, *, timeout: float, max_bytes: int,
+                failure: str, not_ok: str) -> bytes:
+    """POST to Gemini, waiting out rate limits and transient errors before holding."""
+    for attempt in range(1, GEMINI_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                require(response.status == 200, not_ok)
+                return response.read(max_bytes + 1)
+        except urllib.error.HTTPError as exc:
+            if exc.code not in GEMINI_RETRY_CODES or attempt == GEMINI_ATTEMPTS:
+                raise QaHold(f"{failure} (HTTP {exc.code})") from exc
+            time.sleep(_retry_delay(exc))
+        except (OSError, urllib.error.URLError) as exc:
+            raise QaHold(failure) from exc
+    raise QaHold(failure)
 
 
 def write_bytes_new(path: Path, data: bytes) -> None:

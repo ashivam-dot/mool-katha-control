@@ -18,7 +18,7 @@ from typing import Any
 
 from .audio_quality import AudioQualityObservation
 from .candidate import Candidate
-from .common import (QaHold, digest_file, gemini_text_response, json_object,
+from .common import (QaHold, digest_file, gemini_post, gemini_text_response, json_object,
                      require, write_bytes_new)
 from .media import VisualEvidence
 from .observations import ObservationSet
@@ -207,12 +207,9 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
     request = urllib.request.Request(endpoint, data=raw_request,
                                      headers={"Content-Type": "application/json", "x-goog-api-key": key},
                                      method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=300) as response:
-            require(response.status == 200, "independent reviewer did not return HTTP 200")
-            raw_response = response.read(MAX_REVIEW_RESPONSE_BYTES + 1)
-    except (OSError, urllib.error.URLError) as exc:
-        raise QaHold("independent reviewer API request failed") from exc
+    raw_response = gemini_post(request, timeout=300, max_bytes=MAX_REVIEW_RESPONSE_BYTES,
+                               failure="independent reviewer API request failed",
+                               not_ok="independent reviewer did not return HTTP 200")
     require(len(raw_response) <= MAX_REVIEW_RESPONSE_BYTES,
             "independent reviewer response is oversized")
     write_bytes_new(private_audit_dir / "review-model-response.json", raw_response)

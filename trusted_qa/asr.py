@@ -18,7 +18,7 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any
 
-from .common import (QaHold, digest_file, expect_sha, gemini_text_response, json_object,
+from .common import (QaHold, digest_file, expect_sha, gemini_post, gemini_text_response, json_object,
                      require, utc_now, write_bytes_new, write_json_new)
 
 
@@ -94,12 +94,9 @@ def gemini_full_audio(audio_path: Path, duration: float, video_sha256: str,
     request = urllib.request.Request(endpoint, data=json.dumps(body, separators=(",", ":")).encode("utf-8"),
                                      headers={"Content-Type": "application/json",
                                               "x-goog-api-key": key}, method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=240) as response:
-            require(response.status == 200, "Gemini ASR request did not succeed")
-            raw = response.read(MAX_GEMINI_RESPONSE_BYTES + 1)
-    except (OSError, urllib.error.URLError) as exc:
-        raise QaHold("Gemini full-audio ASR request failed") from exc
+    raw = gemini_post(request, timeout=240, max_bytes=MAX_GEMINI_RESPONSE_BYTES,
+                      failure="Gemini full-audio ASR request failed",
+                      not_ok="Gemini ASR request did not succeed")
     require(len(raw) <= MAX_GEMINI_RESPONSE_BYTES, "Gemini ASR response is oversized")
     if audit_path is not None:
         write_bytes_new(audit_path, raw)
