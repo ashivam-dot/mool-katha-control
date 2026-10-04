@@ -20,12 +20,13 @@ The source checkout is not placed on `PYTHONPATH`, installed, or executed.
 1. `BUFFER_API_KEY`, `BUFFER_YOUTUBE_CHANNEL_ID`,
    `BUFFER_INSTAGRAM_CHANNEL_ID`, and `CLOUDINARY_URL` were staged as Actions
    secrets in this control repository on 2026-10-04 without displaying values.
-   Set this repository's nonsecret `BUFFER_ORG_ID` to the reviewed Mool Katha
+   This repository's nonsecret `BUFFER_ORG_ID` is set to the reviewed Mool Katha
    Buffer organization ID `6ac066851cde9b9edca25c7b`.
-2. Add `SOURCE_WRITE_DEPLOY_KEY` as a control-repository Actions secret and
-   install its public half as a write-enabled deploy key on the producer
-   repository. Use a new key for this purpose; the existing
-   `SOURCE_READONLY_DEPLOY_KEY` remains read-only for QA and the code checkout.
+2. `SOURCE_WRITE_DEPLOY_KEY` now appears among this repository's Actions secret
+   names. Verify its public half is installed as a write-enabled deploy key on
+   the producer repository, then test checkout and a harmless push before live
+   release. The existing `SOURCE_READONLY_DEPLOY_KEY` remains read-only for QA
+   and the code checkout.
 3. Verify the independent release workflow on a manual dispatch while its
    gate remains disabled, then enable it only after a signed QA transfer exists
    and the source write credential and both Buffer destinations have been

@@ -28,7 +28,9 @@ credentials. Producer jobs have no write access here.
 - QA signing is configured here. Four publisher credential names have been
   staged as control-repository secrets, while copies still exist in the
   producer repository. Its signed-release gate is disabled. The proposed
-  control-side release still needs a source write key and remains gated off.
+  control-side release has a source write key secret name and the reviewed
+  Buffer organization variable, but its credentials and release path remain
+  untested and its gate is off.
 
 The producer repository retains its cloud watchdog and other privileged read
 jobs until their credentials are migrated or removed.

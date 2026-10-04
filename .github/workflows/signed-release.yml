@@ -51,6 +51,7 @@ jobs:
           test "$(git -C source branch --show-current)" = 'main'
           test -z "$(git -C source status --porcelain)"
           test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
+          git -C source push --dry-run origin HEAD:main
       - uses: astral-sh/setup-uv@v10.2.0
         with:
           working-directory: trusted/pipeline
