@@ -79,6 +79,20 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(enabled["status"], "alert")
         self.assertEqual(len(enabled["issues"]), 2)
 
+    def test_new_in_progress_run_does_not_hide_completed_failure(self):
+        runs = [{"id": 2, "event": "schedule", "head_branch": "main",
+                 "created_at": (NOW - timedelta(minutes=30)).isoformat(), "status": "in_progress"},
+                {"id": 1, "event": "schedule", "head_branch": "main",
+                 "created_at": (NOW - timedelta(hours=2)).isoformat(), "status": "completed",
+                 "conclusion": "failure"}]
+        def fake_json(url, **_):
+            return {"workflow_runs": runs} if "/runs?" in url else {
+                "path": ".github/workflows/signed-release.yml", "state": "active"}
+        with patch.object(monitor, "_json", side_effect=fake_json):
+            result = monitor.release(NOW, ENV | {"YTC_ENABLE_CONTROL_RELEASE": "1"})
+        self.assertEqual(result["status"], "alert")
+        self.assertEqual(result["latest_completed_scheduled"]["id"], 1)
+
     def test_report_never_contains_provider_exception_or_secrets(self):
         with (patch.object(monitor, "release", side_effect=RuntimeError("secret-gh")),
               patch.object(monitor, "buffer", side_effect=monitor.MonitorError("Buffer query failed")),

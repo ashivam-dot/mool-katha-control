@@ -326,11 +326,16 @@ def release(now: datetime, env: dict[str, str]) -> dict:
         created = _time(latest.get("created_at"))
         if now - created > timedelta(hours=5):
             result["issues"].append("no scheduled control release run within five hours")
-        if latest.get("status") == "completed" and latest.get("conclusion") != "success":
-            result["issues"].append("latest scheduled control release run did not succeed")
+        completed = next((run for run in scheduled if run.get("status") == "completed"), None)
+        if completed and completed.get("conclusion") != "success":
+            result["issues"].append("latest completed scheduled control release run did not succeed")
         result["latest_scheduled"] = {"id": latest.get("id"), "created_at": created.isoformat(),
                                       "status": latest.get("status"), "conclusion": latest.get("conclusion"),
                                       "url": latest.get("html_url")}
+        if completed:
+            result["latest_completed_scheduled"] = {
+                "id": completed.get("id"), "conclusion": completed.get("conclusion"),
+                "url": completed.get("html_url")}
     result["status"] = "alert" if result["issues"] else "ok"
     return result
 
