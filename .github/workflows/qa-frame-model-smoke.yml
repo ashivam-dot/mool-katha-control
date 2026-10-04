@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib
+          import json
           import os
           import urllib.error
           import urllib.request
@@ -39,16 +40,37 @@ jobs:
           if not key:
               raise SystemExit('QA model credential is unavailable')
           request = urllib.request.Request(
-              'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+              'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
               data=body,
               headers={'Content-Type': 'application/json', 'x-goog-api-key': key},
               method='POST',
           )
           try:
               with urllib.request.urlopen(request, timeout=300) as response:
+                  raw = response.read(1024 * 1024 + 1)
                   print(f'provider_http_status={response.status}')
+                  print(f'provider_response_size_valid={len(raw) <= 1024 * 1024}')
           except urllib.error.HTTPError as exc:
               print(f'provider_http_status={exc.code}')
           except (OSError, urllib.error.URLError) as exc:
               print(f'provider_transport_class={type(exc).__name__}')
+          else:
+              try:
+                  provider = json.loads(raw)
+                  parts = provider['candidates'][0]['content']['parts']
+                  answer = ''.join(part.get('text', '') for part in parts)
+                  decision = json.loads(answer)
+                  checked = decision.get('checked_indices')
+                  defects = decision.get('defect_indices')
+                  label = decision.get('decision')
+                  valid = (set(decision) == {
+                      'decision', 'uncertainty', 'checked_indices', 'defect_indices', 'notes'}
+                      and isinstance(checked, list) and isinstance(defects, list)
+                      and label in ('clear', 'hold'))
+                  print(f'frame_review_schema_valid={valid}')
+                  print(f'frame_review_checked_count={len(checked) if valid else 0}')
+                  print(f'frame_review_defect_count={len(defects) if valid else 0}')
+                  print(f'frame_review_decision={label if valid else "invalid"}')
+              except (KeyError, IndexError, TypeError, ValueError):
+                  print('frame_review_schema_valid=false')
           PY
