@@ -165,6 +165,13 @@ class ReadbackTest(unittest.TestCase):
                                                       else "https://www.instagram.com/reel/ABC123/")
         self._verify()
         (self.folder / RECEIPT).unlink()
+        self.rows["yt-channel"][0]["externalLink"] = "https://www.youtube.com/watch?v=ABCDEFGHIJK"
+        self._verify()
+        (self.folder / RECEIPT).unlink()
+        self.rows["yt-channel"][0]["externalLink"] += "&list=other"
+        with self.assertRaisesRegex(ReadbackHold, "valid public link"):
+            self._verify()
+        self.rows["yt-channel"][0]["externalLink"] = "https://www.youtube.com/shorts/ABCDEFGHIJK"
         self.rows["ig-channel"][0]["externalLink"] = "https://www.instagram.com/reel/"
         with self.assertRaisesRegex(ReadbackHold, "valid public link"):
             self._verify()

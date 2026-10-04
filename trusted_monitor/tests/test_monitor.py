@@ -175,6 +175,24 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(report["status"], "alert")
         self.assertNotIn("secret", json.dumps(report))
 
+    def test_signed_pair_issues_surface_without_raw_buffer_rows_in_artifact(self):
+        channels = {service: {"disconnected": False, "locked": False, "queue_paused": False,
+                              "recent_errors": [], "_release_rows": [{"private_marker": "raw-provider-row"}]}
+                    for service in ("youtube", "instagram")}
+        with (patch.object(monitor, "release", return_value={"issues": [], "status": "gate_off"}),
+              patch.object(monitor, "qa", return_value={"issues": [], "status": "ok"}),
+              patch.object(monitor, "buffer", return_value={"channels": channels}),
+              patch.object(monitor, "cloudinary", return_value={"cloud_name": "exact-cloud"}),
+              patch.object(monitor, "youtube_owned", return_value={"channel": {"channel_id": monitor.YOUTUBE_ID}}),
+              patch.object(monitor, "youtube_public", return_value={"channel_id": monitor.YOUTUBE_ID}),
+              patch.object(monitor, "inspect_signed", return_value={"status": "alert", "issues": [
+                  "ep012: instagram Buffer post is not sent after due time"]}) as signed):
+            report = monitor.collect(NOW, ENV | {"SOURCE_CHECKOUT": "/read-only/source"})
+        self.assertEqual(report["status"], "alert")
+        self.assertEqual(len(report["issues"]), 1)
+        self.assertNotIn("raw-provider-row", json.dumps(report))
+        self.assertEqual(len(signed.call_args.args[2]["youtube"]), 1)
+
     def test_pinned_destination_ids_reject_configuration_drift(self):
         with self.assertRaisesRegex(monitor.MonitorError, "channel IDs"):
             monitor.buffer(NOW, ENV | {"BUFFER_YOUTUBE_CHANNEL_ID": "other-channel"})

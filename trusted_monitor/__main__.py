@@ -15,6 +15,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from .signed import SignedMonitorError, inspect as inspect_signed
+
 
 REPOSITORY = "ashivam-dot/mool-katha-control"
 BUFFER_ORG_ID = "6ac066851cde9b9edca25c7b"
@@ -108,15 +110,14 @@ def _posts(key: str, channel_id: str, service: str, now: datetime) -> dict:
     query = """query Posts($input: PostsInput!, $after: String) {
       posts(input: $input, first: 50, after: $after) {
         edges { node { id status dueAt sentAt externalLink channelId channelService
-                       error { message } metrics { type value } metricsUpdatedAt } }
+                       error { message } metrics { type value } metricsUpdatedAt
+                       assets { ... on VideoAsset { source } } } }
         pageInfo { hasNextPage endCursor } } }"""
     variables = {"input": {"organizationId": BUFFER_ORG_ID, "filter": {
-        "channelIds": [channel_id],
-        "startDate": (now - timedelta(days=30)).isoformat(),
-        "endDate": (now + timedelta(days=365)).isoformat()}}, "after": None}
+        "channelIds": [channel_id]}}, "after": None}
     rows: list[dict] = []
     seen: set[str] = set()
-    for _ in range(20):
+    for _ in range(100):
         page = _buffer(query, variables, key).get("posts")
         if not isinstance(page, dict) or not isinstance(page.get("edges"), list):
             raise MonitorError("Buffer posts response is malformed")
@@ -144,14 +145,28 @@ def _posts(key: str, channel_id: str, service: str, now: datetime) -> dict:
     counts = {"sent": 0, "scheduled": 0, "error": 0, "draft": 0}
     recent_errors: list[dict] = []
     sent: list[dict] = []
+    release_rows: list[dict] = []
     for row in rows:
+        assets = row.get("assets")
+        sources = ([item.get("source") if isinstance(item, dict) else None for item in assets]
+                   if isinstance(assets, list) else None)
+        release_rows.append({"id": row["id"], "channel_id": row["channelId"],
+                             "service": row["channelService"], "status": row.get("status"),
+                             "due_at": row.get("dueAt"), "sent_at": row.get("sentAt"),
+                             "external_link": row.get("externalLink"), "media_sources": sources})
         status = row.get("status")
         if status not in counts:
             # Buffer uses additional queued statuses. They are scheduled for monitoring.
             status = "scheduled"
         counts[status] += 1
         if status == "error":
-            recent_errors.append({"id": row["id"], "due_at": row.get("dueAt")})
+            try:
+                due = _time(row.get("dueAt"))
+            except MonitorError:
+                pass
+            else:
+                if now - timedelta(days=30) <= due <= now + timedelta(days=365):
+                    recent_errors.append({"id": row["id"], "due_at": due.isoformat()})
         if status != "sent":
             continue
         sent_at = _time(row.get("sentAt"))
@@ -177,7 +192,8 @@ def _posts(key: str, channel_id: str, service: str, now: datetime) -> dict:
     totals = {kind: {"total": sum(p["metrics"][kind] for p in sent) if sent and all(kind in p["metrics"] for p in sent) else None,
                      "reported_posts": sum(kind in p["metrics"] for p in sent)} for kind in METRICS}
     return {"counts": counts, "recent_errors": recent_errors[:20], "sent_posts_30d": len(sent),
-            "metrics_30d": totals, "posts": sorted(sent, key=lambda p: (p["sent_at"], p["id"]))[-50:]}
+            "metrics_30d": totals, "posts": sorted(sent, key=lambda p: (p["sent_at"], p["id"]))[-50:],
+            "_release_rows": release_rows}
 
 
 def buffer(now: datetime, env: dict[str, str]) -> dict:
@@ -400,6 +416,7 @@ def collect(now: datetime, env: dict[str, str]) -> dict:
     report = {"schema": "mool_katha_control_monitor_v1", "captured_at": now.isoformat(),
               "ist_date": now.astimezone(IST).date().isoformat(), "repository": REPOSITORY,
               "sources": {}, "issues": [], "warnings": []}
+    release_rows: dict[str, list[dict]] = {}
     for name, reader in (("release", lambda: release(now, env)), ("qa", lambda: qa(now, env)),
                          ("buffer", lambda: buffer(now, env)),
                          ("cloudinary", lambda: cloudinary(env)),
@@ -412,6 +429,7 @@ def collect(now: datetime, env: dict[str, str]) -> dict:
                 report["issues"].extend(value["issues"])
             if name == "buffer":
                 for service, channel in value["channels"].items():
+                    release_rows[service] = channel.pop("_release_rows", [])
                     if channel["disconnected"] or channel["locked"] or channel["queue_paused"]:
                         report["issues"].append(f"Buffer {service} channel is unavailable")
                     if channel["recent_errors"]:
@@ -423,6 +441,17 @@ def collect(now: datetime, env: dict[str, str]) -> dict:
             report["sources"][name] = {"status": "unavailable", "reason": label}
             (report["warnings"] if name in ("youtube_owned", "youtube_public") else report["issues"]).append(
                 f"{name}: {label}")
+    try:
+        if not env.get("SOURCE_CHECKOUT"):
+            raise SignedMonitorError("read-only producer checkout is unavailable")
+        value = inspect_signed(now, Path(env["SOURCE_CHECKOUT"]), release_rows,
+                               BUFFER_YOUTUBE_ID, BUFFER_INSTAGRAM_ID)
+        report["sources"]["signed_pairs"] = value
+        report["issues"].extend(value["issues"])
+    except Exception as exc:
+        label = str(exc) if isinstance(exc, SignedMonitorError) else "read failed"
+        report["sources"]["signed_pairs"] = {"status": "unavailable", "reason": label}
+        report["issues"].append(f"signed_pairs: {label}")
     if all(report["sources"][source].get("status") == "unavailable"
            for source in ("youtube_owned", "youtube_public")):
         report["issues"].append("both owned and public YouTube analytics are unavailable")
