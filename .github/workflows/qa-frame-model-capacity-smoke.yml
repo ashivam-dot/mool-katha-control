@@ -8,13 +8,32 @@ on:
         type: boolean
         required: true
         default: false
+      cpu_probe_marker:
+        description: Enter EP022_CPU_QWEN_63 for the pinned CPU capacity probe
+        type: string
+        required: false
+        default: ''
 
 permissions:
   actions: read
   contents: read
 
 jobs:
+  invalid_marker:
+    if: >-
+      inputs.cpu_probe_marker != '' &&
+      (inputs.cpu_probe_marker != 'EP022_CPU_QWEN_63' ||
+       github.repository != 'ashivam-dot/mool-katha-control' ||
+       github.ref != 'refs/heads/ops/ep022-cpu-qwen-capacity-20261004' ||
+       github.actor != 'ashivam-dot' ||
+       github.event.repository.private != true)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject an invalid CPU capacity dispatch
+        run: exit 1
+
   inspect:
+    if: inputs.cpu_probe_marker == ''
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
@@ -41,3 +60,45 @@ jobs:
           QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
           QA_PROBE_SEND_PROVIDER: ${{ inputs.send_provider_request }}
         run: python .github/scripts/qa_sampled_frame_probe.py
+
+  cpu_qwen:
+    if: >-
+      inputs.cpu_probe_marker == 'EP022_CPU_QWEN_63' &&
+      github.repository == 'ashivam-dot/mool-katha-control' &&
+      github.ref == 'refs/heads/ops/ep022-cpu-qwen-capacity-20261004' &&
+      github.actor == 'ashivam-dot' &&
+      github.event.repository.private == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Initialize a held private capacity receipt
+        run: python .github/scripts/qa_sampled_frame_cpu_probe.py prepare-receipt
+      - name: Install exact frame decoder
+        run: |
+          python -m pip install Pillow==11.3.0
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Download exact held ep022 QA artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: private-qa-ep022-90e61a514265a54e45a76b919f21cce563599365816933ab1cf101590946d70b
+          path: qa-output
+          run-id: 37200191200
+          github-token: ${{ github.token }}
+      - name: Run bounded public Qwen CPU probe on both exact sheets
+        run: timeout --signal=TERM --kill-after=10s 930s python .github/scripts/qa_sampled_frame_cpu_probe.py
+      - name: Keep the private held capacity receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: private-qa-ep022-cpu-qwen-${{ github.run_id }}
+          path: private-qa-ep022-cpu-qwen-capacity.json
+          retention-days: 3
+          if-no-files-found: error
+          compression-level: 0
