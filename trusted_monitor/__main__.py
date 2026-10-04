@@ -16,6 +16,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from .signed import SignedMonitorError, inspect as inspect_signed
+from .public import inspect as inspect_public, load_proofs
 
 
 REPOSITORY = "ashivam-dot/mool-katha-control"
@@ -479,6 +480,17 @@ def collect(now: datetime, env: dict[str, str]) -> dict:
         label = str(exc) if isinstance(exc, SignedMonitorError) else "read failed"
         report["sources"]["signed_pairs"] = {"status": "unavailable", "reason": label}
         report["issues"].append(f"signed_pairs: {label}")
+    else:
+        try:
+            proof_dir = env.get("PUBLIC_PROOF_DIR")
+            proofs = load_proofs(Path(proof_dir)) if proof_dir else {}
+            public = inspect_public(now, value, report["sources"].get("youtube_public"),
+                                    proofs=proofs)
+            report["sources"]["public_posts"] = public
+            report["issues"].extend(public["issues"])
+        except Exception:
+            report["sources"]["public_posts"] = {"status": "unavailable", "reason": "read failed"}
+            report["issues"].append("public_posts: read failed")
     if all(report["sources"][source].get("status") == "unavailable"
            for source in ("youtube_owned", "youtube_public")):
         report["issues"].append("both owned and public YouTube analytics are unavailable")
