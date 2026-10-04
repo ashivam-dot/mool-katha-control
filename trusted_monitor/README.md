@@ -16,12 +16,26 @@ Its token has read-only repository permissions. The job reads:
   `YTC_ENABLE_CONTROL_RELEASE=1`, a missing scheduled run for five hours, a
   failed latest scheduled run, or an inactive workflow alerts. While the release
   gate is off, skipped runs are expected.
+- The six-hour QA dispatcher and its exact `qa-v2` run. An inactive workflow,
+  a missing run for ten hours, or a failed latest completed run alerts. The
+  dispatcher is checked separately so a manual QA run cannot hide its failure.
 
 The run summary and a 14-day JSON artifact hold only destination IDs, public
 links, aggregate metrics, status, and bounded operational messages. They contain
 no OAuth, Buffer, Cloudinary, or GitHub tokens. Operational alerts fail the job;
 Google or public-feed outages are warnings unless both YouTube sources fail.
 The workflow makes no mutation requests and publishes nothing.
+
+[`qa-failure-feedback.yml`](../.github/workflows/qa-failure-feedback.yml)
+inspects failed `qa-v2` run artifacts in a separate job. It recognizes only
+specific content and evidence holds from the pinned runner. A second job, with
+the producer write key but no QA artifact or signing key, checks that the
+entire tracked episode tree still matches QA's source commit before committing
+`editorial-lock.json`. A changed, released, or already locked draft is left
+untouched. Provider, fetch, setup, and unknown failures remain retryable and
+show up as failed QA runs in this monitor. The producer classifies editorially
+locked drafts outside its active review capacity; both repository changes are
+needed for a hold to free a producer slot.
 
 Required control Actions secrets: `BUFFER_API_KEY`,
 `BUFFER_YOUTUBE_CHANNEL_ID`, `BUFFER_INSTAGRAM_CHANNEL_ID`, `CLOUDINARY_URL`,

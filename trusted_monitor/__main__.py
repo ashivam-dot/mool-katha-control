@@ -25,6 +25,10 @@ YOUTUBE_ID = "UCdqxVnoHDWXgA2ZVJWkSu8w"
 YOUTUBE_HANDLE = "moolkatha"
 INSTAGRAM_HANDLE = "moolkatha.hindi"
 RELEASE_WORKFLOW = "signed-release.yml"
+QA_DISPATCH_WORKFLOW = "dispatch-release-qa.yml"
+QA_WORKFLOW = "release-qa.yml"
+QA_WORKFLOW_SHA = "e6307460a8e3d83fda4664d09a7a44d8a3cfb40c"
+QA_QUIET_HOURS = 10
 METRICS = ("views", "reach", "reactions", "comments", "shares", "saves", "follows")
 UTC = timezone.utc
 IST = ZoneInfo("Asia/Kolkata")
@@ -340,20 +344,71 @@ def release(now: datetime, env: dict[str, str]) -> dict:
     return result
 
 
+def qa(now: datetime, env: dict[str, str]) -> dict:
+    """Watch the scheduled dispatch and the immutable QA run it launches."""
+    token = env.get("GH_TOKEN", "")
+    if not token:
+        raise MonitorError("GitHub read token missing")
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+               "X-GitHub-Api-Version": "2022-11-28"}
+    result = {"dispatch": None, "pinned_qa": None, "issues": []}
+    for workflow_name, label, predicate in (
+        (QA_DISPATCH_WORKFLOW, "scheduled independent QA dispatch",
+         lambda run: run.get("event") == "schedule" and run.get("head_branch") == "main"),
+        (QA_WORKFLOW, "pinned independent QA",
+         lambda run: run.get("event") == "workflow_dispatch" and
+         run.get("head_branch") == "qa-v2" and run.get("head_sha") == QA_WORKFLOW_SHA),
+    ):
+        url = f"https://api.github.com/repos/{REPOSITORY}/actions/workflows/{workflow_name}"
+        workflow = _json(url, headers=headers)
+        if workflow.get("path") != f".github/workflows/{workflow_name}":
+            raise MonitorError(f"{label} workflow identity mismatch")
+        if workflow.get("state") != "active":
+            result["issues"].append(f"{label} workflow is not active")
+        body = _json(url + "/runs?per_page=50", headers=headers)
+        runs = body.get("workflow_runs")
+        if not isinstance(runs, list):
+            raise MonitorError(f"{label} runs response is malformed")
+        relevant = sorted((run for run in runs if isinstance(run, dict) and predicate(run)),
+                          key=lambda run: run.get("created_at") or "", reverse=True)
+        key = "dispatch" if workflow_name == QA_DISPATCH_WORKFLOW else "pinned_qa"
+        if not relevant:
+            result["issues"].append(f"no {label} run found")
+            continue
+        latest = relevant[0]
+        created = _time(latest.get("created_at"))
+        if now - created > timedelta(hours=QA_QUIET_HOURS):
+            result["issues"].append(f"no {label} run within {QA_QUIET_HOURS} hours")
+        completed = next((run for run in relevant if run.get("status") == "completed"), None)
+        if completed and completed.get("conclusion") != "success":
+            result["issues"].append(f"latest completed {label} run did not succeed")
+        result[key] = {"workflow": workflow_name, "state": workflow.get("state"),
+                       "latest": {"id": latest.get("id"), "created_at": created.isoformat(),
+                                  "status": latest.get("status"), "conclusion": latest.get("conclusion"),
+                                  "url": latest.get("html_url")},
+                       "latest_completed": ({"id": completed.get("id"),
+                                             "conclusion": completed.get("conclusion"),
+                                             "url": completed.get("html_url")}
+                                            if completed else None)}
+    result["status"] = "alert" if result["issues"] else "ok"
+    return result
+
+
 def collect(now: datetime, env: dict[str, str]) -> dict:
     if env.get("GITHUB_REPOSITORY") != REPOSITORY or env.get("GITHUB_REF") != "refs/heads/main":
         raise MonitorError("monitor must run from control main")
     report = {"schema": "mool_katha_control_monitor_v1", "captured_at": now.isoformat(),
               "ist_date": now.astimezone(IST).date().isoformat(), "repository": REPOSITORY,
               "sources": {}, "issues": [], "warnings": []}
-    for name, reader in (("release", lambda: release(now, env)), ("buffer", lambda: buffer(now, env)),
+    for name, reader in (("release", lambda: release(now, env)), ("qa", lambda: qa(now, env)),
+                         ("buffer", lambda: buffer(now, env)),
                          ("cloudinary", lambda: cloudinary(env)),
                          ("youtube_owned", lambda: youtube_owned(now, env)),
                          ("youtube_public", youtube_public)):
         try:
             value = reader()
             report["sources"][name] = value
-            if name == "release":
+            if name in ("release", "qa"):
                 report["issues"].extend(value["issues"])
             if name == "buffer":
                 for service, channel in value["channels"].items():

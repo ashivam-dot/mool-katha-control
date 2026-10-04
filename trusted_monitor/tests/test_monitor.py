@@ -93,8 +93,71 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(result["status"], "alert")
         self.assertEqual(result["latest_completed_scheduled"]["id"], 1)
 
+    def test_failed_pinned_qa_is_visible_despite_new_in_progress_run(self):
+        def run(run_id, workflow, *, status="completed", conclusion="success", minutes=30):
+            return {"id": run_id, "event": "schedule" if workflow == "dispatch" else "workflow_dispatch",
+                    "head_branch": "main" if workflow == "dispatch" else "qa-v2",
+                    "head_sha": "f" * 40 if workflow == "dispatch" else monitor.QA_WORKFLOW_SHA,
+                    "created_at": (NOW - timedelta(minutes=minutes)).isoformat(),
+                    "status": status, "conclusion": conclusion,
+                    "html_url": f"https://github.com/example/runs/{run_id}"}
+
+        def fake_json(url, **_):
+            if url.endswith("/runs?per_page=50"):
+                if monitor.QA_DISPATCH_WORKFLOW in url:
+                    return {"workflow_runs": [run(10, "dispatch")]}
+                return {"workflow_runs": [run(21, "qa", status="in_progress", conclusion=None),
+                                          run(20, "qa", conclusion="failure", minutes=60),
+                                          run(19, "qa") | {"head_branch": "qa-v1"}]}
+            name = monitor.QA_DISPATCH_WORKFLOW if monitor.QA_DISPATCH_WORKFLOW in url else monitor.QA_WORKFLOW
+            return {"path": f".github/workflows/{name}", "state": "active"}
+
+        with patch.object(monitor, "_json", side_effect=fake_json):
+            result = monitor.qa(NOW, ENV)
+        self.assertEqual(result["status"], "alert")
+        self.assertEqual(result["pinned_qa"]["latest_completed"]["id"], 20)
+        self.assertIn("latest completed pinned independent QA run did not succeed", result["issues"])
+        self.assertEqual(result["dispatch"]["latest_completed"]["id"], 10)
+
+    def test_recent_scheduled_dispatch_and_pinned_qa_succeed(self):
+        def fake_json(url, **_):
+            if url.endswith("/runs?per_page=50"):
+                dispatch = monitor.QA_DISPATCH_WORKFLOW in url
+                return {"workflow_runs": [{"id": 1 if dispatch else 2,
+                                           "event": "schedule" if dispatch else "workflow_dispatch",
+                                           "head_branch": "main" if dispatch else "qa-v2",
+                                           "head_sha": "f" * 40 if dispatch else monitor.QA_WORKFLOW_SHA,
+                                           "created_at": (NOW - timedelta(hours=2)).isoformat(),
+                                           "status": "completed", "conclusion": "success"}]}
+            name = monitor.QA_DISPATCH_WORKFLOW if monitor.QA_DISPATCH_WORKFLOW in url else monitor.QA_WORKFLOW
+            return {"path": f".github/workflows/{name}", "state": "active"}
+
+        with patch.object(monitor, "_json", side_effect=fake_json):
+            self.assertEqual(monitor.qa(NOW, ENV)["status"], "ok")
+
+    def test_missing_scheduled_dispatch_is_visible_even_after_manual_qa_success(self):
+        def fake_json(url, **_):
+            if url.endswith("/runs?per_page=50"):
+                if monitor.QA_DISPATCH_WORKFLOW in url:
+                    return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "main",
+                                               "created_at": NOW.isoformat(), "status": "completed",
+                                               "conclusion": "success"}]}
+                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v2",
+                                           "head_sha": monitor.QA_WORKFLOW_SHA,
+                                           "created_at": NOW.isoformat(), "status": "completed",
+                                           "conclusion": "success"}]}
+            name = monitor.QA_DISPATCH_WORKFLOW if monitor.QA_DISPATCH_WORKFLOW in url else monitor.QA_WORKFLOW
+            return {"path": f".github/workflows/{name}", "state": "active"}
+
+        with patch.object(monitor, "_json", side_effect=fake_json):
+            result = monitor.qa(NOW, ENV)
+        self.assertEqual(result["status"], "alert")
+        self.assertIn("no scheduled independent QA dispatch run found", result["issues"])
+        self.assertEqual(result["pinned_qa"]["latest"]["conclusion"], "success")
+
     def test_report_never_contains_provider_exception_or_secrets(self):
         with (patch.object(monitor, "release", side_effect=RuntimeError("secret-gh")),
+              patch.object(monitor, "qa", return_value={"issues": [], "status": "ok"}),
               patch.object(monitor, "buffer", side_effect=monitor.MonitorError("Buffer query failed")),
               patch.object(monitor, "cloudinary", return_value={"cloud_name": "exact-cloud"}),
               patch.object(monitor, "youtube_owned", return_value={"channel": {"channel_id": monitor.YOUTUBE_ID}}),
@@ -103,6 +166,7 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(unexpected["sources"]["release"]["reason"], "read failed")
         self.assertNotIn("secret-gh", json.dumps(unexpected))
         with (patch.object(monitor, "release", return_value={"issues": [], "status": "gate_off"}),
+              patch.object(monitor, "qa", return_value={"issues": [], "status": "ok"}),
               patch.object(monitor, "buffer", side_effect=monitor.MonitorError("Buffer query failed")),
               patch.object(monitor, "cloudinary", return_value={"cloud_name": "exact-cloud"}),
               patch.object(monitor, "youtube_owned", return_value={"channel": {"channel_id": monitor.YOUTUBE_ID}}),
