@@ -1,0 +1,54 @@
+name: Check independent QA frame model transport
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Download exact failed frame request
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: private-qa-ep022-90e61a514265a54e45a76b919f21cce563599365816933ab1cf101590946d70b
+          path: qa-output
+          run-id: 37200191200
+          github-token: ${{ github.token }}
+      - name: Send one request and print status class only
+        env:
+          QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          source = Path('qa-output/episode/private/frame-batch-001-request.json')
+          body = source.read_bytes()
+          expected = 'fcdc4698af9d027ed94d4874eaf356ec00fd77dca8caea5c368b46d6b887e299'
+          if hashlib.sha256(body).hexdigest() != expected:
+              raise SystemExit('saved frame request digest mismatch')
+          key = os.environ.get('QA_GEMINI_API_KEY', '')
+          if not key:
+              raise SystemExit('QA model credential is unavailable')
+          request = urllib.request.Request(
+              'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+              data=body,
+              headers={'Content-Type': 'application/json', 'x-goog-api-key': key},
+              method='POST',
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=300) as response:
+                  print(f'provider_http_status={response.status}')
+          except urllib.error.HTTPError as exc:
+              print(f'provider_http_status={exc.code}')
+          except (OSError, urllib.error.URLError) as exc:
+              print(f'provider_transport_class={type(exc).__name__}')
+          PY
