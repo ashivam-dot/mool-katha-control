@@ -1,0 +1,93 @@
+# Shares each sent, signed Reel once as an Instagram Story the next morning (08:30 IST).
+# Producer main is read-only data; the Buffer client is the same pinned release commit
+# as signed-release.yml, and Story receipts live on this repo's instagram-stories-data branch.
+name: Instagram Story from each sent Reel
+
+on:
+  schedule:
+    - cron: '45 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-stories
+  cancel-in-progress: false
+
+jobs:
+  story:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_INSTAGRAM_STORIES == '1')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out immutable release code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: b8bcd078788cfc35cd98c2dcfa45d168da166c9c
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: trusted
+          persist-credentials: false
+      - name: Check out producer receipts (read-only)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: main
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: source
+          persist-credentials: false
+      - name: Check out Story code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          path: control
+          persist-credentials: false
+      - name: Check out Story receipts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: instagram-stories-data
+          path: state
+      - name: Verify pinned code and Buffer organization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C trusted rev-parse HEAD)" = 'b8bcd078788cfc35cd98c2dcfa45d168da166c9c'
+          test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          working-directory: trusted/pipeline
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install pinned dependencies
+        working-directory: trusted/pipeline
+        run: uv sync --frozen
+      - name: Schedule at most one Story
+        working-directory: trusted/pipeline
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          SOURCE_CHECKOUT: ${{ github.workspace }}/source
+          STORY_STATE: ${{ github.workspace }}/state/stories
+          TRUSTED_PIPELINE: ${{ github.workspace }}/trusted/pipeline
+          PYTHONPATH: ${{ github.workspace }}/control
+        run: uv run --no-sync python -m trusted_stories
+      - name: Save Story receipts
+        if: always()
+        working-directory: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Mool Katha Story sharer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p stories
+          git add -A stories
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "stories: run $GITHUB_RUN_ID"
+          git push origin HEAD:instagram-stories-data
