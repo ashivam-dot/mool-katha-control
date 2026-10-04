@@ -2,6 +2,14 @@ name: Check independent QA Gemini capacity class
 
 on:
   workflow_dispatch:
+    inputs:
+      kind:
+        type: choice
+        required: true
+        default: tiny
+        options:
+          - tiny
+          - exact
 
 permissions:
   actions: read
@@ -27,7 +35,8 @@ jobs:
           path: qa-output
           run-id: 37200191200
           github-token: ${{ github.token }}
-      - name: Probe text and one frame tile without logging provider body
+      - name: Probe selected QA model request without logging provider body
         env:
           QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+          QA_PROBE_KIND: ${{ inputs.kind }}
         run: python .github/scripts/qa_provider_capacity_probe.py

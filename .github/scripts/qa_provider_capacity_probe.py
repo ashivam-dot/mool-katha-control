@@ -7,11 +7,14 @@ import hashlib
 import io
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 from PIL import Image
+
+from qa_frame_model_capacity import shape_valid
 
 
 SOURCE = Path("qa-output/episode/private/frame-batch-001-request.json")
@@ -71,7 +74,8 @@ def sanitized_error(exc: urllib.error.HTTPError) -> str:
             f"quota_failure={quota} retry_info={retry} retry_header={retry_header}")
 
 
-def probe(label: str, content: bytes, key: str) -> None:
+def probe(label: str, content: bytes, key: str,
+          frame_indices: tuple[int, int] | None = None) -> tuple[str, bool]:
     request = urllib.request.Request(
         ENDPOINT, data=content,
         headers={"Content-Type": "application/json", "x-goog-api-key": key},
@@ -79,27 +83,45 @@ def probe(label: str, content: bytes, key: str) -> None:
     )
     try:
         with urllib.request.urlopen(request, timeout=90) as response:
-            raw = response.read(65537)
+            raw = response.read(1024 * 1024 + 1)
             status = response.status
     except urllib.error.HTTPError as exc:
         print(f"{label}={sanitized_error(exc)}")
-        return
+        return f"http_{exc.code}", False
     except (OSError, urllib.error.URLError) as exc:
         print(f"{label}=transport_{type(exc).__name__}")
-        return
+        return f"transport_{type(exc).__name__}", False
     candidate = False
-    if status == 200 and len(raw) <= 65536:
+    if status == 200 and len(raw) <= 1024 * 1024:
         try:
             candidate = bool(json.loads(raw).get("candidates"))
         except (AttributeError, TypeError, ValueError):
             pass
     print(f"{label}=http_{status} has_candidate={candidate}")
+    valid = candidate
+    if frame_indices is not None:
+        valid, decision, defect_count = shape_valid(raw, *frame_indices)
+        print(f"{label}_frame_schema_valid={valid} decision={decision} "
+              f"defect_count={defect_count}")
+    return f"http_{status}", valid
 
 
 def main() -> None:
     key = os.environ.get("QA_GEMINI_API_KEY", "")
     if not key:
         raise SystemExit("QA model credential is unavailable")
+    kind = os.environ.get("QA_PROBE_KIND", "tiny")
+    if kind == "exact":
+        exact = SOURCE.read_bytes()
+        if hashlib.sha256(exact).hexdigest() != EXPECTED_SHA256:
+            raise SystemExit("saved frame request digest mismatch")
+        status, valid = probe("exact_38", exact, key, frame_indices=(1, 35))
+        if not valid and status in ("http_429", "http_503"):
+            time.sleep(30)
+            probe("exact_38_retry", exact, key, frame_indices=(1, 35))
+        return
+    if kind != "tiny":
+        raise SystemExit("unknown probe kind")
     text = body([{"text": "Reply with only OK."}])
     image = body([{"text": "Describe this image in one word."}, image_part()])
     probe("text_38", text, key)
