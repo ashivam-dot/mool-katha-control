@@ -39,7 +39,7 @@ class RunnerHoldTests(unittest.TestCase):
         _, identity = github_run_context(values)
         self.assertEqual(identity, "agent:github_actions/ashivam-dot/mool-katha-control/123/1")
         values["GITHUB_WORKFLOW_REF"] = (
-            "ashivam-dot/mool-katha-control/.github/workflows/qa.yml@refs/tags/qa-v8")
+            "ashivam-dot/mool-katha-control/.github/workflows/qa.yml@refs/tags/qa-v9")
         self.assertEqual(github_run_context(values)[1], identity)
         values["GITHUB_REPOSITORY"] = "ashivam-dot/mool-katha"
         with self.assertRaisesRegex(QaHold, "mool-katha-control"):
@@ -72,6 +72,7 @@ class RunnerHoldTests(unittest.TestCase):
                    "QA_GEMINI_API_KEY": "test-only",
                    "QA_GEMINI_ASR_MODEL": "gemini-test-model",
                    "QA_GEMINI_QUALITY_MODEL": "gemini-test-model",
+                   "QA_GEMINI_AUDIO_MODEL": "gemini-test-model",
                    "QA_GEMINI_REVIEW_MODEL": "gemini-test-model",
                    "QA_WHISPER_MODEL_DIR": str(root / "model"),
                    "QA_WHISPER_MODEL_REPO": "owner/test-model",

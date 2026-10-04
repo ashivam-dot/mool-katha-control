@@ -109,7 +109,8 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         stage = "configuration"
         key = values.get("QA_GEMINI_API_KEY", "")
         require(isinstance(key, str) and bool(key.strip()), "QA Gemini credential is unavailable")
-        for name in ("QA_GEMINI_ASR_MODEL", "QA_GEMINI_QUALITY_MODEL", "QA_GEMINI_REVIEW_MODEL"):
+        for name in ("QA_GEMINI_ASR_MODEL", "QA_GEMINI_QUALITY_MODEL", "QA_GEMINI_AUDIO_MODEL",
+                     "QA_GEMINI_REVIEW_MODEL"):
             require(valid_gemini_models(values.get(name, "")), f"{name} must be explicitly named")
         require(bool(values.get("QA_WHISPER_MODEL_DIR", "")),
                 "QA_WHISPER_MODEL_DIR is unavailable")
@@ -168,7 +169,7 @@ def run_one(repo: Path, episode_id: str, source_commit: str, output_dir: Path,
         stage = "full_audio_quality"
         quality = gemini_voice_quality(
             audio_path, duration, video_hash, candidate.episode_dir, private, key=key,
-            model=values.get("QA_GEMINI_QUALITY_MODEL", ""))
+            model=values.get("QA_GEMINI_AUDIO_MODEL", ""))
         stage = "independent_review"
         model = gemini_independent_review(candidate, observations, [gemini, whisper], visual,
                                           quality, private, key=key,

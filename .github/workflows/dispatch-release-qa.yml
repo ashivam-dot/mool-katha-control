@@ -25,4 +25,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           QA_REPOSITORY: ${{ github.repository }}
-        run: gh workflow run release-qa.yml --repo "$QA_REPOSITORY" --ref qa-v8
+        run: gh workflow run release-qa.yml --repo "$QA_REPOSITORY" --ref qa-v9
