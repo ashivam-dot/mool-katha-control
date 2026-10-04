@@ -155,6 +155,32 @@ class MonitorTests(unittest.TestCase):
         self.assertIn("no scheduled independent QA dispatch run found", result["issues"])
         self.assertEqual(result["pinned_qa"]["latest"]["conclusion"], "success")
 
+    def test_new_dispatch_waits_for_first_cron_slot_then_alerts_if_missing(self):
+        def fake_json(url, **_):
+            if url.endswith("/runs?per_page=50"):
+                if monitor.QA_DISPATCH_WORKFLOW in url:
+                    return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "main",
+                                               "created_at": "2026-10-04T08:41:13Z",
+                                               "status": "completed", "conclusion": "success"}]}
+                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v2",
+                                           "head_sha": monitor.QA_WORKFLOW_SHA,
+                                           "created_at": reference.isoformat(),
+                                           "status": "completed", "conclusion": "success"}]}
+            name = monitor.QA_DISPATCH_WORKFLOW if monitor.QA_DISPATCH_WORKFLOW in url else monitor.QA_WORKFLOW
+            return {"path": f".github/workflows/{name}", "state": "active",
+                    "created_at": "2026-10-04T03:40:02Z" if name == monitor.QA_DISPATCH_WORKFLOW else None}
+
+        changed = json.dumps([{"commit": {"committer": {"date": "2026-10-04T06:41:41Z"}}}]).encode()
+        reference = datetime(2026, 10, 4, 13, 0, tzinfo=timezone.utc)
+        with (patch.object(monitor, "_json", side_effect=fake_json),
+              patch.object(monitor, "_request", return_value=changed)):
+            warm = monitor.qa(reference + timedelta(hours=1), ENV)
+            self.assertEqual(warm["status"], "ok")
+            self.assertEqual(warm["dispatch"]["status"], "warming_up")
+            reference = datetime(2026, 10, 4, 16, 0, tzinfo=timezone.utc)
+            missed = monitor.qa(reference + timedelta(hours=1), ENV)
+        self.assertIn("no scheduled independent QA dispatch run found", missed["issues"])
+
     def test_report_never_contains_provider_exception_or_secrets(self):
         with (patch.object(monitor, "release", side_effect=RuntimeError("secret-gh")),
               patch.object(monitor, "qa", return_value={"issues": [], "status": "ok"}),
