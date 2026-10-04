@@ -106,6 +106,29 @@ class AlertTests(unittest.TestCase):
             alerts.from_workflow_run(event, token="secret", topic="private_topic_123", now=NOW)
         self.assertEqual(called, [("pinned-qa", [])])
 
+    def test_feedback_failure_alerts_separately_and_newer_success_resolves(self):
+        run = {"name": "Independent QA failure feedback", "head_branch": "main",
+               "head_sha": "a" * 40, "head_repository": {"full_name": alerts.REPOSITORY},
+               "status": "completed", "conclusion": "failure", "id": 1,
+               "created_at": "2026-10-04T12:00:00Z", "html_url": RUN_URL}
+        event = {"repository": {"full_name": alerts.REPOSITORY}, "workflow_run": run}
+        called = []
+
+        def fake_sync(category, messages, **kwargs):
+            called.append((category, messages))
+            return "recorded"
+
+        with (patch.object(alerts, "_runs", return_value=[run]),
+              patch.object(alerts, "sync", side_effect=fake_sync)):
+            alerts.from_workflow_run(event, token="secret", topic="private_topic_123", now=NOW)
+        self.assertEqual(called, [("qa-feedback", ["QA hold feedback failure: latest run did not succeed"])])
+        called.clear()
+        success = run | {"id": 2, "created_at": "2026-10-04T13:00:00Z", "conclusion": "success"}
+        with (patch.object(alerts, "_runs", return_value=[run, success]),
+              patch.object(alerts, "sync", side_effect=fake_sync)):
+            alerts.from_workflow_run(event, token="secret", topic="private_topic_123", now=NOW)
+        self.assertEqual(called, [("qa-feedback", [])])
+
     def test_first_dispatch_slot_warms_up_then_missing_schedule_alerts(self):
         seen = []
 

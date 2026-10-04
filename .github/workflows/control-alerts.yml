@@ -8,6 +8,7 @@ on:
       - Control analytics and watchdog
       - Dispatch pinned independent QA
       - Signed independent QA
+      - Independent QA failure feedback
       - Signed release from independent control
     types: [completed]
   schedule:

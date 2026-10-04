@@ -20,12 +20,14 @@ WATCHES = {
     "Control analytics and watchdog": ("control-monitor", "control-monitor.yml", "main", None),
     "Dispatch pinned independent QA": ("qa-dispatch", "dispatch-release-qa.yml", "main", None),
     "Signed independent QA": ("pinned-qa", "release-qa.yml", "qa-v2", QA_SHA),
+    "Independent QA failure feedback": ("qa-feedback", "qa-failure-feedback.yml", "main", None),
     "Signed release from independent control": ("signed-release", "signed-release.yml", "main", None),
 }
 LABELS = {
     "control-monitor": "Control monitor failure",
     "qa-dispatch": "QA dispatcher failure",
     "pinned-qa": "Pinned QA failure",
+    "qa-feedback": "QA hold feedback failure",
     "signed-release": "Signed release failure",
     "control-monitor-missed": "Control monitor schedule missed",
     "qa-dispatch-missed": "QA dispatcher schedule missed",
