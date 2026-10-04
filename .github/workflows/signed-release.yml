@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ashivam-dot/mool-katha
-          ref: b2a854ef96756024987c044587e6e8dd5b8bbc02
+          ref: f0863ec1629d8800c547e9400d60a8be8510e663
           ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
           path: trusted
           persist-credentials: false
@@ -54,11 +54,18 @@ jobs:
           path: source
           fetch-depth: 0
           persist-credentials: true
+      - name: Check out control readback code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          path: control
+          persist-credentials: false
       - name: Verify exact trusted code and source branch
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git -C trusted rev-parse HEAD)" = 'b2a854ef96756024987c044587e6e8dd5b8bbc02'
+          test "$(git -C trusted rev-parse HEAD)" = 'f0863ec1629d8800c547e9400d60a8be8510e663'
+          test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git -C source branch --show-current)" = 'main'
           test -z "$(git -C source status --porcelain)"
           test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
@@ -104,6 +111,7 @@ jobs:
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          PYTHONPATH: ${{ github.workspace }}/control
         run: |
           uv run --no-sync python - <<'PY'
           import json
@@ -111,6 +119,7 @@ jobs:
           from pathlib import Path
           import modal
           from ytc import qa_release
+          from trusted_release.readback import verify_after_release
 
           try:
               workspace = modal.Workspace.from_context().hydrate().name
@@ -120,8 +129,17 @@ jobs:
               raise RuntimeError('Modal token does not belong to mool-katha-producer')
           if Path(qa_release.__file__).resolve() != Path.cwd().resolve() / "src/ytc/qa_release.py":
               raise RuntimeError("release module is outside the pinned checkout")
-          result = qa_release.run_once(Path(os.environ["SOURCE_CHECKOUT"]).resolve())
+          root = Path(os.environ["SOURCE_CHECKOUT"]).resolve()
+          result = qa_release.run_once(root)
+          readbacks = verify_after_release(
+              root, result, publisher=qa_release.publish,
+              policy=qa_release.trusted_policy(),
+              evidence_gate=qa_release.require_episode_evidence,
+              youtube_id=os.environ["BUFFER_YOUTUBE_CHANNEL_ID"],
+              instagram_id=os.environ["BUFFER_INSTAGRAM_CHANNEL_ID"],
+          )
           print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+          print(json.dumps({"platform_readbacks": readbacks}, sort_keys=True))
           PY
       - name: Save signed evidence and post receipts to the producer data branch
         if: ${{ always() && vars.YTC_ENABLE_CONTROL_RELEASE == '1' && inputs.mode != 'verify-only' }}
