@@ -37,7 +37,8 @@ class FakeResponse:
 
 
 def answer(codes: str) -> dict:
-    return {"decision": "clear", "uncertainty": "low", "scene_codes": codes,
+    return {"decision": "clear", "uncertainty": "low",
+            "row_codes": [codes[start:start + 7] for start in range(0, len(codes), 7)],
             "issue_positions": [], "uncertain_positions": [],
             "notes": "The sheet changes between distinct large artwork and dark title cards."}
 
@@ -85,6 +86,19 @@ class PinnedDownloadTests(unittest.TestCase):
 
 
 class ModelResponseTests(unittest.TestCase):
+    def test_row_grammar_matches_the_two_complete_seven_column_sheets(self) -> None:
+        for count, rows in ((35, 5), (28, 4)):
+            with self.subTest(count=count):
+                schema = json.loads(probe._json_schema(count))
+                row_field = schema["properties"]["row_codes"]
+                self.assertEqual((row_field["minItems"], row_field["maxItems"]),
+                                 (rows, rows))
+                self.assertEqual(row_field["items"]["pattern"], "^[ABCDEFGX]{7}$")
+                self.assertEqual(row_field["items"]["maxLength"], 7)
+                self.assertEqual(schema["properties"]["notes"]["maxLength"], 160)
+                self.assertIn(f"{rows} complete rows of seven", probe._prompt(count))
+                self.assertNotIn("partial row", probe._prompt(count))
+
     def test_one_exact_response_with_a_matching_visual_sequence(self) -> None:
         reference = probe.SCENE_REFERENCES[0]
         parsed = probe._parse_output(cli_output(answer(reference)), 35)
@@ -115,7 +129,8 @@ class ModelResponseTests(unittest.TestCase):
         valid = cli_output(response)
         malformed = [valid[:-3], valid + b'{"second":true}',
                      cli_output({**response, "unrequested": 1}),
-                     cli_output({**response, "scene_codes": response["scene_codes"][:-1]}),
+                     cli_output({**response, "row_codes": response["row_codes"][:-1]}),
+                     cli_output({**response, "row_codes": ["A" * 8] + response["row_codes"][1:]}),
                      cli_output({**response, "issue_positions": [True]})]
         duplicate = valid.replace(b'"decision": "clear"',
                                   b'"decision": "clear", "decision": "hold"', 1)
