@@ -27,6 +27,11 @@ job's token has read-only repository permissions. The job reads:
   IDs, destinations, hosted video URLs, sent times, and canonical public links.
   Each missing or mismatched YouTube or Instagram receipt is reported by
   episode. Source files are parsed as bounded JSON and never imported.
+- For each new sent pair, it also finds the exact YouTube ID in the pinned
+  channel's public Atom feed and fetches the Instagram Reel page to check its
+  Open Graph URL names `moolkatha.hindi` and the exact shortcode. A generic
+  HTTP 200 sign-in page does not pass. A pair with no public proof after 72
+  hours keeps alerting instead of aging out of the feed window.
 
 The run summary and a 14-day JSON artifact hold only destination IDs, public
 links, aggregate metrics, status, and bounded operational messages. They contain
@@ -43,6 +48,12 @@ raw provider data, and credentials. This job has control-repository write access
 but no Buffer, Google, Cloudinary, Modal, or producer key. The producer's
 learning automation remains disabled; the private snapshots are available for
 a reviewed feedback path later.
+
+The same job saves each successful exact public pair once under
+`analytics/public-delivery/<episode>.json`, binding both Buffer post IDs, public
+links, and due time. Later monitor runs read those private proofs without
+requesting old Instagram pages again. A changed receipt or missing proof
+alerts and cannot silently replace an archived proof.
 
 [`control-alerts.yml`](../.github/workflows/control-alerts.yml) watches completed
 control monitor, pinned QA, dispatcher, and signed-release runs. Its hourly

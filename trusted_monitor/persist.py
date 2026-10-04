@@ -14,6 +14,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from trusted_release.readback import _platform_link
+from .public import build_proof, load_proofs, _proof_matches
 
 
 BUFFER_CHANNELS = {"youtube": "6ac06721ea19ca0bde5dbe63",
@@ -234,19 +235,87 @@ def write(snapshot: dict, out_dir: Path) -> Path:
     return target
 
 
+def write_public_proofs(report: dict, out_dir: Path) -> list[Path]:
+    """Archive fresh exact-platform proofs so old posts need no repeated page reads."""
+    sources = report.get("sources")
+    public = sources.get("public_posts") if isinstance(sources, dict) else None
+    signed = sources.get("signed_pairs") if isinstance(sources, dict) else None
+    if public is None:
+        return []
+    if isinstance(public, dict) and public.get("status") == "unavailable":
+        return []
+    if (not isinstance(public, dict) or public.get("schema") != "mool_katha_public_delivery_monitor_v1"
+            or not isinstance(signed, dict) or signed.get("schema") != "mool_katha_signed_pair_monitor_v1"
+            or not isinstance(public.get("episodes"), list) or len(public["episodes"]) > 1000
+            or not isinstance(signed.get("episodes"), list) or len(signed["episodes"]) > 1000):
+        raise PersistError("public delivery report is malformed")
+    if out_dir.is_symlink():
+        raise PersistError("public proof destination is linked")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        existing = load_proofs(out_dir)
+    except (OSError, ValueError, UnicodeError, json.JSONDecodeError):
+        raise PersistError("archived public proof is malformed") from None
+    signed_by_id = {item.get("episode_id"): item for item in signed["episodes"]
+                    if isinstance(item, dict)}
+    if len(signed_by_id) != len(signed["episodes"]):
+        raise PersistError("signed episode IDs are duplicated or malformed")
+    written = []
+    for row in public["episodes"]:
+        if not isinstance(row, dict):
+            raise PersistError("public episode result is malformed")
+        if row.get("proof_status") != "fresh":
+            continue
+        episode = signed_by_id.get(row.get("episode_id"))
+        if not isinstance(episode, dict) or row.get("verified_at") != report.get("captured_at"):
+            raise PersistError("fresh public result has no exact signed episode")
+        try:
+            proof = build_proof(episode, row, row["verified_at"])
+        except (ValueError, TypeError):
+            raise PersistError("fresh public result differs from signed episode") from None
+        episode_id = proof["episode_id"]
+        if episode_id in existing:
+            if not _proof_matches(existing[episode_id], episode, datetime.now(UTC)):
+                raise PersistError("archived public proof differs from signed episode")
+            continue
+        target = out_dir / f"{episode_id}.json"
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=out_dir,
+                                             prefix=".proof-", suffix=".tmp", delete=False) as output:
+                temporary = Path(output.name)
+                json.dump(proof, output, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                output.write("\n")
+                output.flush()
+                os.fsync(output.fileno())
+            os.link(temporary, target)
+        except FileExistsError:
+            raise PersistError("public proof was created concurrently") from None
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+        written.append(target)
+    return written
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--proof-dir", type=Path, required=False)
     parser.add_argument("--run-key", required=True)
     args = parser.parse_args()
     try:
-        snapshot = extract(_object(args.report), args.run_key)
-        if snapshot is None:
+        report = _object(args.report)
+        snapshot = extract(report, args.run_key)
+        if snapshot is not None:
+            path = write(snapshot, args.out_dir)
+            print(f"Sanitized analytics snapshot saved: {path.name}")
+        else:
             print("No usable analytics source in control report; snapshot skipped")
-            return 0
-        path = write(snapshot, args.out_dir)
-        print(f"Sanitized analytics snapshot saved: {path.name}")
+        if args.proof_dir is not None:
+            proofs = write_public_proofs(report, args.proof_dir)
+            print(f"Exact public delivery proofs archived: {len(proofs)}")
         return 0
     except PersistError as exc:
         print(f"Analytics snapshot needs retry: {exc}", file=sys.stderr)

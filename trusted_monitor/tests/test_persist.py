@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from trusted_monitor import persist
+from trusted_monitor import persist, public
 
 
 CAPTURED = datetime(2026, 10, 4, 8, 0, tzinfo=timezone.utc).isoformat()
@@ -80,6 +80,32 @@ class PersistenceTests(unittest.TestCase):
         self.assertNotIn("secret provider text", json.dumps(snapshot))
         source["sources"]["youtube_public"] = {"status": "unavailable"}
         self.assertIsNone(persist.extract(source, "37190534024-1"))
+
+    def test_exact_public_pair_gets_one_append_only_proof(self) -> None:
+        now = datetime.now(timezone.utc)
+        due = now - timedelta(hours=1)
+        youtube = "https://www.youtube.com/shorts/ABCDEFGHIJK"
+        instagram = "https://www.instagram.com/reel/DeCLARCCcgC/"
+        episode = {"episode_id": "ep022", "due_at": due.isoformat(), "posts": {
+            "youtube": {"post_id": "yt-22", "status": "sent", "public_link": youtube},
+            "instagram": {"post_id": "ig-22", "status": "sent", "public_link": instagram}}}
+        source = {"captured_at": now.isoformat(), "sources": {
+            "signed_pairs": {"schema": "mool_katha_signed_pair_monitor_v1", "episodes": [episode]},
+            "public_posts": {"schema": "mool_katha_public_delivery_monitor_v1", "status": "ok",
+                             "episodes": [{"episode_id": "ep022", "proof_status": "fresh",
+                                           "verified_at": now.isoformat(), "youtube_id": "ABCDEFGHIJK",
+                                           "instagram_shortcode": "DeCLARCCcgC",
+                                           "youtube_visible": True, "instagram_visible": True}]}}}
+        with tempfile.TemporaryDirectory() as location:
+            folder = Path(location) / "proofs"
+            saved = persist.write_public_proofs(source, folder)
+            self.assertEqual(len(saved), 1)
+            self.assertEqual(persist.write_public_proofs(source, folder), [])
+            self.assertEqual(public.load_proofs(folder)["ep022"]["buffer_post_ids"],
+                             {"youtube": "yt-22", "instagram": "ig-22"})
+            source["sources"]["signed_pairs"]["episodes"][0]["posts"]["instagram"]["post_id"] = "other"
+            with self.assertRaisesRegex(persist.PersistError, "archived public proof differs"):
+                persist.write_public_proofs(source, folder)
 
 
 if __name__ == "__main__":
