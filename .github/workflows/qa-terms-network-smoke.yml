@@ -1,0 +1,63 @@
+name: Check official QA terms HTTPS from cloud runner
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Compare pinned TLS with runner-supported HTTPS
+        run: |
+          python3 - <<'PY'
+          import http.client
+          import ipaddress
+          import socket
+          import ssl
+          import urllib.request
+
+          host = 'ai.google.dev'
+          target = '/gemini-api/terms'
+          answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+          ips = sorted({row[4][0] for row in answers})
+          if not ips or not all(ipaddress.ip_address(ip).is_global for ip in ips):
+              raise SystemExit('official terms host DNS is unsafe or unavailable')
+          print(f'public_ip_count={len(ips)} proxy_configured={bool(urllib.request.getproxies())}')
+
+          class Pinned(http.client.HTTPSConnection):
+              def __init__(self, ip):
+                  super().__init__(host, timeout=10, context=ssl.create_default_context())
+                  self.ip = ip
+
+              def connect(self):
+                  sock = socket.create_connection((self.ip, 443), self.timeout)
+                  self.sock = self._context.wrap_socket(sock, server_hostname=host)
+
+          for index, ip in enumerate(ips[:4], 1):
+              connection = Pinned(ip)
+              try:
+                  connection.request('GET', target, headers={
+                      'Host': host, 'User-Agent': 'MoolKathaTrustedQA/1.0',
+                      'Accept': 'text/html,text/plain', 'Accept-Encoding': 'identity',
+                  })
+                  response = connection.getresponse()
+                  response.read(1024)
+                  print(f'direct_attempt_{index}=http_{response.status}')
+              except (OSError, TimeoutError, http.client.HTTPException) as exc:
+                  print(f'direct_attempt_{index}={type(exc).__name__}')
+              finally:
+                  connection.close()
+
+          try:
+              request = urllib.request.Request('https://' + host + target,
+                                               headers={'User-Agent': 'MoolKathaTrustedQA/1.0'})
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  response.read(1024)
+                  print(f'runner_https=http_{response.status}')
+          except Exception as exc:
+              print(f'runner_https={type(exc).__name__}')
+          PY
