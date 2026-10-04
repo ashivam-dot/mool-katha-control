@@ -15,7 +15,7 @@ from urllib.parse import quote, urlsplit
 
 
 REPOSITORY = "ashivam-dot/mool-katha-control"
-QA_SHA = "b22f28b3beeb78c6905a069abaec9166df4765ea"
+QA_SHA = "17b8162c0fee22c7a0a5427b449f3b263b5648d5"
 WATCHES = {
     "Control analytics and watchdog": ("control-monitor", "control-monitor.yml", "main", None),
     "Dispatch pinned independent QA": ("qa-dispatch", "dispatch-release-qa.yml", "main", None),
