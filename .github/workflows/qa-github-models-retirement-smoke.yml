@@ -1,0 +1,38 @@
+name: Check historical GitHub Models endpoint availability
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Probe historical catalog with Actions token
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get('GITHUB_TOKEN', '')
+          if not token:
+              raise SystemExit('Actions token unavailable')
+          request = urllib.request.Request(
+              'https://models.github.ai/catalog/models?limit=1',
+              headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/json'},
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  print(f'catalog_http_status={response.status}')
+          except urllib.error.HTTPError as exc:
+              print(f'catalog_http_status={exc.code}')
+          except (OSError, urllib.error.URLError) as exc:
+              print(f'catalog_transport_class={type(exc).__name__}')
+          PY
