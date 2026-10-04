@@ -25,6 +25,9 @@ from .common import (QaHold, digest_file, expect_sha, gemini_text_response, json
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
 MAX_GEMINI_AUDIO_BYTES = 10 * 1024 * 1024
 MAX_GEMINI_RESPONSE_BYTES = 5 * 1024 * 1024
+# A 30-second window omitted spoken ep022 beats that a 15-second window recovered.
+# The recognizer still receives and processes the complete final WAV, with VAD off.
+WHISPER_CHUNK_SECONDS = 15
 
 
 def _asr_segments(raw: Any, duration: float, provider: str) -> tuple[list[dict], str]:
@@ -148,7 +151,7 @@ def whisper_full_audio(audio_path: Path, duration: float, video_sha256: str,
     try:
         iterator, info = model.transcribe(str(audio_path), language="hi", beam_size=5,
                                           temperature=0, condition_on_previous_text=False,
-                                          vad_filter=False)
+                                          vad_filter=False, chunk_length=WHISPER_CHUNK_SECONDS)
         raw_segments = [{"id": segment.id, "start": segment.start, "end": segment.end,
                          "text": segment.text, "avg_logprob": segment.avg_logprob,
                          "no_speech_prob": segment.no_speech_prob,
@@ -162,7 +165,8 @@ def whisper_full_audio(audio_path: Path, duration: float, video_sha256: str,
         "language": info.language, "language_probability": info.language_probability,
         "duration": info.duration, "duration_after_vad": info.duration_after_vad},
         "settings": {"language": "hi", "beam_size": 5, "temperature": 0,
-                     "condition_on_previous_text": False, "vad_filter": False}}
+                     "condition_on_previous_text": False, "vad_filter": False,
+                     "chunk_length_seconds": WHISPER_CHUNK_SECONDS}}
     segments, joined = _asr_segments(raw_segments, duration, "Whisper")
     library_version = metadata.version("faster-whisper")
     version = f"{model_repo}@{revision}; faster-whisper {library_version}; model.bin sha256:{model_hash}"
