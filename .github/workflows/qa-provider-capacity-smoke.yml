@@ -10,6 +10,7 @@ on:
         options:
           - tiny
           - exact
+          - audio_packet
 
 permissions:
   actions: read
@@ -36,7 +37,13 @@ jobs:
           run-id: 37200191200
           github-token: ${{ github.token }}
       - name: Probe selected QA model request without logging provider body
+        if: inputs.kind != 'audio_packet'
         env:
           QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
           QA_PROBE_KIND: ${{ inputs.kind }}
         run: python .github/scripts/qa_provider_capacity_probe.py
+      - name: Probe exact ep022 audio and representative final packet once
+        if: inputs.kind == 'audio_packet'
+        env:
+          QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+        run: python .github/scripts/qa_audio_packet_capacity_probe.py
