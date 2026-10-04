@@ -20,6 +20,7 @@ from .audio_quality import AudioQualityObservation
 from .candidate import Candidate
 from .common import (QaHold, digest_file, gemini_text_response, json_object,
                      require, write_bytes_new)
+from .frame_audit import FrameBatchEvidence
 from .media import VisualEvidence
 from .observations import ObservationSet
 from .terms import required_beat_terms
@@ -36,7 +37,9 @@ mention its topic. Verify printed labels and cross-edition semantic alignment. A
 source, uncertain commercial or derivative rights, missing attribution, offensive or meaning-
 changing speech, sacred-name or source-reference disagreement, or unreadable visual is a hold.
 Two recognizers can agree incorrectly; do not claim you heard the audio. A full FFmpeg decode
-is not full visual viewing; say you inspected the saved samples. Be cautious about captions,
+is not full visual viewing. A separate frame model reviewed the disclosed non-contiguous
+sampled sheets in the packet; do not claim that you saw its sheets or that a model inspected
+every decoded frame. Say you directly inspected the supplied contact sheet and crops. Be cautious about captions,
 first-frame source, artwork labels, timing and visual defects. Never grant human approval.
 Output exactly one JSON object. For any doubt use decision 'hold' and name unresolved items.
 """
@@ -81,6 +84,7 @@ def _animation_preview(path: Path) -> bytes:
 
 def _prompt_packet(candidate: Candidate, observations: ObservationSet,
                    asr_results: list[dict], visual: VisualEvidence,
+                   frames: FrameBatchEvidence,
                    quality: AudioQualityObservation) -> dict[str, Any]:
     return {
         "episode_id": candidate.episode_id, "video_sha256": candidate.hashes["video"],
@@ -119,7 +123,13 @@ def _prompt_packet(candidate: Candidate, observations: ObservationSet,
                             "contact_sheet_sha256": visual.contact_sheet_sha256,
                             "sample_times_seconds": visual.sample_times_seconds,
                             "beat_sample_times": visual.beat_sample_times,
-                            "readable_crops": visual.readable_crops},
+                            "readable_crops": visual.readable_crops,
+                            "separate_frame_model_review": {
+                                "kind": frames.review["kind"],
+                                "model_visual_coverage": frames.review["model_visual_coverage"],
+                                "checked_indices_by_sheet": [batch["checked_indices"]
+                                                             for batch in frames.review["batches"]],
+                                "all_frame_audit_sha256": frames.review["all_frame_audit_sha256"]}},
     }
 
 
@@ -152,6 +162,10 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "unresolved_items, verified_all_claims, verified_all_assets, verified_asr_and_decoded_frames, "
         "verified_no_unresolved_concerns). Every note and reason should give concrete evidence. "
         "The full-audio quality observations are a separate model judgment, not human listening. "
+        "The separate frame model inspected only the stated selected frame indices. You inspect the "
+        "supplied contact sheet and full-size crops; do not claim direct inspection of its sheets or "
+        "model visual coverage of all decoded frames. 'verified_asr_and_decoded_frames' refers to "
+        "the full FFmpeg decode and recognizer evidence, not all-frame model viewing. "
         "Quote source/license excerpts verbatim from supplied fetched contexts; they must exist in saved "
         "snapshots. Be explicit about any uncertainty. Do not invent page contents or recognizer text.\n\n"
         + json.dumps(packet, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -166,6 +180,7 @@ class ReviewModelResult:
 
 def gemini_independent_review(candidate: Candidate, observations: ObservationSet,
                               asr_results: list[dict], visual: VisualEvidence,
+                              frames: FrameBatchEvidence,
                               quality: AudioQualityObservation,
                               private_audit_dir: Path, *, key: str, model: str) -> ReviewModelResult:
     require(isinstance(key, str) and bool(key.strip()), "independent Gemini reviewer key is unavailable")
@@ -173,7 +188,9 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
             "independent reviewer model must be explicitly named")
     candidate.recheck()
     quality.recheck(candidate.hashes["video"])
-    packet = _prompt_packet(candidate, observations, asr_results, visual, quality)
+    frames.recheck(candidate.hashes["video"], visual.decoder["decoded_frame_count"],
+                   candidate.manifest["beats"], candidate.check["duration"])
+    packet = _prompt_packet(candidate, observations, asr_results, visual, frames, quality)
     parts: list[dict[str, Any]] = [{"text": _output_instructions(packet)}]
 
     def add_image(label: str, data: bytes) -> None:

@@ -18,13 +18,14 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from PIL import Image, ImageChops, ImageStat
 
 from trusted_qa.frame_audit import (FRAME_BYTES, HEIGHT, WIDTH, _raw_scaled_frames,
-                                    _sheet, _timestamps)
+                                    _sheet, _timestamps, audit_and_review_frames)
 from trusted_qa.sample_plan import plan_sampled_frames
 
 
@@ -33,10 +34,11 @@ VIDEO_SHA256 = "90e61a514265a54e45a76b919f21cce563599365816933ab1cf101590946d70b
 MODEL = "gemini-3.8-flash"
 MAX_RESPONSE_BYTES = 1024 * 1024
 EXPECTED_INDICES = [
-    1, 11, 12, 56, 101, 146, 190, 191, 192, 230, 267, 305, 343, 344,
-    391, 438, 468, 469, 500, 532, 533, 534, 578, 623, 667, 712, 713,
-    714, 758, 802, 846, 890, 891, 892, 952, 982, 1012, 1013, 1014,
-    1074, 1104, 1135, 1136, 1177, 1219, 1260, 1301, 1302, 1311,
+    1, 11, 12, 13, 57, 101, 146, 190, 191, 192, 193, 230, 267, 305,
+    343, 344, 345, 368, 392, 415, 438, 468, 469, 470, 501, 532, 533,
+    534, 535, 579, 623, 667, 712, 713, 714, 715, 758, 802, 846, 890,
+    891, 892, 893, 922, 952, 982, 1012, 1013, 1014, 1015, 1044, 1074,
+    1104, 1135, 1136, 1137, 1178, 1219, 1260, 1301, 1302, 1303, 1311,
 ]
 EXPECTED_JUMPS = [191, 344, 469, 533, 713, 891, 1013, 1136]
 RESPONSE_KEYS = {"decision", "uncertainty", "checked_indices", "defect_indices", "notes"}
@@ -223,11 +225,49 @@ def _post(number: int, data: bytes, indices: list[int], key: str) -> tuple[str, 
     return f"http_{code}", valid and decision == "clear" and uncertainty == "low" and defect_count == 0
 
 
+def _mock_full_audit() -> None:
+    """Exercise the actual v2 audit and evidence recheck without any provider call."""
+    manifest = json.loads((EPISODE / "work/manifest.json").read_text(encoding="utf-8"))
+
+    def fake_model(_sheet: bytes, records: list[dict], _private: Path,
+                   *, key: str, model: str, batch_number: int):
+        indices = [record["index"] for record in records]
+        call = {"provider": "synthetic mock only", "model": model,
+                "model_version": "synthetic mock only",
+                "request_id": f"synthetic-frame-{batch_number:04d}"}
+        verdict = {"decision": "clear", "uncertainty": "low",
+                   "checked_indices": indices, "defect_indices": [],
+                   "notes": "Synthetic mock verdict for the deterministic gate smoke only.",
+                   "model_call": call, "request_sha256": "a" * 64,
+                   "response_sha256": "b" * 64}
+        return verdict, call
+
+    with tempfile.TemporaryDirectory(prefix="ep022-v2-mock-audit-") as directory:
+        episode = Path(directory) / "episode"
+        private = Path(directory) / "private"
+        episode.mkdir()
+        private.mkdir()
+        with patch("trusted_qa.frame_audit._model_batch", side_effect=fake_model):
+            evidence = audit_and_review_frames(
+                EPISODE / "ep022.mp4", episode, private, VIDEO_SHA256, 1311, 43.7,
+                manifest["beats"], key="synthetic-no-provider", model="gemini-synthetic-mock")
+        plan = evidence.review["sample_plan"]
+        if plan["sampled_indices"] != EXPECTED_INDICES or len(evidence.sheet_paths) != 2:
+            raise SystemExit("v2 full-frame mock audit changed its exact sample selection")
+        print(f"v2_full_frame_audit=pass model_verdict=synthetic_mock_only "
+              f"selected_frames={plan['sampled_frame_count']} "
+              f"selection_sha256={evidence.review['sample_plan_sha256']}")
+
+
 def main() -> None:
+    sheets = build_sheets()
+    if os.environ.get("QA_PROBE_SEND_PROVIDER") != "true":
+        _mock_full_audit()
+        print("provider_call=skipped")
+        return
     key = os.environ.get("QA_GEMINI_API_KEY", "")
     if not key:
         raise SystemExit("QA model credential is unavailable")
-    sheets = build_sheets()
     first, records = sheets[0]
     status, accepted = _post(1, _body(first, records), [r["index"] for r in records], key)
     if accepted:

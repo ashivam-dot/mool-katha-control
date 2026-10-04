@@ -6,7 +6,7 @@ import unittest
 
 from trusted_qa.common import QaHold
 from trusted_qa.sample_plan import (MAX_MODEL_FRAMES, MAX_SAMPLE_GAP_SECONDS,
-                                    plan_sampled_frames)
+                                    canonical_sha256, plan_sampled_frames)
 
 
 class SamplePlanTests(unittest.TestCase):
@@ -21,17 +21,20 @@ class SamplePlanTests(unittest.TestCase):
         plan = plan_sampled_frames(frames, [{"start": start, "end": end}
                                             for start, end in spans], 43.7)
         selected = set(plan["sampled_indices"])
-        self.assertEqual(plan["kind"], "deterministic_sample_plan_v1")
+        self.assertEqual(plan["kind"], "deterministic_sample_plan_v2")
+        self.assertEqual(plan["selection_rule_sha256"], canonical_sha256(plan["selection_rule"]))
+        self.assertEqual(plan["sampled_frame_count"], len(selected))
+        self.assertEqual(plan["unsampled_frame_count"], 1311 - len(selected))
         self.assertLessEqual(len(selected), MAX_MODEL_FRAMES)
         self.assertEqual((plan["sampled_indices"][0], plan["sampled_indices"][-1]),
                          (1, 1311))
         self.assertLessEqual(plan["max_gap_seconds"], MAX_SAMPLE_GAP_SECONDS)
         self.assertEqual({item["index"] for item in plan["anomalies"]}, cuts)
         for cut in cuts:
-            self.assertTrue({cut - 1, cut}.issubset(selected))
+            self.assertTrue({cut - 1, cut, cut + 1}.issubset(selected))
         self.assertEqual(len(plan["beat_midpoints"]), len(spans))
         self.assertTrue(all(row["index"] in selected for row in plan["beat_midpoints"]))
-        self.assertTrue(all({row["before_index"], row["after_index"]}.issubset(selected)
+        self.assertTrue(all({row["before_index"], row["after_index"], row["next_index"]}.issubset(selected)
                             for row in plan["beat_boundary_pairs"]))
 
     def test_color_jump_and_extreme_luma_require_model_samples(self) -> None:

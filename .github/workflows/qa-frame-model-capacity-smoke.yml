@@ -1,7 +1,13 @@
-name: Probe exact ep022 sampled frame capacity
+name: Check exact ep022 sampled frame gate
 
 on:
   workflow_dispatch:
+    inputs:
+      send_provider_request:
+        description: Send at most two QA-key model requests after a provider cooldown
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   actions: read
@@ -30,7 +36,8 @@ jobs:
           path: qa-output
           run-id: 37200191200
           github-token: ${{ github.token }}
-      - name: Regenerate samples and probe at most two calls
+      - name: Mock v2 audit and optionally probe at most two calls
         env:
           QA_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+          QA_PROBE_SEND_PROVIDER: ${{ inputs.send_provider_request }}
         run: python .github/scripts/qa_sampled_frame_probe.py

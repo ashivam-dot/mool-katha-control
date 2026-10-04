@@ -191,9 +191,12 @@ def _qa_run(candidate: Candidate, run: dict[str, Any], frame_batches: FrameBatch
     expected_id = f"agent:github_actions/{run['repository']}/{run['run_id']}/{run['run_attempt']}"
     require(candidate.qa_agent_id == expected_id and candidate.producer_agent_id != expected_id,
             "QA identity differs from the cloud run or producer")
+    frame_batches.recheck(candidate.hashes["video"],
+                          frame_batches.review["decoded_frame_count"],
+                          candidate.manifest["beats"], candidate.check["duration"])
     batches = frame_batches.review.get("batches")
     require(isinstance(model_calls, list) and isinstance(batches, list) and
-            1 <= len(batches) <= 112 and
+            1 <= len(batches) <= 2 and
             len(frame_batches.model_calls) == len(batches) and
             model_calls[:len(batches)] == frame_batches.model_calls and
             len(model_calls) == len(batches) + 2 and
@@ -237,7 +240,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                 "ASR result changed after review")
     require(digest_file(candidate.episode_dir / visual.contact_sheet_file) == visual.contact_sheet_sha256,
             "contact sheet changed after visual review")
-    frame_batches.recheck(candidate.hashes["video"], visual.decoder["decoded_frame_count"])
+    frame_batches.recheck(candidate.hashes["video"], visual.decoder["decoded_frame_count"],
+                          candidate.manifest["beats"], candidate.check["duration"])
     for crop in visual.readable_crops:
         require(digest_file(candidate.episode_dir / crop["file"]) == crop["sha256"],
                 "readable crop changed after visual review")
@@ -388,7 +392,13 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     "contact_sheet_sha256": visual.contact_sheet_sha256,
                     "sample_times_seconds": visual.sample_times_seconds,
                     "readable_crops": visual.readable_crops, "critical_defects": [],
+                    "model_visual_coverage": frame_batches.review["model_visual_coverage"],
                     **{name: True for name in VIDEO_CHECKS}}
+    coverage = frame_batches.review["model_visual_coverage"]
+    scope_note = (f" Separate frame model visual inspection covered "
+                  f"{coverage['selected_frames']}/{coverage['decoded_frames']} selected frames; "
+                  "unselected frames received deterministic pixel and temporal checks only.")
+    video_review["notes"] += scope_note
 
     warnings = candidate.check["warnings"]
     raw_warnings = decision["qc_warning_dispositions"]
@@ -416,6 +426,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     _checks(release_item, RELEASE_CHECKS, "release review")
     release_review = {**_verdict(qa_id, "agent_independent_release_review", reviewed_at, release_item),
                       **{name: True for name in RELEASE_CHECKS}}
+    release_review["notes"] += scope_note
     completed_at = utc_now()
     review = {"kind": "agent_episode_qa_v1", "episode_id": candidate.episode_id,
               "production_agent_id": candidate.producer_agent_id,
