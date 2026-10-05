@@ -10,7 +10,7 @@ from pathlib import Path
 from trusted_feedback.__main__ import FeedbackError, artifact_name, candidates, inspect_all, verify_run
 
 REPO = "ashivam-dot/mool-katha-control"
-TAG = "qa-v21"
+TAG = "qa-v22"
 SHA = "7" * 40
 COMMIT = "b" * 40
 ROWS = [{"episode_id": "ep020", "video_sha256": "a" * 64, "source_commit": COMMIT},

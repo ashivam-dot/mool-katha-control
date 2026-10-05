@@ -352,6 +352,11 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     "fetched rights response changed after observation")
             require(digest_file(candidate.episode_dir / rights.snapshot_ref) == rights.snapshot_sha256,
                     "fetched rights snapshot changed after observation")
+    for proof in observations.asset_origins.values():
+        require(digest_file(candidate.episode_dir / proof.page.response_ref) == proof.page.response_sha256 and
+                digest_file(candidate.episode_dir / proof.page.snapshot_ref) == proof.page.snapshot_sha256 and
+                digest_file(candidate.episode_dir / proof.download.response_ref) == proof.download.response_sha256,
+                "fetched origin page or official file changed after observation")
     decision = model.decision
     reviewed_at = utc_now()
     qa_id = candidate.qa_agent_id
@@ -423,9 +428,14 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
             require(len(rights_fetch["provenance_excerpt"].strip()) >= 20 and
                     rights_fetch["content_sha256"] == asset["sha256"],
                     f"asset {identity}: internal provenance is incomplete")
-        asset_findings.append({**_verdict(qa_id, "agent_checked_origin_and_rights", reviewed_at, item),
-                               "id": identity, "sha256": asset["sha256"],
-                               **{name: True for name in ASSET_CHECKS}, "rights_fetch": rights_fetch})
+        finding = {**_verdict(qa_id, "agent_checked_origin_and_rights", reviewed_at, item),
+                   "id": identity, "sha256": asset["sha256"],
+                   **{name: True for name in ASSET_CHECKS}, "rights_fetch": rights_fetch}
+        if str(asset.get("origin", "")).startswith("https://"):
+            proof = observations.asset_origins.get(identity)
+            require(proof is not None, f"asset {identity}: public object has no origin proof")
+            finding["origin_proof"] = proof.record()
+        asset_findings.append(finding)
 
     audio_keys = AUDIO_CHECKS | {"beat_reconciliation", "speech_difference_dispositions"}
     transformed = "narration_transform" in candidate.manifest

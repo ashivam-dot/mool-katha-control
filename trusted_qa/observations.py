@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote, urlsplit
 
 from .candidate import Candidate
 from .common import QaHold, digest_file, require, utc_now, write_json_new
-from .fetch import FetchObservation, _request_identity, fetch_observation, text_window
+from .fetch import (FetchObservation, FileDownload, _request_identity, download_file, fetch_observation,
+                    text_window, visible_links)
 
 
 @dataclass(frozen=True)
@@ -16,6 +19,60 @@ class ObservationSet:
     claim_pages: dict[str, dict[str, FetchObservation]]
     asset_rights: dict[str, FetchObservation | dict[str, Any]]
     review_packet: dict[str, Any]
+    asset_origins: dict[str, OriginProof] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class OriginProof:
+    """A public object page and the official file whose bytes equal the used asset."""
+    page: FetchObservation
+    links: list[str]
+    download: FileDownload
+    source_object_id: str
+    rights_basis: str
+
+    def record(self) -> dict[str, Any]:
+        page = self.page
+        return {"source_object_id": self.source_object_id, "rights_basis": self.rights_basis,
+                "origin_fetch": {"url": page.url, "fetched_at": page.fetched_at,
+                                 "http_status": page.http_status, "final_url": page.final_url,
+                                 "content_type": page.content_type,
+                                 "response_sha256": page.response_sha256, "response_ref": page.response_ref,
+                                 "snapshot_ref": page.snapshot_ref, "snapshot_sha256": page.snapshot_sha256,
+                                 "visible_links": list(self.links)},
+                "exact_file": {"method": "official_download", "sha256": self.download.response_sha256,
+                               "official_asset_url": self.download.url,
+                               "response_ref": self.download.response_ref}}
+
+
+def origin_proof(identity: str, asset: dict[str, Any], page: FetchObservation, rights_text: str,
+                 episode_dir: Path, private_audit_dir: Path) -> OriginProof:
+    """Bind an HTTPS asset to its object page and an official download of the exact used bytes."""
+    object_id = asset.get("source_object_id")
+    require(isinstance(object_id, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{5,127}", object_id),
+            f"asset {identity} has no source object ID")
+    final = urlsplit(page.final_url)
+    require(page.final_url.startswith("https://") and
+            object_id.casefold() in unquote(final.path + "?" + final.query).casefold() and
+            object_id.casefold() in page.text.casefold(),
+            f"asset {identity}: object page does not identify object {object_id}")
+    license_name = asset.get("license")
+    require(object_id.casefold() in rights_text.casefold() and isinstance(license_name, str) and
+            license_name.casefold() in rights_text.casefold(),
+            f"asset {identity}: rights page does not name the object and its licence")
+    official = asset.get("official_asset_url")
+    links = visible_links(page, episode_dir)
+    require(isinstance(official, str) and official.startswith("https://") and
+            (official in links or official in page.text),
+            f"asset {identity}: object page does not link the official file")
+    require(asset.get("rights_url") == asset.get("origin") or
+            any(isinstance(value, str) and value.casefold() in rights_text.casefold()
+                for value in (asset.get("origin"), asset.get("sha256"), official)),
+            f"asset {identity}: rights page is not linked to this exact object")
+    download = download_file(official, episode_dir, private_audit_dir)
+    require(download.response_sha256 == asset["sha256"],
+            f"asset {identity}: official file bytes differ from the used asset")
+    return OriginProof(page, links, download, object_id, asset["rights_basis"])
 
 
 def require_distinct_claim_pages(identity: str, pages: dict[str, FetchObservation]) -> None:
@@ -84,6 +141,7 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
                              "correspondence": claim.get("correspondence"), **visible})
 
     asset_rights: dict[str, FetchObservation | dict[str, Any]] = {}
+    asset_origins: dict[str, OriginProof] = {}
     asset_packet: list[dict[str, Any]] = []
     for identity, asset in candidate.assets.items():
         exact_path = candidate.asset_paths[identity]
@@ -114,6 +172,12 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
                         "provenance": provenance}
         else:
             raise QaHold(f"asset {identity} has no inspectable rights evidence")
+        if str(asset.get("origin", "")).startswith("https://"):
+            rights_page = asset_rights[identity]
+            require(isinstance(rights_page, FetchObservation),
+                    f"asset {identity}: a public object needs a fetched rights page")
+            asset_origins[identity] = origin_proof(identity, asset, observe(asset["origin"]), rights_page.text,
+                                                   candidate.episode_dir, private_audit_dir)
         asset_packet.append({"id": identity, "role": asset["role"], "file": asset["file"],
                              "sha256": asset["sha256"], "origin": asset.get("origin"),
                              "creator": asset.get("creator"), "license": asset.get("license"),
@@ -125,4 +189,4 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
     packet = {"episode_id": candidate.episode_id, "video_sha256": candidate.hashes["video"],
               "claims": claim_packet, "assets": asset_packet}
     write_json_new(private_audit_dir / "observations.json", packet)
-    return ObservationSet(claim_pages, asset_rights, packet)
+    return ObservationSet(claim_pages, asset_rights, packet, asset_origins)

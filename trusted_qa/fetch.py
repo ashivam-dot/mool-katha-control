@@ -284,6 +284,64 @@ def fetch_observation(url: str, episode_dir: Path, private_audit_dir: Path) -> F
     raise QaHold("source exceeded HTTPS redirect limit")
 
 
+class _Links(HTMLParser):
+    def __init__(self, base: str) -> None:
+        super().__init__(convert_charrefs=True)
+        self.base = base
+        self.links: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        for name, value in attrs:
+            if name in ("href", "src") and value:
+                self.links.append(urljoin(self.base, value.strip()))
+
+
+def visible_links(page: FetchObservation, episode_dir: Path) -> list[str]:
+    """HTTPS links a saved page exposes: anchors and images of HTML, or URLs written in its text."""
+    raw = (episode_dir / page.response_ref).read_bytes()
+    found: list[str] = []
+    if page.content_type.split(";", 1)[0].strip().lower() in ("text/html", "application/xhtml+xml"):
+        parser = _Links(page.final_url)
+        parser.feed(raw.decode("utf-8", errors="replace"))
+        found.extend(parser.links)
+    found.extend(re.findall(r"https://[^\s\"'<>\\]+", page.text))
+    links = [link for link in dict.fromkeys(found)
+             if link.startswith("https://") and len(link) <= 4096
+             and not any(ord(character) < 32 for character in link)]
+    return links[:4096]
+
+
+@dataclass(frozen=True)
+class FileDownload:
+    url: str
+    final_url: str
+    response_sha256: str
+    response_ref: str
+
+
+def download_file(url: str, episode_dir: Path, private_audit_dir: Path) -> FileDownload:
+    """Download an official asset file now and keep its exact bytes under their SHA-256."""
+    current = url
+    for _ in range(MAX_REDIRECTS + 1):
+        status, headers, raw = _request_once(current)
+        if status in (301, 302, 303, 307, 308):
+            location = headers.get("location")
+            require(bool(location), "official file redirect has no location")
+            current = urljoin(current, location)
+            _safe_url(current)
+            continue
+        require(status == 200, f"official file download returned HTTP {status}")
+        response_sha = digest_bytes(raw)
+        response_ref = f"agent-qa-responses/{response_sha}.bin"
+        for path in (episode_dir / response_ref, private_audit_dir / "http" / f"{response_sha}.bin"):
+            if path.exists():
+                require(path.read_bytes() == raw, "official file digest collision")
+            else:
+                write_bytes_new(path, raw)
+        return FileDownload(url, current, response_sha, response_ref)
+    raise QaHold("official file exceeded HTTPS redirect limit")
+
+
 def text_window(snapshot: str, needles: list[str], max_chars: int = 12000) -> str:
     """Give the reviewer bounded page context around a claimed passage or grant."""
     positions = [snapshot.casefold().find(needle.casefold()) for needle in needles

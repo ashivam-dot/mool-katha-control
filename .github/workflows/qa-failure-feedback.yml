@@ -1,4 +1,4 @@
-# Only an exact content hold from the immutable qa-v21 run may park its draft.
+# Only an exact content hold from the immutable qa-v22 run may park its draft.
 # The inspector has no source write key; the writer never opens QA artifacts.
 name: Independent QA failure feedback
 
@@ -32,7 +32,7 @@ jobs:
       github.event.workflow_run.event == 'workflow_dispatch' &&
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.head_repository.full_name == 'ashivam-dot/mool-katha-control' &&
-      github.event.workflow_run.head_branch == 'qa-v21' &&
+      github.event.workflow_run.head_branch == 'qa-v22' &&
       github.event.workflow_run.head_sha == '95a8e895b953141d6e40fabc5380d9d9518cfc62'))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -60,7 +60,7 @@ jobs:
             printf 'id=%s\nattempt=%s\n' "$EVENT_RUN_ID" "$EVENT_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
           else
             python -m trusted_feedback verify-run --run-id "$INPUT_RUN_ID" --repo "$GITHUB_REPOSITORY" \
-              --tag 'qa-v21' --sha '95a8e895b953141d6e40fabc5380d9d9518cfc62' --github-output "$GITHUB_OUTPUT"
+              --tag 'qa-v22' --sha '95a8e895b953141d6e40fabc5380d9d9518cfc62' --github-output "$GITHUB_OUTPUT"
           fi
       - name: Download exact run discovery
         id: discovery

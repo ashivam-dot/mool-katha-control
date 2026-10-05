@@ -27,7 +27,7 @@ def valid_qa_workflow_ref(repository: str, workflow_ref: str) -> bool:
     if repository != QA_REPOSITORY or not isinstance(workflow_ref, str):
         return False
     pattern = (re.escape(QA_REPOSITORY) +
-               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v21)\Z")
+               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v22)\Z")
     return re.fullmatch(pattern, workflow_ref) is not None
 
 
