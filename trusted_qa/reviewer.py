@@ -154,7 +154,9 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "decision 'accepted' if resolved, notes, reason, unresolved_items; speech warnings also need "
         "two ASR citations and four false critical flags); release_review (decision, notes, "
         "unresolved_items, verified_all_claims, verified_all_assets, verified_asr_and_decoded_frames, "
-        "verified_no_unresolved_concerns). Every note and reason should give concrete evidence. "
+        "verified_no_unresolved_concerns). Every note and reason is at least one full sentence of 40 or more "
+        "characters giving concrete evidence. Each ASR citation is exactly {asr_file, segment_indices, "
+        "asr_excerpt}; the four critical flags sit on the beat, difference or warning itself. "
         "Use decision 'approved' (or 'accepted' for QC speech differences and warnings) only when clear, "
         "otherwise 'hold'. Give license_excerpt only for assets whose rights come from a fetched page, "
         "checked_cross_edition_alignment and alignment_notes only for claims with correspondence, and "
@@ -185,7 +187,8 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
         return {name: {"type": "boolean"} for name in sorted(names)}
 
     def exactly(item: dict[str, Any], count: int) -> dict[str, Any]:
-        return {"type": "array", "items": item, "minItems": count, "maxItems": count}
+        # Exact item counts make the decoding constraint too large to serve; the assembler checks them.
+        return {"type": "array", "items": item}
 
     files = sorted({item["file"] for item in packet["full_final_audio_asr"]})
     citation = _object({"asr_file": {"type": "string", "enum": files},

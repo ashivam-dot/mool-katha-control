@@ -56,8 +56,48 @@ def _without(value: Any, names) -> Any:
     return {k: v for k, v in value.items() if k not in names} if isinstance(value, dict) else value
 
 
+_EXCERPT_NAMES = ("asr_excerpt", "verbatim_asr_excerpt", "verbatim_excerpt", "excerpt")
+
+
+def _citation(value: Any) -> Any:
+    if not isinstance(value, dict):
+        return value
+    excerpt = next((value[name] for name in _EXCERPT_NAMES if name in value), None)
+    indices = value.get("segment_indices", value.get("segment_index"))
+    if isinstance(indices, int) and not isinstance(indices, bool):
+        indices = [indices]
+    return {"asr_file": value.get("asr_file"), "segment_indices": indices, "asr_excerpt": excerpt}
+
+
+def _asr_item(value: Any) -> Any:
+    """Read the reviewer's ASR citations in the layouts it writes when no schema constrains it.
+
+    Critical flags placed on each citation are lifted to the item; any true flag still holds."""
+    if not isinstance(value, dict):
+        return value
+    item = dict(value)
+    if "beat_number" in item and "beat" not in item:
+        item["beat"] = item.pop("beat_number")
+    numbered = sorted(k for k in item if re.fullmatch(r"(?:asr_evidence|asr_citation)_[0-9]", k))
+    if numbered and "asr_evidence" not in item:
+        item["asr_evidence"] = [item.pop(k) for k in numbered]
+    raw = item.get("asr_evidence")
+    if isinstance(raw, list):
+        for name in CRITICAL_FLAGS:
+            found = [c[name] for c in raw if isinstance(c, dict) and name in c]
+            if name not in item and found:
+                item[name] = any(flag is not False for flag in found)
+        item["asr_evidence"] = [_citation(c) for c in raw]
+    return item
+
+
 def _semantic(value: Any, keys: set[str], label: str, *, decision: str = "approved") -> dict:
     item = _exact(value, BASE | keys, label)
+    reason, notes = item.get("reason"), item.get("notes")
+    if ("reason" in keys and isinstance(reason, str) and isinstance(notes, str)
+            and len(reason.strip()) < 30 and notes.strip()):
+        # A short label for the reason with the full explanation in notes is still the reviewer's reason.
+        item = {**item, "reason": f"{reason.strip().rstrip('.')}: {notes.strip()}"}
     said = str(item.get("decision", "")).strip().lower()
     if said in PASS_WORDS and item.get("unresolved_items") == []:
         item = {**item, "decision": decision}
@@ -370,7 +410,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     beat_reconciliation: list[dict] = []
     for index, (expected, raw) in enumerate(zip(candidate.script["beats"], raw_beats), 1):
         keys = {"beat", "asr_evidence"} | CRITICAL_FLAGS
-        item = _semantic(raw, keys, f"audio beat {index}")
+        item = _semantic(_asr_item(raw), keys, f"audio beat {index}")
         require(item["beat"] == index, f"audio beat {index} has a wrong beat number")
         _no_critical(item, f"audio beat {index}")
         terms = required_beat_terms(expected["text"])
@@ -389,7 +429,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
             "every exact QC speech difference needs a disposition")
     speech_dispositions: list[dict] = []
     for index, (expected, raw) in enumerate(zip(differences, raw_differences), 1):
-        item = _semantic(raw, {"difference", "reason", "asr_evidence"} | CRITICAL_FLAGS,
+        item = _semantic(_asr_item(raw), {"difference", "reason", "asr_evidence"} | CRITICAL_FLAGS,
                          f"speech difference {index}", decision="accepted")
         require(item["difference"] == expected and isinstance(item["reason"], str) and
                 len(item["reason"].strip()) >= 30,
@@ -434,8 +474,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     for index, (expected, raw) in enumerate(zip(warnings, raw_warnings), 1):
         speech_warning = expected.startswith("speech:") or "recognizer heard" in expected
         fields = {"warning", "reason"} | ({"asr_evidence"} | CRITICAL_FLAGS if speech_warning else set())
-        if not speech_warning:
-            raw = _without(raw, {"asr_evidence"} | CRITICAL_FLAGS)
+        raw = _asr_item(raw) if speech_warning else _without(_asr_item(raw), {"asr_evidence"} | CRITICAL_FLAGS)
         item = _semantic(raw, fields, f"QC warning {index}", decision="accepted")
         require(item["warning"] == expected and isinstance(item["reason"], str) and
                 len(item["reason"].strip()) >= 30,

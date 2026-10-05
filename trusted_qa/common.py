@@ -163,6 +163,15 @@ def valid_gemini_models(value: Any) -> bool:
     return isinstance(value, str) and GEMINI_MODELS.fullmatch(value) is not None
 
 
+def _error_message(exc: urllib.error.HTTPError) -> str:
+    """Gemini's short error text, which names the rejected request feature and carries no secret."""
+    try:
+        message = json.loads(exc.read(64_000)).get("error", {}).get("message", "")
+    except (ValueError, AttributeError, OSError):
+        return ""
+    return f": {message[:240]}" if isinstance(message, str) and message else ""
+
+
 class _NextModel(Exception):
     pass
 
@@ -178,7 +187,7 @@ def _post_once(request: urllib.request.Request, *, timeout: float, max_bytes: in
             if exc.code == 404:
                 raise _NextModel(f"{failure} (HTTP 404, model unavailable)") from exc
             if exc.code not in GEMINI_RETRY_CODES:
-                raise QaHold(f"{failure} (HTTP {exc.code})") from exc
+                raise QaHold(f"{failure} (HTTP {exc.code}{_error_message(exc)})") from exc
             if attempt == GEMINI_ATTEMPTS:
                 raise _NextModel(f"{failure} (HTTP {exc.code})") from exc
             delay = _retry_delay(exc)
