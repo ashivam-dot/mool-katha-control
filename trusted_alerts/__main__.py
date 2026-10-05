@@ -15,11 +15,11 @@ from urllib.parse import quote, urlsplit
 
 
 REPOSITORY = "ashivam-dot/mool-katha-control"
-QA_SHA = "73a3f0a95c0c1f95662f2a6bb151ce5be3055f3c"
+QA_SHA = "8ac9fce45b4192f0719162af6fd275c9ee93181b"
 WATCHES = {
     "Control analytics and watchdog": ("control-monitor", "control-monitor.yml", "main", None),
     "Dispatch pinned independent QA": ("qa-dispatch", "dispatch-release-qa.yml", "main", None),
-    "Signed independent QA": ("pinned-qa", "release-qa.yml", "qa-v14", QA_SHA),
+    "Signed independent QA": ("pinned-qa", "release-qa.yml", "qa-v15", QA_SHA),
     "Independent QA failure feedback": ("qa-feedback", "qa-failure-feedback.yml", "main", None),
     "Signed release from independent control": ("signed-release", "signed-release.yml", "main", None),
 }

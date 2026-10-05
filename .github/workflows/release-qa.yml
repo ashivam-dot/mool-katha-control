@@ -1,4 +1,4 @@
-# Frozen, independently reviewed candidate QA. Only the qa-v14 tag may sign.
+# Frozen, independently reviewed candidate QA. Only the qa-v15 tag may sign.
 # The final job transfers signed evidence to untrusted Modal storage; it has
 # neither the signing key nor any publisher credential.
 name: Signed independent QA
@@ -24,7 +24,7 @@ jobs:
       - name: Require pinned release tag
         shell: bash
         run: |
-          test "$GITHUB_REF" = 'refs/tags/qa-v14'
+          test "$GITHUB_REF" = 'refs/tags/qa-v15'
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false

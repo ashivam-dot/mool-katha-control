@@ -30,7 +30,7 @@ INSTAGRAM_HANDLE = "moolkatha.hindi"
 RELEASE_WORKFLOW = "signed-release.yml"
 QA_DISPATCH_WORKFLOW = "dispatch-release-qa.yml"
 QA_WORKFLOW = "release-qa.yml"
-QA_WORKFLOW_SHA = "73a3f0a95c0c1f95662f2a6bb151ce5be3055f3c"
+QA_WORKFLOW_SHA = "8ac9fce45b4192f0719162af6fd275c9ee93181b"
 QA_QUIET_HOURS = 10
 QA_DISPATCH_HOURS = (0, 6, 12, 18)
 QA_DISPATCH_MINUTE = 10
@@ -376,7 +376,7 @@ def qa(now: datetime, env: dict[str, str]) -> dict:
          lambda run: run.get("event") == "schedule" and run.get("head_branch") == "main"),
         (QA_WORKFLOW, "pinned independent QA",
          lambda run: run.get("event") == "workflow_dispatch" and
-         run.get("head_branch") == "qa-v14" and run.get("head_sha") == QA_WORKFLOW_SHA),
+         run.get("head_branch") == "qa-v15" and run.get("head_sha") == QA_WORKFLOW_SHA),
     ):
         url = f"https://api.github.com/repos/{REPOSITORY}/actions/workflows/{workflow_name}"
         workflow = _json(url, headers=headers)
