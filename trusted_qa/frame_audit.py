@@ -40,6 +40,12 @@ defect_indices and notes. Name every tile index in checked_indices.
 """
 
 
+def model_indices(frames: list[dict], start: int, end: int) -> list[int]:
+    """The frames of one contiguous sheet range that the model must see."""
+    return [index for index in range(start, end + 1)
+            if (index - 1) % MODEL_STRIDE == 0 or frames[index - 1]["delta_previous"] >= SCENE_CUT_DELTA]
+
+
 @dataclass(frozen=True)
 class FrameBatchEvidence:
     review: dict[str, Any]
@@ -128,8 +134,8 @@ def _reject_long_identical_span(frames: list[dict]) -> None:
 
 def _model_batch(sheet: bytes, records: list[dict], private_dir: Path,
                  *, key: str, model: str, batch_number: int) -> tuple[dict, dict[str, str]]:
-    start, end = records[0]["index"], records[-1]["index"]
-    prompt = (f"Inspect every labeled frame tile {start} through {end} in order. "
+    indices = [record["index"] for record in records]
+    prompt = (f"Inspect every labeled frame tile in order: {indices}. "
               "Use the printed indices, not guesses about sampling. Return exactly one JSON object: "
               "decision ('clear' or 'hold'), uncertainty ('low' or 'high'), "
               "checked_indices (all indices you inspected), defect_indices (indices with concerns), "
@@ -160,7 +166,7 @@ def _model_batch(sheet: bytes, records: list[dict], private_dir: Path,
     decision = json_object(decision_text, "frame batch decision")
     require(set(decision) == {"decision", "uncertainty", "checked_indices", "defect_indices", "notes"},
             "frame batch model response has an unexpected schema")
-    require(decision["checked_indices"] == list(range(start, end + 1)) and
+    require(decision["checked_indices"] == indices and
             decision["decision"] == "clear" and decision["uncertainty"] == "low" and
             decision["defect_indices"] == [] and isinstance(decision["notes"], str) and
             len(decision["notes"].strip()) >= 30,
@@ -199,8 +205,9 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
         require(raw_path.stat().st_size == decoded_count * FRAME_BYTES,
                 "scaled RGB frames differ from complete MP4 decode")
         frames: list[dict] = []
-        sheets: list[tuple[bytes, list[dict]]] = []
+        sheets: list[tuple[bytes, list[dict], int, int]] = []
         batch: list[tuple[dict, Any]] = []
+        range_start = 1
         previous_luma = None
         with raw_path.open("rb") as source:
             for index, seconds in enumerate(times, 1):
@@ -223,10 +230,13 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
                     batch.append((record, rgb))
                 previous_luma = luma
                 if len(batch) == BATCH_SIZE:
-                    sheets.append((_sheet(batch), [item for item, _ in batch]))
-                    batch = []
+                    sheets.append((_sheet(batch), [item for item, _ in batch], range_start, index))
+                    batch, range_start = [], index + 1
         if batch:
-            sheets.append((_sheet(batch), [item for item, _ in batch]))
+            sheets.append((_sheet(batch), [item for item, _ in batch], range_start, len(frames)))
+        elif sheets and range_start <= len(frames):
+            data, records, start, _end = sheets[-1]
+            sheets[-1] = (data, records, start, len(frames))
     _reject_long_identical_span(frames)
     require(len(sheets) <= MAX_BATCHES, "indexed frame batch count exceeds signed gate")
     require(digest_file(video) == video_sha256, "final MP4 changed during all-frame audit")
@@ -234,7 +244,7 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
     reviewed: list[dict] = []
     model_calls: list[dict[str, str]] = []
     sheet_paths: list[Path] = []
-    for number, (data, records) in enumerate(sheets, 1):
+    for number, (data, records, start, end) in enumerate(sheets, 1):
         digest = digest_bytes(data)
         name = f"agent-video-frames/{digest}.jpg"
         path = episode_dir / name
@@ -243,9 +253,11 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
         else:
             write_bytes_new(path, data)
         sheet_paths.append(path)
-        first, last = records[0], records[-1]
+        require([record["index"] for record in records] == model_indices(frames, start, end),
+                "frame batch sampling differs from the signed policy")
+        first, last = frames[start - 1], frames[end - 1]
         identity = {"file": name, "sha256": digest,
-                    "start_index": first["index"], "end_index": last["index"],
+                    "start_index": start, "end_index": end,
                     "first_seconds": first["seconds"], "last_seconds": last["seconds"]}
         verdict, call = _model_batch(data, records, private_dir,
                                      key=key, model=model, batch_number=number)

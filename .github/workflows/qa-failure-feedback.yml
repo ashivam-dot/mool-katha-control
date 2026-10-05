@@ -1,4 +1,4 @@
-# Only an exact content hold from the immutable qa-v11 run may park its draft.
+# Only an exact content hold from the immutable qa-v12 run may park its draft.
 # The inspector has no source write key; the writer never opens QA artifacts.
 name: Independent QA failure feedback
 
@@ -23,7 +23,7 @@ jobs:
       github.event.workflow_run.event == 'workflow_dispatch' &&
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.head_repository.full_name == 'ashivam-dot/mool-katha-control' &&
-      github.event.workflow_run.head_branch == 'qa-v11' &&
+      github.event.workflow_run.head_branch == 'qa-v12' &&
       github.event.workflow_run.head_sha == '587f2285681ccd97485871473d3533c9ed702757'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
