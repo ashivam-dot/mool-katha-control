@@ -150,7 +150,8 @@ def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: lis
         if isinstance(pic, int):
             visual = {"reuse": pic, "motion": motion}
         else:
-            visual = {"source": "url", "url": pic["url"], "credit": pic["credit"], "motion": motion}
+            visual = ({"source": "file", "path": pic["path"]} if pic.get("path") else {"source": "url", "url": pic["url"]})
+            visual.update({"credit": pic["credit"], "motion": motion})
         beats.append({"text": beat["text"], "emphasis": [beat["emphasis"]] if beat.get("emphasis") else [],
                       "visual": visual, "pause_after": 0.12})
     return {
@@ -245,6 +246,7 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         if work.exists():
             shutil.rmtree(work)
         work.mkdir(parents=True)
+        pictures = art.download(pictures, work / "pics")
         spec = build_spec(ep_id, script, passage, pictures)
         (work / "short.yaml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8")
         calls.wrap_tts()

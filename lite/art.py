@@ -7,9 +7,11 @@ tagged as AI-generated are refused, so no AI-made deity face can reach a Short.
 from __future__ import annotations
 
 import html
+import io
 import logging
 import re
 import time
+from pathlib import Path
 
 import requests
 
@@ -19,7 +21,7 @@ USER_AGENT = "MoolKathaLite/1.0 (https://www.youtube.com/@moolkatha; educational
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 CLEVELAND_API = "https://openaccess-api.clevelandart.org/api/artworks/"
 MIN_SIDE = 1000
-THUMB_WIDTH = 1920
+THUMB_STEPS = (960, 1280, 1920)
 # Share-alike, non-commercial and no-derivative licences are excluded.
 LICENSE_OK = re.compile(r"^(public domain|pd\b|pd-|cc0|cc by \d(\.\d)?( [a-z]{2})?$|cc-by-\d(\.\d)?(-[a-z]{2})?$)", re.I)
 PAINTING = re.compile(
@@ -71,11 +73,74 @@ def _year(text: str) -> int | None:
     return min(years) if years else None
 
 
+def thumb_url(original: str, width: int) -> str:
+    """The largest standard Commons thumbnail narrower than the original.
+
+    Wikimedia throttles automated downloads of original files hard, and serves thumbnails only at standard
+    widths (https://w.wiki/GHai); the original is used only when it is narrower than every standard width.
+    """
+    step = next((s for s in reversed(THUMB_STEPS) if s < width), None)
+    match = re.match(r"(https://upload\.wikimedia\.org/wikipedia/commons)/(\w/\w\w)/([^/]+)$", original)
+    if step is None or not match:
+        return original
+    root, shard, name = match.groups()
+    return f"{root}/thumb/{shard}/{name}/{step}px-{name}"
+
+
+def _fetch_bytes(url: str) -> bytes:
+    """One picture, patiently: Wikimedia answers bursts with 429 and a Retry-After."""
+    for attempt in range(6):
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=120)
+        if resp.status_code == 200:
+            return resp.content
+        if resp.status_code not in (429, 500, 502, 503, 504) or attempt == 5:
+            resp.raise_for_status()
+        after = resp.headers.get("Retry-After", "")
+        wait = min(float(after) if after.isdigit() else 0.0, 90.0) or 5.0 * 2**attempt
+        log.info("picture download %s returned %d; waiting %.0fs", url.rsplit("/", 1)[-1][:60], resp.status_code, wait)
+        time.sleep(wait)
+    raise RuntimeError(f"{url} kept failing")
+
+
+def download(chosen: list[dict | int], folder: Path) -> list[dict | int]:
+    """Save every chosen picture under folder as picNN.jpg and record its relative path in "path".
+
+    A picture that still can't be fetched is replaced by a repeat of the previous picture; fewer than 3
+    distinct pictures left is an error.
+    """
+    from PIL import Image, ImageOps
+
+    folder.mkdir(parents=True, exist_ok=True)
+    result: list[dict | int] = []
+    for i, pic in enumerate(chosen):
+        if isinstance(pic, int):
+            result.append(pic if isinstance(result[pic - 1], dict) else result[pic - 1])
+            continue
+        target = folder / f"pic{i:02d}.jpg"
+        try:
+            image = ImageOps.exif_transpose(Image.open(io.BytesIO(_fetch_bytes(pic["url"]))))
+            if max(image.size) < 600:
+                raise ValueError(f"only {image.width}x{image.height}")
+            image.convert("RGB").save(target, quality=95)
+        except (requests.RequestException, RuntimeError, OSError, ValueError) as err:
+            log.warning("picture %d (%s) failed: %s", i + 1, pic["url"], err)
+            earlier = next((n for n in range(i, 0, -1) if isinstance(result[n - 1], dict)), None)
+            if earlier is None:
+                raise LookupError(f"first picture failed: {err}") from err
+            result.append(earlier)
+            continue
+        result.append({**pic, "path": f"{folder.name}/{target.name}"})
+        time.sleep(1.5)
+    distinct = sum(isinstance(p, dict) for p in result)
+    if distinct < 3:
+        raise LookupError(f"only {distinct} distinct pictures could be downloaded")
+    return result
+
+
 def commons_candidates(query: str) -> list[dict]:
     data = _get(COMMONS_API, {
         "action": "query", "format": "json", "generator": "search", "gsrsearch": f"{query} filetype:bitmap",
         "gsrnamespace": 6, "gsrlimit": 40, "prop": "imageinfo", "iiprop": "url|size|mime|extmetadata",
-        "iiurlwidth": THUMB_WIDTH,
     })
     pages = sorted((data.get("query") or {}).get("pages", {}).values(), key=lambda p: p.get("index", 0))
     terms = [t.lower() for t in re.findall(r"[A-Za-z]{3,}", query)
@@ -101,7 +166,7 @@ def commons_candidates(query: str) -> list[dict]:
         if terms and not hits:
             continue
         found.append({
-            "url": info.get("thumburl") or info.get("url"),
+            "url": thumb_url(info.get("url", ""), int(info.get("width") or 0)),
             "credit": {"source": "Wikimedia Commons", "title": re.sub(r"\.(jpe?g|png)$", "", title, flags=re.I),
                        "credit": _meta(meta, "Artist")[:160] or "Unknown artist", "license": license_name,
                        "url": info.get("descriptionurl")},
