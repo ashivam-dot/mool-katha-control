@@ -18,7 +18,7 @@ from trusted_qa.transfer import SIGNING_CONTEXT, sign_transfer
 
 COMMIT = "a" * 40
 WORKFLOW_SHA = "b" * 40
-WORKFLOW_REF = "ashivam-dot/mool-katha-control/.github/workflows/release-qa.yml@refs/tags/qa-v16"
+WORKFLOW_REF = "ashivam-dot/mool-katha-control/.github/workflows/release-qa.yml@refs/tags/qa-v17"
 
 
 def _save(path: Path, value: dict | bytes) -> str:

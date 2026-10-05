@@ -137,7 +137,7 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "inspected_* field anywhere is the JSON boolean true or false, never a page name or text); "
         "asset_findings (one per asset ID; each has id, decision, notes, unresolved_items, "
         "checked_exact_asset_bytes, checked_origin_and_rights_evidence, checked_license_terms, "
-        "checked_commercial_use, checked_derivatives, checked_credit, and license_excerpt for HTTP rights); "
+        "checked_commercial_use, checked_derivatives, checked_credit, and license_excerpt); "
         "audio_review (decision, notes, unresolved_items, checked_full_asr_coverage, "
         "checked_entire_spoken_script, checked_names_and_source_refs, checked_narration_transform if present, "
         "beat_reconciliation, speech_difference_dispositions). Each beat reconciliation needs beat number, "
@@ -158,7 +158,9 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "characters giving concrete evidence. Each ASR citation is exactly {asr_file, segment_indices, "
         "asr_excerpt}; the four critical flags sit on the beat, difference or warning itself. "
         "Use decision 'approved' (or 'accepted' for QC speech differences and warnings) only when clear, "
-        "otherwise 'hold'. Give license_excerpt only for assets whose rights come from a fetched page, "
+        "otherwise 'hold'. Every asset finding has license_excerpt: when the asset's rights come from a fetched "
+        "page, quote the license or rights wording from that page verbatim (at least ten characters); otherwise "
+        "give an empty string. Give "
         "checked_cross_edition_alignment and alignment_notes only for claims with correspondence, and "
         "checked_narration_transform only when narration_transform is present. "
         "The full-audio quality observations are a separate model judgment, not human listening. "
@@ -201,7 +203,7 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
                      "alignment_notes": {"type": "string"}},
                     optional=("checked_cross_edition_alignment", "alignment_notes"))
     asset = _object({"id": {"type": "string"}, **base("approved"), **flags(ASSET_CHECKS),
-                     "license_excerpt": {"type": "string"}}, optional=("license_excerpt",))
+                     "license_excerpt": {"type": "string"}})
     beat = _object({"beat": {"type": "integer"}, **base("approved"), "asr_evidence": evidence,
                     **flags(CRITICAL_FLAGS)})
     difference = _object({"difference": {"type": "string"}, **base("accepted"), "reason": {"type": "string"},
