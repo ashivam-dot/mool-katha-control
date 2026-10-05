@@ -76,7 +76,7 @@ class AlertTests(unittest.TestCase):
 
     def test_unpinned_qa_run_does_not_open_issue(self):
         event = {"repository": {"full_name": alerts.REPOSITORY}, "workflow_run": {
-            "name": "Signed independent QA", "head_branch": "qa-v18", "head_sha": "f" * 40,
+            "name": "Signed independent QA", "head_branch": "qa-v19", "head_sha": "f" * 40,
             "head_repository": {"full_name": alerts.REPOSITORY},
             "status": "completed", "conclusion": "failure"}}
         with patch.object(alerts, "_api", side_effect=AssertionError("must not query")):
@@ -84,7 +84,7 @@ class AlertTests(unittest.TestCase):
                                                        now=NOW), "ignored")
 
     def test_pinned_qa_failure_notifies_but_newer_success_clears_stale_event(self):
-        run = {"name": "Signed independent QA", "head_branch": "qa-v18",
+        run = {"name": "Signed independent QA", "head_branch": "qa-v19",
                "head_sha": alerts.QA_SHA, "head_repository": {"full_name": alerts.REPOSITORY},
                "status": "completed", "conclusion": "failure", "id": 1,
                "created_at": "2026-10-04T12:00:00Z", "html_url": RUN_URL}
@@ -143,7 +143,7 @@ class AlertTests(unittest.TestCase):
                 filename = path.split("/")[3]
                 if filename == "dispatch-release-qa.yml":
                     return {"workflow_runs": []}
-                branch = "qa-v18" if filename == "release-qa.yml" else "main"
+                branch = "qa-v19" if filename == "release-qa.yml" else "main"
                 sha = alerts.QA_SHA if filename == "release-qa.yml" else "f" * 40
                 event = "workflow_dispatch" if filename == "release-qa.yml" else "schedule"
                 return {"workflow_runs": [{"id": 1, "event": event, "head_branch": branch,

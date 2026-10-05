@@ -1,4 +1,4 @@
-# Frozen, independently reviewed candidate QA. Only the qa-v18 tag may sign.
+# Frozen, independently reviewed candidate QA. Only the qa-v19 tag may sign.
 # The final job transfers signed evidence to untrusted Modal storage; it has
 # neither the signing key nor any publisher credential.
 name: Signed independent QA
@@ -24,7 +24,7 @@ jobs:
       - name: Require pinned release tag
         shell: bash
         run: |
-          test "$GITHUB_REF" = 'refs/tags/qa-v18'
+          test "$GITHUB_REF" = 'refs/tags/qa-v19'
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
@@ -229,8 +229,10 @@ jobs:
           if-no-files-found: warn
 
   sign:
+    # Each draft is signed on its own merits; one held draft must not block another
+    # approved one. The signer itself refuses anything but an approved review.
     needs: [discover, review]
-    if: ${{ needs.discover.outputs.has_pending == 'true' && needs.review.result == 'success' }}
+    if: ${{ always() && needs.discover.outputs.has_pending == 'true' && (needs.review.result == 'success' || needs.review.result == 'failure') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -256,7 +258,17 @@ jobs:
         with:
           name: private-qa-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
           path: qa-output
+      - name: Skip a draft whose review held
+        id: verdict
+        shell: bash
+        run: |
+          if [ -e qa-output/episode/private/agent-qa-hold.json ] || [ ! -d qa-output/episode ]; then
+            printf 'held=true\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'held=false\n' >> "$GITHUB_OUTPUT"
+          fi
       - name: Sign approved review and package exact QA files
+        if: steps.verdict.outputs.held == 'false'
         shell: bash
         env:
           QA_SIGNING_PRIVATE_KEY_B64: ${{ secrets.QA_SIGNING_PRIVATE_KEY_B64 }}
@@ -270,6 +282,7 @@ jobs:
             --source-commit "$QA_SOURCE_COMMIT" \
             --output "transfer-output/$QA_EPISODE.tar"
       - name: Keep signed transfer briefly for audit
+        if: steps.verdict.outputs.held == 'false'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: private-signed-transfer-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
@@ -277,9 +290,24 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  feedback:
+    # The scheduled dispatch uses the Actions token, which raises no workflow_run
+    # event; ask the pinned feedback workflow to inspect this failed run.
+    needs: [discover, fetch_archive, review]
+    if: ${{ failure() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Request pinned QA failure feedback
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run qa-failure-feedback.yml --repo "$GITHUB_REPOSITORY" --ref main -f qa_run_id="$GITHUB_RUN_ID"
+
   deliver:
     needs: [discover, sign]
-    if: ${{ needs.discover.outputs.has_pending == 'true' && needs.sign.result == 'success' }}
+    if: ${{ always() && needs.discover.outputs.has_pending == 'true' && needs.sign.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -298,11 +326,14 @@ jobs:
           python -m pip install uv==0.9.18
           uv sync --frozen --project trusted_qa --python 3.12
       - name: Download signed transfer
+        id: transfer
+        continue-on-error: true
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: private-signed-transfer-${{ matrix.episode_id }}-${{ matrix.video_sha256 }}
           path: transfer-output
       - name: Store and round-trip exact signed bytes
+        if: steps.transfer.outcome == 'success'
         shell: bash
         env:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}

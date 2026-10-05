@@ -76,6 +76,87 @@ def candidate(path: Path) -> dict[str, str] | None:
     return row
 
 
+MAX_CANDIDATES = 4
+RUN_POLLS = 40
+RUN_POLL_SECONDS = 15
+
+
+def candidates(path: Path) -> list[dict[str, str]]:
+    """Every exact discovery key of one pinned QA run; each is checked on its own."""
+    value = _object(path)
+    if set(value) != {"status", "stage", "reason", "source_commit", "candidates"} or \
+            value["stage"] != "discovery":
+        raise FeedbackError("discovery artifact has an unexpected schema")
+    if value["status"] == "hold" and value["candidates"] == []:
+        return []
+    rows = value["candidates"]
+    if (value["status"] != "pending" or value["reason"] is not None or
+            type(rows) is not list or not 1 <= len(rows) <= MAX_CANDIDATES):
+        raise FeedbackError("discovery artifact does not name pending candidates")
+    for row in rows:
+        if (type(row) is not dict or set(row) != {"episode_id", "video_sha256", "source_commit"} or
+                type(row["episode_id"]) is not str or not EPISODE.fullmatch(row["episode_id"]) or
+                type(row["video_sha256"]) is not str or not SHA256.fullmatch(row["video_sha256"]) or
+                type(row["source_commit"]) is not str or not COMMIT.fullmatch(row["source_commit"]) or
+                value["source_commit"] != row["source_commit"]):
+            raise FeedbackError("discovery candidate identity is malformed")
+    if len({row["episode_id"] for row in rows}) != len(rows):
+        raise FeedbackError("discovery artifact names an episode twice")
+    return rows
+
+
+def artifact_name(row: dict[str, str]) -> str:
+    return f"private-qa-{row['episode_id']}-{row['video_sha256']}"
+
+
+def inspect_all(discovery: Path, qa_root: Path) -> list[dict[str, str]]:
+    """Admit each candidate's specific content hold; an untrusted or absent result admits nothing."""
+    admitted = []
+    for row in candidates(discovery):
+        hold = qa_root / artifact_name(row) / "episode" / "private" / "agent-qa-hold.json"
+        try:
+            code = inspect_hold(hold, row)
+        except FeedbackError:
+            continue
+        if code:
+            admitted.append({"episode": row["episode_id"], "video_sha": row["video_sha256"],
+                             "source_commit": row["source_commit"], "reason_code": code})
+    return admitted
+
+
+def verify_run(run: dict, run_id: str, repository: str, tag: str, sha: str) -> str:
+    """A dispatched request names a run; only the completed, failed, pinned QA run is accepted."""
+    if (not POSITIVE_INT.fullmatch(run_id) or type(run) is not dict or run.get("id") != int(run_id) or
+            run.get("path") != ".github/workflows/release-qa.yml" or
+            run.get("event") != "workflow_dispatch" or run.get("head_branch") != tag or
+            run.get("head_sha") != sha or
+            (run.get("repository") or {}).get("full_name") != repository or
+            (run.get("head_repository") or {}).get("full_name") != repository or
+            run.get("status") != "completed" or run.get("conclusion") != "failure" or
+            type(run.get("run_attempt")) is not int or run["run_attempt"] < 1):
+        raise FeedbackError("requested run is not a failed pinned QA run")
+    return str(run["run_attempt"])
+
+
+def _completed_run(run_id: str, repository: str) -> dict:
+    if not POSITIVE_INT.fullmatch(run_id) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
+        raise FeedbackError("requested run identity is malformed")
+    for poll in range(RUN_POLLS):
+        result = subprocess.run(["gh", "api", f"repos/{repository}/actions/runs/{run_id}"],
+                                capture_output=True, text=True, check=False, timeout=45)
+        if result.returncode:
+            raise FeedbackError("requested run is unavailable")
+        try:
+            run = json.loads(result.stdout)
+        except json.JSONDecodeError as exc:
+            raise FeedbackError("requested run is unreadable") from exc
+        if type(run) is dict and run.get("status") == "completed":
+            return run
+        if poll + 1 < RUN_POLLS:
+            time.sleep(RUN_POLL_SECONDS)
+    raise FeedbackError("requested run did not complete in time")
+
+
 def _hold_reason(stage: str, reason: str) -> str | None:
     """Leave infrastructure, provider, decoder, and unknown failures retryable."""
     if stage == "candidate" and CANDIDATE_RIGHTS_HOLD.fullmatch(reason):
@@ -252,6 +333,19 @@ def main(argv: list[str] | None = None) -> int:
     inspection.add_argument("--video-sha", required=True)
     inspection.add_argument("--source-commit", required=True)
     inspection.add_argument("--github-output", type=Path, required=True)
+    listing = commands.add_parser("candidates")
+    listing.add_argument("--discovery", type=Path, required=True)
+    listing.add_argument("--github-output", type=Path, required=True)
+    every = commands.add_parser("inspect-all")
+    every.add_argument("--discovery", type=Path, required=True)
+    every.add_argument("--qa-root", type=Path, required=True)
+    every.add_argument("--github-output", type=Path, required=True)
+    run = commands.add_parser("verify-run")
+    run.add_argument("--run-id", required=True)
+    run.add_argument("--repo", required=True)
+    run.add_argument("--tag", required=True)
+    run.add_argument("--sha", required=True)
+    run.add_argument("--github-output", type=Path, required=True)
     writer = commands.add_parser("apply")
     writer.add_argument("--source-repo", type=Path, required=True)
     writer.add_argument("--episode", required=True)
@@ -268,6 +362,17 @@ def main(argv: list[str] | None = None) -> int:
                                          "video_sha": row["video_sha256"],
                                          "source_commit": row["source_commit"]} if row else
                     {"candidate": "false"})
+        elif args.command == "candidates":
+            _output(args.github_output, {"artifacts": " ".join(artifact_name(row)
+                                                                for row in candidates(args.discovery))})
+        elif args.command == "inspect-all":
+            holds = inspect_all(args.discovery, args.qa_root)
+            _output(args.github_output, {"holds": json.dumps(holds, separators=(",", ":")),
+                                         "hold": "true" if holds else "false"})
+        elif args.command == "verify-run":
+            attempt = verify_run(_completed_run(args.run_id, args.repo), args.run_id, args.repo,
+                                 args.tag, args.sha)
+            _output(args.github_output, {"id": args.run_id, "attempt": attempt})
         elif args.command == "inspect-hold":
             row = {"episode_id": args.episode, "video_sha256": args.video_sha,
                    "source_commit": args.source_commit}
