@@ -91,6 +91,21 @@ def _asr_item(value: Any) -> Any:
     return item
 
 
+_SPEECH_WARNING = re.compile(r"speech: (.+) \(fix the narration, or a Hindi reviewer approves it in "
+                             r"speech-approvals\.json\)")
+
+
+def reviewed_warnings(check: dict[str, Any]) -> list[str]:
+    """Warnings the reviewer answers; a speech warning repeating a QC speech difference shares its disposition."""
+    differences = set(check["speech_differences"])
+    return [warning for warning in check["warnings"] if repeated_difference(warning, differences) is None]
+
+
+def repeated_difference(warning: str, differences: set[str]) -> str | None:
+    match = _SPEECH_WARNING.fullmatch(warning) if isinstance(warning, str) else None
+    return match[1] if match and match[1] in differences else None
+
+
 def _listed(value: Any, prefix: str) -> Any:
     """Read the schema's keyed form ({prefix}_01, {prefix}_02, ...) as the ordered list it stands for."""
     if not isinstance(value, dict):
@@ -137,8 +152,12 @@ _VARIANTS = str.maketrans({"\u093c": None, "\u0901": "\u0902", "\u094d": None,
 _YE = re.compile("\u092f\u0947$")
 
 
+_NASAL = re.compile("[\u0919\u091e\u0923\u0928\u092e]\u094d(?=[\u0915-\u0939])")
+
+
 def _hindi_words(text: str) -> list[str]:
-    words = ["".join(character for character in unicodedata.normalize("NFC", part).lower()
+    text = _NASAL.sub("\u0902", unicodedata.normalize("NFC", text))
+    words = ["".join(character for character in part.lower()
                      if unicodedata.category(character)[0] in "LMN") for part in text.split()]
     return [_YE.sub("\u090f", word.translate(_VARIANTS)) for word in words if word]
 
@@ -186,7 +205,10 @@ def _citations(value: Any, asr: dict[str, dict], label: str,
                           "asr_excerpt": excerpt})
     require(seen == set(asr), f"{label}: both ASR files are required")
     if critical_terms:
-        heard = set(_loose_words(" ".join(c["asr_excerpt"] for c in citations)))
+        heard_words = _loose_words(" ".join(c["asr_excerpt"] for c in citations))
+        heard = set(heard_words)
+        # A recognizer may split one spoken word in two (फेंककर as फेंक कर); joined neighbours count as heard.
+        heard |= {first + second for first, second in zip(heard_words, heard_words[1:])}
         missing = [term for term in critical_terms if not set(_loose_words(term)) <= heard]
         require(len(missing) <= len(critical_terms) * (1 - TERM_COVERAGE),
                 f"{label}: recognizers missed signed terms {missing}")
@@ -467,6 +489,9 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
 
     video_item = _semantic(decision["video_review"], VIDEO_CHECKS | {"critical_defects"}, "video review")
     _checks(video_item, VIDEO_CHECKS, "video review")
+    # A reviewer that answers "no defects" with false, null or "none" has reported none.
+    if video_item["critical_defects"] in (False, None, "", "none", "None"):
+        video_item = {**video_item, "critical_defects": []}
     require(video_item["critical_defects"] == [], "sampled visual review found critical defects")
     video_review = {**_verdict(qa_id, "agent_decoded_and_inspected_samples", reviewed_at, video_item),
                     "video_sha256": candidate.hashes["video"], **visual.decoder,
@@ -476,11 +501,12 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     "readable_crops": visual.readable_crops, "critical_defects": [],
                     **{name: True for name in VIDEO_CHECKS}}
 
-    warnings = candidate.check["warnings"]
+    warnings = reviewed_warnings(candidate.check)
     raw_warnings = _listed(decision["qc_warning_dispositions"], "warning")
     require(isinstance(raw_warnings, list) and len(raw_warnings) == len(warnings),
             "every exact QC warning needs one disposition, including repeats")
-    warning_dispositions: list[dict] = []
+    by_difference = {item["difference"]: item for item in speech_dispositions}
+    reviewed: list[dict] = []
     for index, (expected, raw) in enumerate(zip(warnings, raw_warnings), 1):
         speech_warning = expected.startswith("speech:") or "recognizer heard" in expected
         fields = {"warning", "reason"} | ({"asr_evidence"} | CRITICAL_FLAGS if speech_warning else set())
@@ -497,7 +523,20 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                                                       f"QC warning {index}",
                                                       expected_phrase=_quoted_expected(expected))
             disposition.update({name: False for name in CRITICAL_FLAGS})
-        warning_dispositions.append(disposition)
+        reviewed.append(disposition)
+    remaining = iter(reviewed)
+    warning_dispositions: list[dict] = []
+    for expected in candidate.check["warnings"]:
+        repeated = repeated_difference(expected, set(differences))
+        if repeated is None:
+            warning_dispositions.append(next(remaining))
+            continue
+        shared = by_difference[repeated]
+        warning_dispositions.append({**{key: shared[key] for key in ("agent_id", "reviewed_at", "decision",
+                                                                      "unresolved_items", "notes")},
+                                     "method": "agent_inspected_qc_warning", "warning": expected,
+                                     "reason": shared["reason"], "asr_evidence": shared["asr_evidence"],
+                                     **{name: False for name in CRITICAL_FLAGS}})
 
     release_item = _semantic(decision["release_review"], RELEASE_CHECKS, "release review")
     _checks(release_item, RELEASE_CHECKS, "release review")

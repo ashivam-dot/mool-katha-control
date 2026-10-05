@@ -10,6 +10,7 @@ import base64
 import io
 import json
 import re
+import unicodedata
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -112,7 +113,7 @@ def _prompt_packet(candidate: Candidate, observations: ObservationSet,
             "uncertainty_notes": quality.decision["uncertainty_notes"],
             "summary": quality.decision["summary"],
             "observations": quality.decision["observations"]},
-        "qc": {"duration": candidate.check["duration"], "warnings": candidate.check["warnings"],
+        "qc": {"duration": candidate.check["duration"], "warnings": _reviewed_warnings(candidate.check),
                "speech_differences": candidate.check["speech_differences"],
                "stream_problems": candidate.check["stream_problems"],
                "integrated_lufs": candidate.check["integrated_lufs"],
@@ -145,15 +146,14 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "required_asr_terms word supplied for that beat, with asr_file, "
         "segment_indices, verbatim asr_excerpt, and four booleans all false when clear: "
         "sacred_name_disagreement, source_reference_disagreement, offensive_reading, "
-        "meaning_changing_disagreement. speech_difference_dispositions is an object keyed difference_01, "
-        "difference_02, ... in qc.speech_differences order, one key for EVERY difference; each "
-        "needs difference (copied exactly), decision "
+        "meaning_changing_disagreement. speech_difference_dispositions has one entry for EVERY exact "
+        "qc.speech_differences item, in that order; each needs difference (copied exactly), decision "
         "'accepted' if resolved, notes, reason, unresolved_items, two ASR citations and the same four flags; "
         "video_review (decision, notes, unresolved_items, inspected_sampled_frames, "
         "checked_hindi_captions, checked_first_frame_source, checked_artwork_labels, "
         "checked_visual_integrity, checked_timeline_alignment, critical_defects); "
-        "qc_warning_dispositions (an object keyed warning_01, warning_02, ... in qc.warnings order, one key "
-        "for EVERY exact warning including repeats, with warning copied exactly, "
+        "qc_warning_dispositions (one entry for EVERY exact qc.warnings item including repeats, in that "
+        "order, with warning copied exactly, "
         "decision 'accepted' if resolved, notes, reason, unresolved_items; speech warnings also need "
         "two ASR citations and four false critical flags); release_review (decision, notes, "
         "unresolved_items, verified_all_claims, verified_all_assets, verified_asr_and_decoded_frames, "
@@ -175,13 +175,19 @@ def _output_instructions(packet: dict[str, Any]) -> str:
     )
 
 
+def _reviewed_warnings(check: dict[str, Any]) -> list[str]:
+    from .assemble import reviewed_warnings
+
+    return reviewed_warnings(check)
+
+
 def _object(properties: dict[str, Any], optional: tuple[str, ...] = ()) -> dict[str, Any]:
     return {"type": "object", "properties": properties,
             "required": [name for name in properties if name not in optional]}
 
 
 def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
-    """The exact layout the assembler reads, so the model cannot invent field names."""
+    """The layout the assembler reads, kept for schema_probe; the review request no longer sends it."""
     from .assemble import (ASSET_CHECKS, AUDIO_CHECKS, CLAIM_CHECKS, CRITICAL_FLAGS, RELEASE_CHECKS,
                            VIDEO_CHECKS)
 
@@ -197,12 +203,6 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
         # Exact item counts make the decoding constraint too large to serve; the assembler checks them.
         return {"type": "array", "items": item}
 
-    def keyed(prefix: str, definition: str, count: int) -> dict[str, Any]:
-        # Required named properties are enforced where array lengths are not, so none can be skipped.
-        if not count:
-            return {"type": "array", "items": {"$ref": f"#/$defs/{definition}"}, "maxItems": 0}
-        return _object({keyed_name(prefix, index): {"$ref": f"#/$defs/{definition}"}
-                        for index in range(1, count + 1)})
 
     files = sorted({item["file"] for item in packet["full_final_audio_asr"]})
     citation = _object({"asr_file": {"type": "string", "enum": files},
@@ -225,22 +225,82 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
     qc = packet["qc"]
     audio = _object({**base("approved"), **flags(AUDIO_CHECKS), "checked_narration_transform": {"type": "boolean"},
                      "beat_reconciliation": exactly(beat, len(packet["script_beats"])),
-                     "speech_difference_dispositions": keyed("difference", "difference",
-                                                             len(qc["speech_differences"]))},
+                     "speech_difference_dispositions": exactly(difference, len(qc["speech_differences"]))},
                     optional=("checked_narration_transform",))
     video = _object({**base("approved"), **flags(VIDEO_CHECKS),
                      "critical_defects": {"type": "array", "items": {"type": "string"}}})
     release = _object({**base("approved"), **flags(RELEASE_CHECKS)})
-    schema = _object({"claim_findings": {"type": "array", "items": claim},
-                      "asset_findings": {"type": "array", "items": asset},
-                      "audio_review": audio, "video_review": video,
-                      "qc_warning_dispositions": keyed("warning", "warning", len(qc["warnings"])),
-                      "release_review": release})
-    return {"$defs": {"difference": difference, "warning": warning}, **schema}
+    return _object({"claim_findings": {"type": "array", "items": claim},
+                    "asset_findings": {"type": "array", "items": asset},
+                    "audio_review": audio, "video_review": video,
+                    "qc_warning_dispositions": exactly(warning, len(qc["warnings"])),
+                    "release_review": release})
 
 
-def keyed_name(prefix: str, index: int) -> str:
-    return f"{prefix}_{index:02d}"
+def _text(value: Any) -> Any:
+    return unicodedata.normalize("NFC", value).strip() if isinstance(value, str) else value
+
+
+def _ordered(expected: list[str], given: list[Any], field: str) -> tuple[list[Any], list[str]]:
+    """Each expected item (repeats included) takes the first unused answer that names it exactly."""
+    pool = [item for item in given if isinstance(item, dict)]
+    ordered, missing = [], []
+    for text in expected:
+        match = next((item for item in pool if _text(item.get(field)) == _text(text)), None)
+        if match is None:
+            missing.append(text)
+        else:
+            pool.remove(match)
+            ordered.append({**match, field: text})
+    return ordered, missing
+
+
+FOLLOWUP_ROUNDS = 2
+
+
+def _complete_dispositions(decision: dict[str, Any], packet: dict[str, Any], parts: list[dict[str, Any]],
+                           config: dict[str, Any], post, private_audit_dir: Path) -> dict[str, Any]:
+    """Ask once more for exactly the speech differences and warnings the reviewer left out."""
+    from .assemble import _listed
+
+    qc = packet["qc"]
+    audio = decision.get("audio_review")
+    if not isinstance(audio, dict):
+        return decision
+    differences, missing_differences = _ordered(
+        qc["speech_differences"], _as_list(_listed(audio.get("speech_difference_dispositions"), "difference")),
+        "difference")
+    warnings, missing_warnings = _ordered(
+        qc["warnings"], _as_list(_listed(decision.get("qc_warning_dispositions"), "warning")), "warning")
+    for _round in range(FOLLOWUP_ROUNDS):
+        if not (missing_differences or missing_warnings):
+            break
+        parts.append({"text": (
+            "Your previous answer left out these exact items. Return a JSON object with "
+            "speech_difference_dispositions and qc_warning_dispositions covering ONLY these, each copied "
+            "exactly, in the same layout and with the same evidence rules as before.\n"
+            + json.dumps({"speech_differences": missing_differences, "warnings": missing_warnings},
+                         ensure_ascii=False))})
+        generation = dict(config)
+        suffix = "" if _round == 0 else f"-{_round + 1}"
+        raw, _ = post(generation, f"review-model-followup-request{suffix}.json")
+        require(len(raw) <= MAX_REVIEW_RESPONSE_BYTES, "independent reviewer follow-up is oversized")
+        write_bytes_new(private_audit_dir / f"review-model-followup-response{suffix}.json", raw)
+        _, _, text = gemini_text_response(json_object(raw, "independent reviewer follow-up"),
+                                          "independent reviewer follow-up")
+        extra = unique_json(text, "independent reviewer follow-up")
+        extra = extra[0] if isinstance(extra, list) and len(extra) == 1 else extra
+        if isinstance(extra, dict):
+            differences, missing_differences = _ordered(qc["speech_differences"], differences + _as_list(
+                _listed(extra.get("speech_difference_dispositions"), "difference")), "difference")
+            warnings, missing_warnings = _ordered(qc["warnings"], warnings + _as_list(
+                _listed(extra.get("qc_warning_dispositions"), "warning")), "warning")
+    return {**decision, "audio_review": {**audio, "speech_difference_dispositions": differences},
+            "qc_warning_dispositions": warnings}
+
+
+def _as_list(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []
 
 
 @dataclass(frozen=True)
@@ -278,8 +338,9 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
         require(digest_file(path) == asset["sha256"], f"visual asset {identity} changed")
         preview = _animation_preview(path) if asset["role"] == "animation" else _image_jpeg(path)
         add_image(f"Exact used {asset['role']} asset {identity}, source SHA-256 {asset['sha256']}.", preview)
-    config = {"temperature": 0, "responseMimeType": "application/json", "maxOutputTokens": 32768,
-              "responseJsonSchema": _response_schema(packet)}
+    # No responseJsonSchema: under it the reviewer stops after one or two speech differences
+    # (three of three saved answers), and Gemini rejects stricter shapes; the assembler reads its layout.
+    config = {"temperature": 0, "responseMimeType": "application/json", "maxOutputTokens": 32768}
 
     def post(generation: dict[str, Any], name: str) -> tuple[bytes, str]:
         body = {"systemInstruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
@@ -294,14 +355,7 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
                            failure="independent reviewer API request failed",
                            not_ok="independent reviewer did not return HTTP 200")
 
-    try:
-        raw_response, model = post(config, "review-model-request.json")
-    except QaHold as exc:
-        if "HTTP 400" not in str(exc):
-            raise
-        # A model that cannot take the schema still gets the same written layout in the prompt.
-        config.pop("responseJsonSchema")
-        raw_response, model = post(config, "review-model-request-without-schema.json")
+    raw_response, model = post(config, "review-model-request.json")
     require(len(raw_response) <= MAX_REVIEW_RESPONSE_BYTES,
             "independent reviewer response is oversized")
     write_bytes_new(private_audit_dir / "review-model-response.json", raw_response)
@@ -315,6 +369,7 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
     require(set(decision) == {"claim_findings", "asset_findings", "audio_review",
                               "video_review", "qc_warning_dispositions", "release_review"},
             "independent reviewer decision has an unexpected shape")
+    decision = _complete_dispositions(decision, packet, parts, config, post, private_audit_dir)
     candidate.recheck()
     return ReviewModelResult(decision, {"provider": "Google Gemini API", "model": model,
                                         "model_version": model_version, "request_id": request_id})
