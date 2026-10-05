@@ -27,7 +27,7 @@ def valid_qa_workflow_ref(repository: str, workflow_ref: str) -> bool:
     if repository != QA_REPOSITORY or not isinstance(workflow_ref, str):
         return False
     pattern = (re.escape(QA_REPOSITORY) +
-               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v12)\Z")
+               r"/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@refs/(?:heads/[A-Za-z0-9._/-]+|tags/qa-v13)\Z")
     return re.fullmatch(pattern, workflow_ref) is not None
 
 
@@ -177,8 +177,10 @@ def _post_once(request: urllib.request.Request, *, timeout: float, max_bytes: in
         except urllib.error.HTTPError as exc:
             if exc.code == 404:
                 raise _NextModel(f"{failure} (HTTP 404, model unavailable)") from exc
-            if exc.code not in GEMINI_RETRY_CODES or attempt == GEMINI_ATTEMPTS:
+            if exc.code not in GEMINI_RETRY_CODES:
                 raise QaHold(f"{failure} (HTTP {exc.code})") from exc
+            if attempt == GEMINI_ATTEMPTS:
+                raise _NextModel(f"{failure} (HTTP {exc.code})") from exc
             delay = _retry_delay(exc)
             if delay is None:
                 raise _NextModel(f"{failure} (HTTP {exc.code}, daily quota spent)") from exc
@@ -193,7 +195,8 @@ def gemini_post(models: str, body: bytes, *, key: str, timeout: float, max_bytes
     """POST to the first listed Gemini model that can answer; return the response and that model.
 
     Rate limits and transient errors are waited out on the same model. A model whose daily quota is
-    spent, or that no longer exists, passes the request to the next one; the last one's failure holds."""
+    spent, that stays overloaded, or that no longer exists passes the request to the next one; the last
+    one's failure holds."""
     require(valid_gemini_models(models), "Gemini model list is not explicitly named")
     names = models.split(",")
     for index, model in enumerate(names):

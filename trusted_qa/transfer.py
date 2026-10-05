@@ -80,7 +80,7 @@ def _check_review(qa_output: Path, episode_id: str, source_commit: str,
             "QA review names another episode or schema")
     run = review.get("qa_run")
     require(isinstance(run, dict) and run.get("repository") == QA_REPOSITORY
-            and run.get("workflow_ref") == f"{QA_REPOSITORY}/.github/workflows/release-qa.yml@refs/tags/qa-v12"
+            and run.get("workflow_ref") == f"{QA_REPOSITORY}/.github/workflows/release-qa.yml@refs/tags/qa-v13"
             and run.get("workflow_sha") == workflow_sha and run.get("run_id") == run_id
             and run.get("run_attempt") == attempt,
             "QA review did not come from this pinned release workflow run")

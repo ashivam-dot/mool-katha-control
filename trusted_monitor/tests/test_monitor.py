@@ -96,7 +96,7 @@ class MonitorTests(unittest.TestCase):
     def test_failed_pinned_qa_is_visible_despite_new_in_progress_run(self):
         def run(run_id, workflow, *, status="completed", conclusion="success", minutes=30):
             return {"id": run_id, "event": "schedule" if workflow == "dispatch" else "workflow_dispatch",
-                    "head_branch": "main" if workflow == "dispatch" else "qa-v12",
+                    "head_branch": "main" if workflow == "dispatch" else "qa-v13",
                     "head_sha": "f" * 40 if workflow == "dispatch" else monitor.QA_WORKFLOW_SHA,
                     "created_at": (NOW - timedelta(minutes=minutes)).isoformat(),
                     "status": status, "conclusion": conclusion,
@@ -125,7 +125,7 @@ class MonitorTests(unittest.TestCase):
                 dispatch = monitor.QA_DISPATCH_WORKFLOW in url
                 return {"workflow_runs": [{"id": 1 if dispatch else 2,
                                            "event": "schedule" if dispatch else "workflow_dispatch",
-                                           "head_branch": "main" if dispatch else "qa-v12",
+                                           "head_branch": "main" if dispatch else "qa-v13",
                                            "head_sha": "f" * 40 if dispatch else monitor.QA_WORKFLOW_SHA,
                                            "created_at": (NOW - timedelta(hours=2)).isoformat(),
                                            "status": "completed", "conclusion": "success"}]}
@@ -142,7 +142,7 @@ class MonitorTests(unittest.TestCase):
                     return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "main",
                                                "created_at": NOW.isoformat(), "status": "completed",
                                                "conclusion": "success"}]}
-                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v12",
+                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v13",
                                            "head_sha": monitor.QA_WORKFLOW_SHA,
                                            "created_at": NOW.isoformat(), "status": "completed",
                                            "conclusion": "success"}]}
@@ -162,7 +162,7 @@ class MonitorTests(unittest.TestCase):
                     return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "main",
                                                "created_at": "2026-10-04T08:41:13Z",
                                                "status": "completed", "conclusion": "success"}]}
-                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v12",
+                return {"workflow_runs": [{"event": "workflow_dispatch", "head_branch": "qa-v13",
                                            "head_sha": monitor.QA_WORKFLOW_SHA,
                                            "created_at": reference.isoformat(),
                                            "status": "completed", "conclusion": "success"}]}
