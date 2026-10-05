@@ -133,7 +133,8 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "claim_findings (one per claim ID; each has id, decision, notes, unresolved_items, "
         "primary_excerpt, corroboration_excerpt, checked_primary_page, checked_corroboration_page, "
         "checked_source_independence, checked_hindi_entailment, checked_variant_scope; when there is "
-        "correspondence also checked_cross_edition_alignment and alignment_notes); "
+        "correspondence also checked_cross_edition_alignment and alignment_notes; every checked_* and "
+        "inspected_* field anywhere is the JSON boolean true or false, never a page name or text); "
         "asset_findings (one per asset ID; each has id, decision, notes, unresolved_items, "
         "checked_exact_asset_bytes, checked_origin_and_rights_evidence, checked_license_terms, "
         "checked_commercial_use, checked_derivatives, checked_credit, and license_excerpt for HTTP rights); "
@@ -154,11 +155,69 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "two ASR citations and four false critical flags); release_review (decision, notes, "
         "unresolved_items, verified_all_claims, verified_all_assets, verified_asr_and_decoded_frames, "
         "verified_no_unresolved_concerns). Every note and reason should give concrete evidence. "
+        "Use decision 'approved' (or 'accepted' for QC speech differences and warnings) only when clear, "
+        "otherwise 'hold'. Give license_excerpt only for assets whose rights come from a fetched page, "
+        "checked_cross_edition_alignment and alignment_notes only for claims with correspondence, and "
+        "checked_narration_transform only when narration_transform is present. "
         "The full-audio quality observations are a separate model judgment, not human listening. "
         "Quote source/license excerpts verbatim from supplied fetched contexts; they must exist in saved "
         "snapshots. Be explicit about any uncertainty. Do not invent page contents or recognizer text.\n\n"
         + json.dumps(packet, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     )
+
+
+def _object(properties: dict[str, Any], optional: tuple[str, ...] = ()) -> dict[str, Any]:
+    return {"type": "object", "properties": properties,
+            "required": [name for name in properties if name not in optional]}
+
+
+def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
+    """The exact layout the assembler reads, so the model cannot invent field names."""
+    from .assemble import (ASSET_CHECKS, AUDIO_CHECKS, CLAIM_CHECKS, CRITICAL_FLAGS, RELEASE_CHECKS,
+                           VIDEO_CHECKS)
+
+    def base(*decisions: str) -> dict[str, Any]:
+        return {"decision": {"type": "string", "enum": [*decisions, "hold"]},
+                "notes": {"type": "string"},
+                "unresolved_items": {"type": "array", "items": {"type": "string"}}}
+
+    def flags(names) -> dict[str, Any]:
+        return {name: {"type": "boolean"} for name in sorted(names)}
+
+    def exactly(item: dict[str, Any], count: int) -> dict[str, Any]:
+        return {"type": "array", "items": item, "minItems": count, "maxItems": count}
+
+    files = sorted({item["file"] for item in packet["full_final_audio_asr"]})
+    citation = _object({"asr_file": {"type": "string", "enum": files},
+                        "segment_indices": {"type": "array", "items": {"type": "integer"}},
+                        "asr_excerpt": {"type": "string"}})
+    evidence = exactly(citation, len(files))
+    claim = _object({"id": {"type": "string"}, **base("approved"),
+                     "primary_excerpt": {"type": "string"}, "corroboration_excerpt": {"type": "string"},
+                     **flags(CLAIM_CHECKS), "checked_cross_edition_alignment": {"type": "boolean"},
+                     "alignment_notes": {"type": "string"}},
+                    optional=("checked_cross_edition_alignment", "alignment_notes"))
+    asset = _object({"id": {"type": "string"}, **base("approved"), **flags(ASSET_CHECKS),
+                     "license_excerpt": {"type": "string"}}, optional=("license_excerpt",))
+    beat = _object({"beat": {"type": "integer"}, **base("approved"), "asr_evidence": evidence,
+                    **flags(CRITICAL_FLAGS)})
+    difference = _object({"difference": {"type": "string"}, **base("accepted"), "reason": {"type": "string"},
+                          "asr_evidence": evidence, **flags(CRITICAL_FLAGS)})
+    warning = _object({"warning": {"type": "string"}, **base("accepted"), "reason": {"type": "string"},
+                       "asr_evidence": evidence, **flags(CRITICAL_FLAGS)})
+    qc = packet["qc"]
+    audio = _object({**base("approved"), **flags(AUDIO_CHECKS), "checked_narration_transform": {"type": "boolean"},
+                     "beat_reconciliation": exactly(beat, len(packet["script_beats"])),
+                     "speech_difference_dispositions": exactly(difference, len(qc["speech_differences"]))},
+                    optional=("checked_narration_transform",))
+    video = _object({**base("approved"), **flags(VIDEO_CHECKS),
+                     "critical_defects": {"type": "array", "items": {"type": "string"}}})
+    release = _object({**base("approved"), **flags(RELEASE_CHECKS)})
+    return _object({"claim_findings": {"type": "array", "items": claim},
+                    "asset_findings": {"type": "array", "items": asset},
+                    "audio_review": audio, "video_review": video,
+                    "qc_warning_dispositions": exactly(warning, len(qc["warnings"])),
+                    "release_review": release})
 
 
 @dataclass(frozen=True)
@@ -196,19 +255,30 @@ def gemini_independent_review(candidate: Candidate, observations: ObservationSet
         require(digest_file(path) == asset["sha256"], f"visual asset {identity} changed")
         preview = _animation_preview(path) if asset["role"] == "animation" else _image_jpeg(path)
         add_image(f"Exact used {asset['role']} asset {identity}, source SHA-256 {asset['sha256']}.", preview)
-    body = {"systemInstruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
-            "contents": [{"role": "user", "parts": parts}],
-            "generationConfig": {"temperature": 0, "responseMimeType": "application/json",
-                                 "maxOutputTokens": 32768}}
-    raw_request = json.dumps(body, ensure_ascii=False, separators=(",", ":"),
-                             allow_nan=False).encode("utf-8")
-    require(len(raw_request) <= MAX_REVIEW_REQUEST_BYTES,
-            "independent reviewer request exceeds single-call evidence limit")
-    write_bytes_new(private_audit_dir / "review-model-request.json", raw_request)
-    raw_response, model = gemini_post(model, raw_request, key=key, timeout=300,
-                                      max_bytes=MAX_REVIEW_RESPONSE_BYTES,
-                                      failure="independent reviewer API request failed",
-                                      not_ok="independent reviewer did not return HTTP 200")
+    config = {"temperature": 0, "responseMimeType": "application/json", "maxOutputTokens": 32768,
+              "responseJsonSchema": _response_schema(packet)}
+
+    def post(generation: dict[str, Any], name: str) -> tuple[bytes, str]:
+        body = {"systemInstruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
+                "contents": [{"role": "user", "parts": parts}], "generationConfig": generation}
+        raw_request = json.dumps(body, ensure_ascii=False, separators=(",", ":"),
+                                 allow_nan=False).encode("utf-8")
+        require(len(raw_request) <= MAX_REVIEW_REQUEST_BYTES,
+                "independent reviewer request exceeds single-call evidence limit")
+        write_bytes_new(private_audit_dir / name, raw_request)
+        return gemini_post(model, raw_request, key=key, timeout=300,
+                           max_bytes=MAX_REVIEW_RESPONSE_BYTES,
+                           failure="independent reviewer API request failed",
+                           not_ok="independent reviewer did not return HTTP 200")
+
+    try:
+        raw_response, model = post(config, "review-model-request.json")
+    except QaHold as exc:
+        if "HTTP 400" not in str(exc):
+            raise
+        # A model that cannot take the schema still gets the same written layout in the prompt.
+        config.pop("responseJsonSchema")
+        raw_response, model = post(config, "review-model-request-without-schema.json")
     require(len(raw_response) <= MAX_REVIEW_RESPONSE_BYTES,
             "independent reviewer response is oversized")
     write_bytes_new(private_audit_dir / "review-model-response.json", raw_response)

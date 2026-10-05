@@ -27,6 +27,7 @@ from .terms import required_beat_terms
 BASE = {"decision", "notes", "unresolved_items"}
 CRITICAL_FLAGS = {"sacred_name_disagreement", "source_reference_disagreement",
                   "offensive_reading", "meaning_changing_disagreement"}
+PAGE_CHECKS = ("checked_primary_page", "checked_corroboration_page")
 CLAIM_CHECKS = {"checked_primary_page", "checked_corroboration_page",
                 "checked_source_independence", "checked_hindi_entailment", "checked_variant_scope"}
 ASSET_CHECKS = {"checked_exact_asset_bytes", "checked_origin_and_rights_evidence",
@@ -48,6 +49,11 @@ def _exact(value: Any, keys: set[str], label: str) -> dict:
 
 # The reviewer model writes its own word for a clean pass; only a pass with nothing unresolved counts.
 PASS_WORDS = {"approved", "accepted", "pass", "passed", "approve", "accept", "ok", "clear", "cleared"}
+
+
+def _without(value: Any, names) -> Any:
+    """Drop optional fields that do not apply here; the reviewer schema offers them to every item."""
+    return {k: v for k, v in value.items() if k not in names} if isinstance(value, dict) else value
 
 
 def _semantic(value: Any, keys: set[str], label: str, *, decision: str = "approved") -> dict:
@@ -287,7 +293,12 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
         keys = {"id", "primary_excerpt", "corroboration_excerpt"} | CLAIM_CHECKS
         if matched:
             keys |= {"checked_cross_edition_alignment", "alignment_notes"}
-        item = _semantic(model_claims[identity], keys, f"claim {identity}")
+        raw_claim = model_claims[identity] if matched else _without(
+            model_claims[identity], {"checked_cross_edition_alignment", "alignment_notes"})
+        item = _semantic(raw_claim, keys, f"claim {identity}")
+        # A reviewer that names the page it read has checked it at least as surely as one that answers true.
+        item = {**item, **{name: True for name in PAGE_CHECKS
+                           if isinstance(item.get(name), str) and item[name].strip()}}
         _checks(item, CLAIM_CHECKS | ({"checked_cross_edition_alignment"} if matched else set()),
                 f"claim {identity}")
         if matched:
@@ -324,7 +335,10 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     for identity, asset in candidate.assets.items():
         rights = observations.asset_rights[identity]
         keys = {"id"} | ASSET_CHECKS | ({"license_excerpt"} if isinstance(rights, FetchObservation) else set())
-        item = _semantic(model_assets[identity], keys, f"asset {identity}")
+        raw_asset = model_assets[identity]
+        if not isinstance(rights, FetchObservation):
+            raw_asset = _without(raw_asset, {"license_excerpt"})
+        item = _semantic(raw_asset, keys, f"asset {identity}")
         _checks(item, ASSET_CHECKS, f"asset {identity}")
         if isinstance(rights, FetchObservation):
             excerpt = item["license_excerpt"]
@@ -345,7 +359,9 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     transformed = "narration_transform" in candidate.manifest
     if transformed:
         audio_keys.add("checked_narration_transform")
-    audio_item = _semantic(decision["audio_review"], audio_keys, "audio review")
+    raw_audio = decision["audio_review"] if transformed else _without(decision["audio_review"],
+                                                                         {"checked_narration_transform"})
+    audio_item = _semantic(raw_audio, audio_keys, "audio review")
     _checks(audio_item, AUDIO_CHECKS | ({"checked_narration_transform"} if transformed else set()),
             "audio review")
     raw_beats = audio_item["beat_reconciliation"]
@@ -418,6 +434,8 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
     for index, (expected, raw) in enumerate(zip(warnings, raw_warnings), 1):
         speech_warning = expected.startswith("speech:") or "recognizer heard" in expected
         fields = {"warning", "reason"} | ({"asr_evidence"} | CRITICAL_FLAGS if speech_warning else set())
+        if not speech_warning:
+            raw = _without(raw, {"asr_evidence"} | CRITICAL_FLAGS)
         item = _semantic(raw, fields, f"QC warning {index}", decision="accepted")
         require(item["warning"] == expected and isinstance(item["reason"], str) and
                 len(item["reason"].strip()) >= 30,

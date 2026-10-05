@@ -376,7 +376,7 @@ def qa(now: datetime, env: dict[str, str]) -> dict:
          lambda run: run.get("event") == "schedule" and run.get("head_branch") == "main"),
         (QA_WORKFLOW, "pinned independent QA",
          lambda run: run.get("event") == "workflow_dispatch" and
-         run.get("head_branch") == "qa-v13" and run.get("head_sha") == QA_WORKFLOW_SHA),
+         run.get("head_branch") == "qa-v14" and run.get("head_sha") == QA_WORKFLOW_SHA),
     ):
         url = f"https://api.github.com/repos/{REPOSITORY}/actions/workflows/{workflow_name}"
         workflow = _json(url, headers=headers)
