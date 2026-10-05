@@ -24,7 +24,7 @@ jobs:
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.head_repository.full_name == 'ashivam-dot/mool-katha-control' &&
       github.event.workflow_run.head_branch == 'qa-v17' &&
-      github.event.workflow_run.head_sha == '17f64b629d0615141b6107c191e498f31c58315c'
+      github.event.workflow_run.head_sha == '242dcd95763b1e75bf98009ef6160cc580aa2bdf'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
