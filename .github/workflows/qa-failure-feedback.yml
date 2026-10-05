@@ -33,7 +33,7 @@ jobs:
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.head_repository.full_name == 'ashivam-dot/mool-katha-control' &&
       github.event.workflow_run.head_branch == 'qa-v22' &&
-      github.event.workflow_run.head_sha == '95a8e895b953141d6e40fabc5380d9d9518cfc62'))
+      github.event.workflow_run.head_sha == 'a5668a05fd3ccc1506f72fd3e3efda219b851fd7'))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
@@ -60,7 +60,7 @@ jobs:
             printf 'id=%s\nattempt=%s\n' "$EVENT_RUN_ID" "$EVENT_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
           else
             python -m trusted_feedback verify-run --run-id "$INPUT_RUN_ID" --repo "$GITHUB_REPOSITORY" \
-              --tag 'qa-v22' --sha '95a8e895b953141d6e40fabc5380d9d9518cfc62' --github-output "$GITHUB_OUTPUT"
+              --tag 'qa-v22' --sha 'a5668a05fd3ccc1506f72fd3e3efda219b851fd7' --github-output "$GITHUB_OUTPUT"
           fi
       - name: Download exact run discovery
         id: discovery
