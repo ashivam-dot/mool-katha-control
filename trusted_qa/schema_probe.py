@@ -70,7 +70,18 @@ def main() -> None:
               "qc": {"speech_differences": ["d"] * args.differences, "warnings": ["w"] * args.warnings}}
     current = _response_schema(packet)
     key = os.environ["QA_GEMINI_API_KEY"]
-    for name, schema in (("current", current), ("inline", _inline(current)), ("arrays", _arrays(current))):
+    def counted(exact: bool) -> dict:
+        schema = _arrays(current)
+        audio = schema["properties"]["audio_review"]["properties"]
+        for parent, name, count in ((audio, "speech_difference_dispositions", args.differences),
+                                    (schema["properties"], "qc_warning_dispositions", args.warnings)):
+            parent[name]["minItems"] = count
+            if exact:
+                parent[name]["maxItems"] = count
+        return schema
+
+    for name, schema in (("current", current), ("arrays_min", counted(False)),
+                         ("arrays_exact", counted(True))):
         status, message = probe(schema, args.model, key)
         print(json.dumps({"variant": name, "bytes": len(json.dumps(schema)), "status": status,
                           "message": message}))
