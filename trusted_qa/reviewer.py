@@ -145,12 +145,15 @@ def _output_instructions(packet: dict[str, Any]) -> str:
         "required_asr_terms word supplied for that beat, with asr_file, "
         "segment_indices, verbatim asr_excerpt, and four booleans all false when clear: "
         "sacred_name_disagreement, source_reference_disagreement, offensive_reading, "
-        "meaning_changing_disagreement. Each exact QC speech difference needs difference, decision "
+        "meaning_changing_disagreement. speech_difference_dispositions is an object keyed difference_01, "
+        "difference_02, ... in qc.speech_differences order, one key for EVERY difference; each "
+        "needs difference (copied exactly), decision "
         "'accepted' if resolved, notes, reason, unresolved_items, two ASR citations and the same four flags; "
         "video_review (decision, notes, unresolved_items, inspected_sampled_frames, "
         "checked_hindi_captions, checked_first_frame_source, checked_artwork_labels, "
         "checked_visual_integrity, checked_timeline_alignment, critical_defects); "
-        "qc_warning_dispositions (one entry for EVERY exact warning including repeats, with warning, "
+        "qc_warning_dispositions (an object keyed warning_01, warning_02, ... in qc.warnings order, one key "
+        "for EVERY exact warning including repeats, with warning copied exactly, "
         "decision 'accepted' if resolved, notes, reason, unresolved_items; speech warnings also need "
         "two ASR citations and four false critical flags); release_review (decision, notes, "
         "unresolved_items, verified_all_claims, verified_all_assets, verified_asr_and_decoded_frames, "
@@ -194,6 +197,13 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
         # Exact item counts make the decoding constraint too large to serve; the assembler checks them.
         return {"type": "array", "items": item}
 
+    def keyed(prefix: str, definition: str, count: int) -> dict[str, Any]:
+        # Required named properties are enforced where array lengths are not, so none can be skipped.
+        if not count:
+            return {"type": "array", "items": {"$ref": f"#/$defs/{definition}"}, "maxItems": 0}
+        return _object({keyed_name(prefix, index): {"$ref": f"#/$defs/{definition}"}
+                        for index in range(1, count + 1)})
+
     files = sorted({item["file"] for item in packet["full_final_audio_asr"]})
     citation = _object({"asr_file": {"type": "string", "enum": files},
                         "segment_indices": {"type": "array", "items": {"type": "integer"}},
@@ -215,16 +225,22 @@ def _response_schema(packet: dict[str, Any]) -> dict[str, Any]:
     qc = packet["qc"]
     audio = _object({**base("approved"), **flags(AUDIO_CHECKS), "checked_narration_transform": {"type": "boolean"},
                      "beat_reconciliation": exactly(beat, len(packet["script_beats"])),
-                     "speech_difference_dispositions": exactly(difference, len(qc["speech_differences"]))},
+                     "speech_difference_dispositions": keyed("difference", "difference",
+                                                             len(qc["speech_differences"]))},
                     optional=("checked_narration_transform",))
     video = _object({**base("approved"), **flags(VIDEO_CHECKS),
                      "critical_defects": {"type": "array", "items": {"type": "string"}}})
     release = _object({**base("approved"), **flags(RELEASE_CHECKS)})
-    return _object({"claim_findings": {"type": "array", "items": claim},
-                    "asset_findings": {"type": "array", "items": asset},
-                    "audio_review": audio, "video_review": video,
-                    "qc_warning_dispositions": exactly(warning, len(qc["warnings"])),
-                    "release_review": release})
+    schema = _object({"claim_findings": {"type": "array", "items": claim},
+                      "asset_findings": {"type": "array", "items": asset},
+                      "audio_review": audio, "video_review": video,
+                      "qc_warning_dispositions": keyed("warning", "warning", len(qc["warnings"])),
+                      "release_review": release})
+    return {"$defs": {"difference": difference, "warning": warning}, **schema}
+
+
+def keyed_name(prefix: str, index: int) -> str:
+    return f"{prefix}_{index:02d}"
 
 
 @dataclass(frozen=True)

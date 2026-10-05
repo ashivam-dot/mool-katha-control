@@ -91,6 +91,16 @@ def _asr_item(value: Any) -> Any:
     return item
 
 
+def _listed(value: Any, prefix: str) -> Any:
+    """Read the schema's keyed form ({prefix}_01, {prefix}_02, ...) as the ordered list it stands for."""
+    if not isinstance(value, dict):
+        return value
+    names = sorted(value)
+    if names != [f"{prefix}_{index:02d}" for index in range(1, len(names) + 1)]:
+        return value
+    return [value[name] for name in names]
+
+
 def _semantic(value: Any, keys: set[str], label: str, *, decision: str = "approved") -> dict:
     item = _exact(value, BASE | keys, label)
     reason, notes = item.get("reason"), item.get("notes")
@@ -423,7 +433,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                                     "critical_terms": terms, "asr_evidence": citations,
                                     **{name: False for name in CRITICAL_FLAGS}})
 
-    raw_differences = audio_item["speech_difference_dispositions"]
+    raw_differences = _listed(audio_item["speech_difference_dispositions"], "difference")
     differences = candidate.check["speech_differences"]
     require(isinstance(raw_differences, list) and len(raw_differences) == len(differences),
             "every exact QC speech difference needs a disposition")
@@ -467,7 +477,7 @@ def assemble_approved_review(candidate: Candidate, observations: ObservationSet,
                     **{name: True for name in VIDEO_CHECKS}}
 
     warnings = candidate.check["warnings"]
-    raw_warnings = decision["qc_warning_dispositions"]
+    raw_warnings = _listed(decision["qc_warning_dispositions"], "warning")
     require(isinstance(raw_warnings, list) and len(raw_warnings) == len(warnings),
             "every exact QC warning needs one disposition, including repeats")
     warning_dispositions: list[dict] = []

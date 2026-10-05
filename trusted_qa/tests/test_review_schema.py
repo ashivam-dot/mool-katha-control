@@ -1,6 +1,6 @@
 import unittest
 
-from trusted_qa.assemble import AUDIO_CHECKS, CLAIM_CHECKS, CRITICAL_FLAGS, _asr_item, _semantic, _without
+from trusted_qa.assemble import AUDIO_CHECKS, CLAIM_CHECKS, CRITICAL_FLAGS, _asr_item, _listed, _semantic, _without
 from trusted_qa.reviewer import _response_schema
 
 
@@ -21,6 +21,11 @@ class ReviewSchemaTests(unittest.TestCase):
         claim = schema["properties"]["claim_findings"]["items"]
         self.assertTrue(CLAIM_CHECKS <= set(claim["required"]))
         self.assertEqual(claim["properties"]["decision"]["enum"], ["approved", "hold"])
+        warnings = schema["properties"]["qc_warning_dispositions"]
+        self.assertEqual(warnings["required"], ["warning_01", "warning_02"])
+        self.assertEqual(audio["properties"]["speech_difference_dispositions"]["required"], ["difference_01"])
+        self.assertEqual(warnings["properties"]["warning_01"], {"$ref": "#/$defs/warning"})
+        self.assertIn("reason", schema["$defs"]["warning"]["required"])
 
     def test_inapplicable_optional_fields_are_dropped(self):
         self.assertEqual(_without({"id": "x", "license_excerpt": "n/a"}, {"license_excerpt"}), {"id": "x"})
@@ -46,3 +51,10 @@ class ReviewSchemaTests(unittest.TestCase):
                          {"difference", "reason"}, "difference 1", decision="accepted")
         self.assertTrue(item["reason"].startswith("Phonetic variation: The ASR wrote"))
         self.assertGreaterEqual(len(item["reason"]), 30)
+
+    def test_keyed_dispositions_cannot_be_skipped_and_read_back_in_order(self):
+        keyed = {"difference_02": "b", "difference_01": "a", "difference_03": "c"}
+        self.assertEqual(_listed(keyed, "difference"), ["a", "b", "c"])
+        self.assertEqual(_listed({"difference_01": "a", "difference_03": "c"}, "difference"),
+                         {"difference_01": "a", "difference_03": "c"})
+        self.assertEqual(_listed(["a"], "difference"), ["a"])
