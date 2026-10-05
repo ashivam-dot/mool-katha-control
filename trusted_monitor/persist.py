@@ -22,6 +22,7 @@ BUFFER_CHANNELS = {"youtube": "6ac06721ea19ca0bde5dbe63",
 BUFFER_ORG_ID = "6ac066851cde9b9edca25c7b"
 YOUTUBE_ID = "UCdqxVnoHDWXgA2ZVJWkSu8w"
 METRICS = ("views", "reach", "reactions", "comments", "shares", "saves", "follows")
+STORY_LINK = r"https://(?:www\.)?instagram\.com/stories/moolkatha\.hindi/[0-9]{1,30}/?"
 IST = ZoneInfo("Asia/Kolkata")
 UTC = timezone.utc
 
@@ -92,7 +93,11 @@ def _post(row: object, service: str) -> dict:
         raise PersistError("analytics post ID is invalid")
     link = row.get("external_link")
     if link is not None and not _platform_link(link, service):
-        raise PersistError("analytics public link is invalid")
+        # A Story expires after a day, so it is counted without a lasting public link.
+        if service == "instagram" and re.fullmatch(STORY_LINK, link):
+            link = None
+        else:
+            raise PersistError("analytics public link is invalid")
     values = row.get("metrics")
     if not isinstance(values, dict) or any(key not in METRICS for key in values):
         raise PersistError("analytics post metrics are invalid")

@@ -263,7 +263,7 @@ class ProviderAndFetchTests(unittest.TestCase):
             cited = [{"asr_file": name, "segment_indices": [1],
                       "asr_excerpt": "राम नल से कहते हैं।"} for name in asr]
             self.assertEqual(len(_citations(cited, asr, "beat", critical_terms=["नल"])), 2)
-            with self.assertRaisesRegex(QaHold, "critical term"):
+            with self.assertRaisesRegex(QaHold, "missed signed terms"):
                 _citations(cited, asr, "beat", critical_terms=["विश्वकर्मा"])
 
     def test_beat_citations_are_contiguous_and_each_segment_overlaps(self) -> None:

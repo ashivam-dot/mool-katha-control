@@ -90,7 +90,7 @@ class FrameAuditTests(unittest.TestCase):
         self.assertEqual(audit["frame_batches"], [{key: evidence.review["batches"][0][key]
                                                     for key in ("file", "sha256", "start_index", "end_index",
                                                                 "first_seconds", "last_seconds")}])
-        self.assertEqual(evidence.review["batches"][0]["checked_indices"], list(range(1, 11)))
+        self.assertEqual(evidence.review["batches"][0]["checked_indices"], [1])
         self.assertEqual(digest_file(evidence.audit_path), evidence.review["all_frame_audit_sha256"])
         evidence.recheck(video_hash, 10)
         evidence.sheet_paths[0].write_bytes(b"tampered sheet")

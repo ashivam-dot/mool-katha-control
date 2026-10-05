@@ -1,4 +1,4 @@
-# Frozen, independently reviewed candidate QA. Only the qa-v10 tag may sign.
+# Frozen, independently reviewed candidate QA. Only the qa-v11 tag may sign.
 # The final job transfers signed evidence to untrusted Modal storage; it has
 # neither the signing key nor any publisher credential.
 name: Signed independent QA
@@ -24,7 +24,7 @@ jobs:
       - name: Require pinned release tag
         shell: bash
         run: |
-          test "$GITHUB_REF" = 'refs/tags/qa-v10'
+          test "$GITHUB_REF" = 'refs/tags/qa-v11'
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           mkdir -p discovery-output
           source_commit="$(git -C source rev-parse HEAD)"
-          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 1 --unlocked-only)"
+          candidates="$(python -m trusted_qa discover --source-repo source --source-commit "$source_commit" --limit 2 --unlocked-only)"
           printf 'candidates=%s\n' "$candidates" >> "$GITHUB_OUTPUT"
           QA_SOURCE_COMMIT="$source_commit" QA_CANDIDATES="$candidates" python - <<'PY'
           import json

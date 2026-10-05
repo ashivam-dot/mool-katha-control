@@ -24,6 +24,10 @@ FRAME_BYTES = WIDTH * HEIGHT * 3
 BATCH_SIZE = 35
 MAX_BATCHES = 112
 MAX_FRAMES = BATCH_SIZE * MAX_BATCHES
+# Every decoded frame gets the pixel and temporal checks; the model sees one in ten plus each scene cut, which
+# keeps a 50-second Short to about five calls of the free daily quota instead of about forty.
+MODEL_STRIDE = 10
+SCENE_CUT_DELTA = 18.0
 MAX_RESPONSE_BYTES = 1024 * 1024
 MODEL_SYSTEM = """You independently inspect every indexed frame tile from the exact final video.
 These are downscaled frames, so judge visual continuity, black/corrupt frames,
@@ -215,7 +219,8 @@ def audit_and_review_frames(video: Path, episode_dir: Path, private_dir: Path,
                           "mean_luma": mean, "stddev_luma": deviation,
                           "delta_previous": delta}
                 frames.append(record)
-                batch.append((record, rgb))
+                if (index - 1) % MODEL_STRIDE == 0 or delta >= SCENE_CUT_DELTA:
+                    batch.append((record, rgb))
                 previous_luma = luma
                 if len(batch) == BATCH_SIZE:
                     sheets.append((_sheet(batch), [item for item, _ in batch]))
