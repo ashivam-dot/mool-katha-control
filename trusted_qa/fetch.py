@@ -217,12 +217,25 @@ class FetchObservation:
                 "printed_verse_label": printed_label}
 
     def rights_record(self, license_excerpt: str) -> dict:
+        if isinstance(license_excerpt, str) and license_excerpt not in self.text:
+            license_excerpt = self._json_pair(license_excerpt) or license_excerpt
         require(isinstance(license_excerpt, str) and len(license_excerpt.strip()) >= 10 and
                 license_excerpt in self.text, "license excerpt is absent from fetched snapshot")
         return {"url": self.url, "fetched_at": self.fetched_at, "http_status": self.http_status,
                 "response_sha256": self.response_sha256, "response_ref": self.response_ref,
                 "snapshot_ref": self.snapshot_ref,
                 "snapshot_sha256": self.snapshot_sha256, "license_excerpt": license_excerpt}
+
+    def _json_pair(self, excerpt: str) -> str | None:
+        """The exact JSON text for a reviewer's `key: value` rendering of one string field of an API page."""
+        match = re.fullmatch(r'\s*"?([A-Za-z_][A-Za-z0-9_]*)"?\s*:\s*"?([^"\n]+?)"?\s*', excerpt)
+        if not match:
+            return None
+        key, value = match.groups()
+        for candidate in (f'"{key}": "{value}"', f'"{key}":"{value}"'):
+            if candidate in self.text:
+                return candidate
+        return None
 
 
 def fetch_observation(url: str, episode_dir: Path, private_audit_dir: Path) -> FetchObservation:
@@ -278,13 +291,22 @@ def text_window(snapshot: str, needles: list[str], max_chars: int = 12000) -> st
     positions = [position for position in positions if position >= 0]
     if not positions:
         return snapshot[:max_chars]
-    chunks: list[str] = []
-    used: list[tuple[int, int]] = []
+    windows: list[tuple[int, int]] = []
     for position in positions[:8]:
-        start = max(0, position - 1500)
-        end = min(len(snapshot), position + 4500)
-        if any(start < past_end and end > past_start for past_start, past_end in used):
+        window = (max(0, position - 1500), min(len(snapshot), position + 4500))
+        merged = _merge(windows + [window])
+        if windows and sum(end - start for start, end in merged) > max_chars:
             continue
-        used.append((start, end))
-        chunks.append(snapshot[start:end])
-    return "\n[…]\n".join(chunks)[:max_chars]
+        windows = merged
+    chunks = [snapshot[start:end] for start, end in windows]
+    return "\n[…]\n".join(chunks)[:max_chars + 8 * len(chunks)]
+
+
+def _merge(windows: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    merged: list[tuple[int, int]] = []
+    for start, end in sorted(windows):
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged

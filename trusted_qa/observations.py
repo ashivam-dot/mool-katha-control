@@ -96,8 +96,9 @@ def collect_observations(candidate: Candidate, private_audit_dir: Path) -> Obser
                         "fetched_at": page.fetched_at, "response_sha256": page.response_sha256,
                         "response_ref": page.response_ref,
                         "snapshot_ref": page.snapshot_ref, "snapshot_sha256": page.snapshot_sha256,
-                        "fetched_context": text_window(page.text, [asset.get("license", ""),
-                                                                   "commercial", "derivatives", "credit"])}
+                        "fetched_context": text_window(page.text, [asset.get("license", ""), "ownership",
+                                                                   "commercial", "derivative", "credit",
+                                                                   "CC0", "public domain", "Creative Commons"])}
         elif rights_url.startswith("internal:"):
             require(len(asset["rights_basis"].strip()) >= 20,
                     f"asset {identity} internal provenance explanation is too short")
