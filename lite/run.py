@@ -104,10 +104,14 @@ class Calls:
     def generate(self, purpose: str):
         from ytc import llm
 
+        # Flash Lite and the light backups wrote Hindi scripts far under length with misquoted evidence
+        # (2026-10-06), so with Flash spent the lane waits for quota rather than burn a topic on them.
+        models = (*llm.FLASH, *(llm.JUDGES if "review" in purpose else llm.BACKUP_STRONG))
+
         def call(prompt: str, schema: dict):
             before = len(llm.calls)
             try:
-                return llm.generate(prompt, schema=schema, models=llm.STRONG, temperature=0.4, purpose=purpose)
+                return llm.generate(prompt, schema=schema, models=models, temperature=0.4, purpose=purpose)
             except (llm.OutOfQuota, llm.Overloaded) as err:
                 raise WaitForQuota(str(err)) from err
             finally:
@@ -321,7 +325,7 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
         youtube_id, instagram_id = publisher.destinations()
         yt_rows = publisher.recent_posts(youtube_id, now)
         ig_rows = publisher.recent_posts(instagram_id, now)
-        slot = slots.free_slot(now, yt_rows, ig_rows)
+        slot = slots.free_slot(now, yt_rows, ig_rows, days_ahead=slots.BOOK_AHEAD_DAYS)
         summary["free_slot"] = slot.isoformat() if slot else None
         if slot is None:
             summary["status"] = "no_free_slot"
@@ -371,7 +375,7 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
     from . import publisher
 
     slot = slots.free_slot(datetime.now(timezone.utc), publisher.recent_posts(youtube_id, now),
-                           publisher.recent_posts(instagram_id, now))
+                           publisher.recent_posts(instagram_id, now), days_ahead=slots.BOOK_AHEAD_DAYS)
     ledger["pending"] = None
     return _schedule(record, Path(record["video"]), slot, ledger, youtube_id, instagram_id, now, summary, calls)
 

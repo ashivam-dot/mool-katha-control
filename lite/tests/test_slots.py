@@ -50,6 +50,13 @@ class FreeSlotTest(unittest.TestCase):
         now = datetime(2026, 10, 6, 9, 0, tzinfo=IST)
         self.assertIsNone(slots.free_slot(now, full, []))
 
+    def test_lane_books_today_only(self):
+        day = [post("2026-10-06T19:00:00+05:30"), post("2026-10-06T20:30:00+05:30")]
+        now = datetime(2026, 10, 6, 8, 0, tzinfo=IST)
+        self.assertIsNone(slots.free_slot(now, day, [], days_ahead=slots.BOOK_AHEAD_DAYS))
+        late = datetime(2026, 10, 6, 21, 30, tzinfo=IST)
+        self.assertIsNone(slots.free_slot(late, [], [], days_ahead=slots.BOOK_AHEAD_DAYS))
+
     def test_utc_works_from_any_zone(self):
         now = datetime(2026, 10, 5, 18, 40, tzinfo=timezone.utc)  # 00:10 IST on 6 October
         self.assertEqual(slots.utc(slots.free_slot(now, [], [])), "2026-10-06T12:00:00+00:00")

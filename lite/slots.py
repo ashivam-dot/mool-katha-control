@@ -14,6 +14,9 @@ MIN_GAP = timedelta(minutes=60)
 # Time to host the file and let Buffer take the post before it is due.
 LEAD = timedelta(minutes=40)
 INACTIVE = ("error", "draft")
+# The lite lane books today only: the signed lane books its own posts on the day, so a lite post booked for
+# tomorrow could not see them and the day could pass two Shorts.
+BOOK_AHEAD_DAYS = 0
 
 
 def _due(row: dict) -> datetime | None:
