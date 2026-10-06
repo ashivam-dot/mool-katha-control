@@ -2,5 +2,9 @@
  "episodes": [],
  "skipped": {},
  "pending": null,
- "ready": null
+ "ready": null,
+ "strikes": {
+  "ramayana-5-1": 1,
+  "mahabharata-1-1": 1
+ }
 }
