@@ -210,6 +210,15 @@ def verdict_for(script, bad_beat=None):
             "respectful": True, "title_reveals_answer": False, "summary": ""}
 
 
+class TextWaitTest(unittest.TestCase):
+    def test_busy_models_end_the_run_as_waiting_for_quota(self):
+        calls = run.Calls()
+        calls._text_deadline = 0
+        with self.assertRaises(run.WaitForQuota):
+            calls.generate("lite script")("prompt", {})
+        self.assertEqual(calls.gemini, 0)
+
+
 class PrepareTest(unittest.TestCase):
     def setUp(self):
         self.passage = sources.parse_valmiki(VALMIKI_PAGE, "https://x")

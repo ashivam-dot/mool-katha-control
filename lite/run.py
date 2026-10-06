@@ -8,6 +8,7 @@ import os
 import random
 import shutil
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,6 +28,10 @@ MAX_REPAIRS = 2
 TTS_RESERVE = 4
 # Runs a topic may fail at scripting or source review before it is set aside for good.
 MAX_TOPIC_STRIKES = 2
+# With Flash spent, OVH's shared Qwen stayed rate-limited for over an hour (2026-10-06) and the job timed out at
+# 80 minutes; the lane gives up early and a later run (or the 07:00 UTC quota reset) picks the topic up again.
+TEXT_WAIT_PER_CALL = 480
+TEXT_WAIT_PER_RUN = 2400
 VOICE = "Sulafat"
 # Sargas per kanda on valmikiramayan.net, for picking fresh passages once the curated topics are used.
 VALMIKI_SARGAS = {1: 77, 2: 119, 3: 75, 4: 67, 5: 68, 6: 128}
@@ -92,6 +97,7 @@ class Calls:
         self.gemini_tts = 0
         self.fallback = 0
         self._wrapped = False
+        self._text_deadline = time.monotonic() + TEXT_WAIT_PER_RUN
 
     @property
     def gemini(self) -> int:
@@ -109,6 +115,9 @@ class Calls:
         models = (*llm.FLASH, *(llm.JUDGES if "review" in purpose else llm.BACKUP_STRONG))
 
         def call(prompt: str, schema: dict):
+            if time.monotonic() > self._text_deadline:
+                raise WaitForQuota(f"text models stayed busy for {TEXT_WAIT_PER_RUN // 60} minutes this run")
+            llm.OVERLOAD_WAIT = min(llm.OVERLOAD_WAIT, TEXT_WAIT_PER_CALL)
             before = len(llm.calls)
             try:
                 return llm.generate(prompt, schema=schema, models=models, temperature=0.4, purpose=purpose)
