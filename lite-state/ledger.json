@@ -1,6 +1,9 @@
 {
  "episodes": [],
- "skipped": {},
+ "skipped": {
+  "ramayana-5-1": "first picture failed: 400 Client Error: Use thumbnail sizes listed on https://w.wiki/GHai for url: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/%E5%8D%81%E4%BA%8C%E5%A4%A9%E5%83%8F%28%E7%",
+  "mahabharata-1-1": "https://archive.sacred-texts.com/hin/m01/m01002.htm returned HTTP 403"
+ },
  "pending": null,
  "ready": null
 }
