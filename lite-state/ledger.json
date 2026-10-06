@@ -134,6 +134,147 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261006-1323",
+   "topic_key": "mahabharata-1-1",
+   "title": "महाभारत लिखने के लिए गणेश जी ने क्या शर्त रखी थी?",
+   "description": "महाभारत के आदि पर्व के अनुसार, व्यास जी ने महाभारत लिखने के लिए गणेश जी को आमंत्रित किया था। गणेश जी ने बिना रुके लिखने की शर्त रखी, जिसके जवाब में व्यास जी ने एक अद्भुत युक्ति निकाली।",
+   "citation": "महाभारत · आदि पर्व · खंड 1 (गांगुली अनुवाद)",
+   "source_url": "https://archive.sacred-texts.com/hin/m01/m01002.htm",
+   "translator": "Kisari Mohan Ganguli (1883-1896), sacred-texts.com",
+   "hashtags": [
+    "#mahabharat",
+    "#ganesha",
+    "#vyasa",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Mahabharat Ganesha story",
+    "Vyasa Ganesha condition",
+    "Who wrote Mahabharat",
+    "महाभारत",
+    "गणेश जी",
+    "व्यास जी"
+   ],
+   "key_quote": "I will become the writer of thy work, provided my pen do not for a moment cease writing.",
+   "shloka": null,
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Ganesa_writing_the_Mahabharat.jpeg/1280px-Ganesa_writing_the_Mahabharat.jpeg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ganesa writing the Mahabharat",
+      "credit": "Indian from Mewar, Rajasthan, Northern India",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ganesa_writing_the_Mahabharat.jpeg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Ribera_-_A_Greek_Sage%2C_c._1630.jpg/1920px-Ribera_-_A_Greek_Sage%2C_c._1630.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ribera - A Greek Sage, c. 1630",
+      "credit": "Jusepe de Ribera",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ribera_-_A_Greek_Sage,_c._1630.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Unidentified_-_Brahma_-_2021.340_-_Metropolitan_Museum_of_Art.jpg/1920px-Unidentified_-_Brahma_-_2021.340_-_Metropolitan_Museum_of_Art.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Unidentified - Brahma - 2021.340 - Metropolitan Museum of Art",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Unidentified_-_Brahma_-_2021.340_-_Metropolitan_Museum_of_Art.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Ganesha_deva.JPG/1280px-Ganesha_deva.JPG",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ganesha deva",
+      "credit": "E. A. Rodrigues",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ganesha_deva.JPG"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/The_sage_Vyasa_with_disciples_observes_his_son_Sukya_approaching_them_like_a_ball_of_fire.jpg/1280px-The_sage_Vyasa_with_disciples_observes_his_son_Sukya_approaching_them_like_a_ball_of_fire.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "The sage Vyasa with disciples observes his son Sukya approaching them like a ball of fire",
+      "credit": "Banwari (artist)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:The_sage_Vyasa_with_disciples_observes_his_son_Sukya_approaching_them_like_a_ball_of_fire.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Ganesha_miniature_painting.jpg/1280px-Ganesha_miniature_painting.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ganesha miniature painting",
+      "credit": "Unknown artist Unknown artist",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ganesha_miniature_painting.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Ganesha_Basohli_miniature_circa_1730_Dubost_p73.jpg/960px-Ganesha_Basohli_miniature_circa_1730_Dubost_p73.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ganesha Basohli miniature circa 1730 Dubost p73",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ganesha_Basohli_miniature_circa_1730_Dubost_p73.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.889,
+    "duration": true,
+    "loudness": true,
+    "seconds": 42.19,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 5,
+    "gemini_tts": 1,
+    "gemini_total": 6,
+    "free_fallback": 0
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261006-1323-a76e21821c06494a",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791273873/mool-katha/lite-20261006-1323-a76e21821c06494a.mp4",
+    "due_at": "2026-10-06T21:45:00+05:30",
+    "youtube": {
+     "id": "6ac4ab931438456395acb9a2",
+     "status": "scheduled",
+     "due_at": "2026-10-06T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac4ab94b0effcd6ca4fae0f",
+     "status": "scheduled",
+     "due_at": "2026-10-06T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-06T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-06T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {},
