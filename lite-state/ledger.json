@@ -1,5 +1,141 @@
 {
- "episodes": [],
+ "episodes": [
+  {
+   "id": "lite-20261006-1237",
+   "topic_key": "ramayana-5-1",
+   "title": "रामायण के अनुसार हनुमान जी ने सुरसा की परीक्षा कैसे पार की?",
+   "description": "वाल्मीकि रामायण के सुन्दरकाण्ड में वर्णित है कि समुद्र लांघते समय हनुमान जी की परीक्षा लेने नागमाता सुरसा आईं। जानिए कैसे बुद्धि और सूक्ष्म रूप के बल पर मारुति ने यह परीक्षा पार की।",
+   "citation": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 1",
+   "source_url": "https://www.valmikiramayan.net/utf8/sundara/sarga1/sundarasans1.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#ramayan",
+    "#hanuman",
+    "#sundarkand",
+    "#valmikiramayan"
+   ],
+   "keywords": [
+    "Valmiki Ramayana",
+    "Sundarakanda",
+    "Hanuman Surasa",
+    "Surasa test",
+    "Mool Katha",
+    "हनुमान",
+    "सुरसा"
+   ],
+   "key_quote": "The great wise Hanuma seeing that mouth with a long tongue which was horrible and equal to hell being opened by Surasa, greatly reduced His own body and became the size of a thumb.",
+   "shloka": {
+    "number": "5-1-167",
+    "sanskrit": "तद्दृष्ट्वा व्यादितं त्वास्यं वायुपुत्रः सुबुद्धिमान् | दीर्घजिह्वं सुरसया सुघोरं नरकोपमम् || ५-१-१६७ सुसंक्षिप्यात्मनः कायं बभूवाञ्गुष्ठमात्रकः |"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg/1920px-Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama and Hanuman fighting Ravana, an album painting on paper, c1820",
+      "credit": "Anonymous Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama_and_Hanuman_fighting_Ravana,_an_album_painting_on_paper,_c1820.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman%2C_M_V_Dhurandar.jpg/1280px-Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman%2C_M_V_Dhurandar.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Sree Raghunandan - Ram Laxman Sita and Hanuman, M V Dhurandar",
+      "credit": "M. V. Dhurandhar (1867- 1944)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman,_M_V_Dhurandar.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Hanuman_and_Surasa.jpg/1280px-Hanuman_and_Surasa.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman and Surasa",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_and_Surasa.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Hanuman_painted_by_Pahari_Painter.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman painted by Pahari Painter",
+      "credit": "Probably Nurpur, Punjab Hills, Northern India",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_painted_by_Pahari_Painter.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Painting_depicting_Hanuman%2C_Durga%2C_and_Bhairava.jpg/1280px-Painting_depicting_Hanuman%2C_Durga%2C_and_Bhairava.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Painting depicting Hanuman, Durga, and Bhairava",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Painting_depicting_Hanuman,_Durga,_and_Bhairava.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Hanuman_carrying_Rama_on_his_shoulders.jpg/1920px-Hanuman_carrying_Rama_on_his_shoulders.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman carrying Rama on his shoulders",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_carrying_Rama_on_his_shoulders.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.975,
+    "duration": true,
+    "loudness": true,
+    "seconds": 47.07,
+    "lufs": -14.1
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261006-1237-69483d46d1feb408",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791271122/mool-katha/lite-20261006-1237-69483d46d1feb408.mp4",
+    "due_at": "2026-10-06T17:30:00+05:30",
+    "youtube": {
+     "id": "6ac4a0d4561defb21475c863",
+     "status": "scheduled",
+     "due_at": "2026-10-06T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac4a0d53219394954afd3a3",
+     "status": "scheduled",
+     "due_at": "2026-10-06T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-06T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-06T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
+  }
+ ],
  "skipped": {},
  "pending": null,
  "ready": null,
