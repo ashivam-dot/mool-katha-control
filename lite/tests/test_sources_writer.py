@@ -37,6 +37,25 @@ class SourcesTest(unittest.TestCase):
         self.assertEqual(p.citation_hi, "महाभारत · महाप्रस्थानिक पर्व · खंड 3 (गांगुली अनुवाद)")
         self.assertNotIn("footnote", p.writer_text().lower())
 
+    def test_sacred_texts_403_falls_back_to_a_mirror(self):
+        url = sources.sacred_url("mahabharata", 17, 3)
+        seen = []
+
+        def fake_get(u):
+            seen.append(u)
+            if "web.archive.org" not in u:
+                raise sources.SourceError(f"{u} returned HTTP 403")
+            return SACRED_PAGE
+
+        original, sources._get = sources._get, fake_get
+        try:
+            p = sources.fetch({"work": "mahabharata", "book": 17, "page": 3})
+        finally:
+            sources._get = original
+        self.assertEqual(len(seen), 3)
+        self.assertEqual(seen[2], "https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m17/m17003.htm")
+        self.assertEqual(p.url, url)
+
     def test_page_without_numbers_is_refused(self):
         with self.assertRaises(sources.SourceError):
             sources.parse_sacred("<title>Something</title><p>" + "text " * 30 + "</p>", "https://x", "mahabharata")
@@ -159,6 +178,63 @@ class TopicTest(unittest.TestCase):
         fresh = run.next_topic(ledger)
         self.assertTrue(fresh["key"].startswith("ramayana-"))
         self.assertNotIn(fresh["key"], ledger["skipped"])
+
+    def test_review_rejection_gets_a_second_run_but_a_bad_source_does_not(self):
+        topics = json.loads(run.TOPICS.read_text(encoding="utf-8"))
+        ledger = {"episodes": [], "skipped": {}, "pending": None, "ready": None}
+        run.strike(ledger, topics[0]["key"], "source review: beat 8 is not supported")
+        self.assertEqual(run.next_topic(ledger)["key"], topics[0]["key"])
+        self.assertEqual(run.next_topic(ledger, exclude={topics[0]["key"]})["key"], topics[1]["key"])
+        run.strike(ledger, topics[0]["key"], "source review: beat 8 is not supported")
+        self.assertIn(topics[0]["key"], ledger["skipped"])
+        run.strike(ledger, topics[1]["key"], "first picture failed: 404")
+        self.assertIn(topics[1]["key"], ledger["skipped"])
+
+
+class FakeCalls(run.Calls):
+    def __init__(self, replies):
+        super().__init__()
+        self.replies, self.purposes = replies, []
+
+    def generate(self, purpose):
+        def call(prompt, schema):
+            self.gemini_text += 1
+            self.purposes.append(purpose)
+            return self.replies[purpose].pop(0)
+        return call
+
+
+def verdict_for(script, bad_beat=None):
+    return {"items": [{"beat": n, "factual": True, "supported": n != bad_beat, "note": "overstated"}
+                      for n in range(1, len(script["beats"]) + 1)],
+            "respectful": True, "title_reveals_answer": False, "summary": ""}
+
+
+class PrepareTest(unittest.TestCase):
+    def setUp(self):
+        self.passage = sources.parse_valmiki(VALMIKI_PAGE, "https://x")
+        self._fetch = run.sources.fetch
+        run.sources.fetch = lambda topic: self.passage
+
+    def tearDown(self):
+        run.sources.fetch = self._fetch
+
+    def test_repairs_until_the_review_passes(self):
+        script = good_script()
+        calls = FakeCalls({"lite script": [script], "lite script repair": [script, script],
+                           "lite source review": [verdict_for(script, 3), verdict_for(script, 3), verdict_for(script)]})
+        _, _, record = run.prepare({"key": "t", "angle": ""}, calls)
+        self.assertTrue(record["ok"])
+        self.assertEqual(calls.purposes.count("lite script repair"), 2)
+        self.assertLessEqual(calls.gemini + run.TTS_RESERVE, run.MAX_GEMINI_CALLS)
+
+    def test_gives_up_after_the_repairs_with_the_reason(self):
+        script = good_script()
+        calls = FakeCalls({"lite script": [script], "lite script repair": [script, script],
+                           "lite source review": [verdict_for(script, 3)] * 3})
+        with self.assertRaisesRegex(ValueError, "^source review: beat 3"):
+            run.prepare({"key": "t", "angle": ""}, calls)
+        self.assertEqual(calls.gemini, 6)
 
 
 if __name__ == "__main__":

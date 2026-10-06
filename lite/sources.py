@@ -208,7 +208,24 @@ def fetch(ref: dict) -> Passage:
             raise SourceError(f"{passage.url} is kanda {passage.book} sarga {passage.chapter}, not the requested one")
         return passage
     url = sacred_url(ref["work"], int(ref["book"]), int(ref["page"]))
-    return parse_sacred(_get(url), url, ref["work"])
+    return parse_sacred(_get_sacred(url), url, ref["work"])
+
+
+def sacred_mirrors(url: str) -> list[str]:
+    """The same sacred-texts page from its other host, then the Wayback Machine's unmodified copy: sacred-texts
+    refuses some cloud runners' addresses with HTTP 403."""
+    path = url.removeprefix(SACRED.rsplit("/", 1)[0])
+    return [url, f"https://sacred-texts.com{path}", f"https://web.archive.org/web/2025id_/https://sacred-texts.com{path}"]
+
+
+def _get_sacred(url: str) -> str:
+    errors = []
+    for mirror in sacred_mirrors(url):
+        try:
+            return _get(mirror)
+        except SourceError as err:
+            errors.append(str(err))
+    raise SourceError("; ".join(errors))
 
 
 def normalize(text: str) -> str:

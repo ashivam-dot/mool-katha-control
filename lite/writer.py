@@ -57,7 +57,9 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         "STRICT RULES",
         "1. Every factual statement must be directly supported by the PASSAGE below. Add nothing from memory,"
         " other versions (Tulsidas, TV serials, folk tellings) or later commentary. If a popular detail is not in the"
-        " passage, leave it out. Never invent numbers, names, verse numbers or dialogue.",
+        " passage, leave it out. Never invent numbers, names, verse numbers or dialogue. Do not dramatise or"
+        " intensify: no 'never', 'not even for a moment', 'all', 'first ever', superlatives, motives or feelings"
+        " unless the passage itself says so. Each beat must say no more than its evidence quote says.",
         "2. Tell ONE story through a lesser-known true detail from this passage.",
         "3. Beat 1 is the hook, spoken in the first 2 seconds: a sharp question or a surprising statement, at most"
         f" {HOOK_MAX_WORDS} words. Never start with a greeting, the channel name, 'क्या आप जानते', 'कल्पना कीजिए',"

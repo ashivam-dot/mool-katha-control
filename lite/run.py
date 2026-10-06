@@ -22,6 +22,11 @@ TOPICS = Path(__file__).with_name("topics.json")
 LEDGER = Path(os.environ.get("LITE_LEDGER", CONTROL_ROOT / "lite-state" / "ledger.json"))
 MAX_GEMINI_CALLS = 15
 MAX_GATE_ATTEMPTS = 2
+MAX_REPAIRS = 2
+# Gemini TTS takes a Short usually needs; script repairs never spend these.
+TTS_RESERVE = 4
+# Runs a topic may fail at scripting or source review before it is set aside for good.
+MAX_TOPIC_STRIKES = 2
 VOICE = "Sulafat"
 # Sargas per kanda on valmikiramayan.net, for picking fresh passages once the curated topics are used.
 VALMIKI_SARGAS = {1: 77, 2: 119, 3: 75, 4: 67, 5: 68, 6: 128}
@@ -61,8 +66,8 @@ def used_keys(ledger: dict) -> set[str]:
     return keys
 
 
-def next_topic(ledger: dict, rng: random.Random | None = None) -> dict:
-    used = used_keys(ledger)
+def next_topic(ledger: dict, rng: random.Random | None = None, exclude: set[str] = frozenset()) -> dict:
+    used = used_keys(ledger) | set(exclude)
     for topic in json.loads(TOPICS.read_text(encoding="utf-8")):
         if topic["key"] not in used:
             return topic
@@ -203,15 +208,18 @@ def prepare(topic: dict, calls: Calls, length_hint: str = "") -> tuple[dict, sou
         raise ValueError("script: " + "; ".join(problems[:6]))
     calls.check(1)
     ok, issues, result = review.review(script, passage, calls.generate("lite source review"))
-    if not ok:
-        calls.check(2)
-        fixed, problems = writer.write(passage, topic.get("angle", ""), _repair(calls, issues, script), tries=1)
+    for _ in range(MAX_REPAIRS):
+        if ok or calls.gemini + 2 + TTS_RESERVE > MAX_GEMINI_CALLS:
+            break
+        log.info("source review rejected the draft; repairing: %s", "; ".join(issues[:4]))
+        script, problems = writer.write(passage, topic.get("angle", ""), _repair(calls, issues, script), tries=1,
+                                        length_hint=length_hint)
         if problems:
-            raise ValueError("repair: " + "; ".join(problems[:6]))
-        script = fixed
+            ok, issues = False, [*issues, *problems]
+            continue
         ok, issues, result = review.review(script, passage, calls.generate("lite source review"))
-        if not ok:
-            raise ValueError("source review: " + "; ".join(issues[:6]))
+    if not ok:
+        raise ValueError("source review: " + "; ".join(issues[:6]))
     return script, passage, {"ok": True, "issues": [], "result": result}
 
 
@@ -323,9 +331,9 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
             return _schedule(ready, Path(ready["video"]) if Path(ready.get("video", "")).exists() else None,
                              slot, ledger, youtube_id, instagram_id, now, summary, calls)
     ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
-    tried = 0
-    while tried < 2:
-        topic = current_topic(ledger)
+    tried: set[str] = set()
+    while len(tried) < 2:
+        topic = current_topic(ledger, exclude=tried)
         summary["topic"] = topic["key"]
         try:
             record = produce(ep_id, topic, ledger, calls, producer_root, out)
@@ -342,10 +350,10 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
             log.warning("topic %s failed: %s", topic["key"], err)
             summary.setdefault("failed_topics", []).append({"topic": topic["key"], "reason": str(err)[:400]})
             if "gate failed" not in str(err):
-                ledger.setdefault("skipped", {})[topic["key"]] = str(err)[:200]
+                strike(ledger, topic["key"], str(err))
                 ledger["pending"] = None
             save_ledger(ledger)
-            tried += 1
+            tried.add(topic["key"])
             if calls.gemini + 6 > MAX_GEMINI_CALLS or "gate failed" in str(err):
                 summary.update(status="failed", calls=calls.to_json())
                 return summary
@@ -368,11 +376,20 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
     return _schedule(record, Path(record["video"]), slot, ledger, youtube_id, instagram_id, now, summary, calls)
 
 
-def current_topic(ledger: dict) -> dict:
+def strike(ledger: dict, key: str, reason: str) -> None:
+    """Count a failed scripting/review run; a source or picture error, or a second strike, sets the topic aside."""
+    strikes = ledger.setdefault("strikes", {})
+    strikes[key] = strikes.get(key, 0) + 1
+    retryable = reason.startswith(("source review:", "script:"))
+    if not retryable or strikes[key] >= MAX_TOPIC_STRIKES:
+        ledger.setdefault("skipped", {})[key] = reason[:200]
+
+
+def current_topic(ledger: dict, exclude: set[str] = frozenset()) -> dict:
     """The topic a pending (scripted but not yet published) Short belongs to, else the next unused one."""
     pending = ledger.get("pending")
-    if not pending:
-        return next_topic(ledger)
+    if not pending or pending["topic_key"] in exclude:
+        return next_topic(ledger, exclude=exclude)
     key = pending["topic_key"]
     for topic in json.loads(TOPICS.read_text(encoding="utf-8")):
         if topic["key"] == key:

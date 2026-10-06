@@ -36,6 +36,11 @@ class ThumbUrl(unittest.TestCase):
                          "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Hanuman_Surasa.jpg/1920px-Hanuman_Surasa.jpg")
         self.assertTrue(art.thumb_url(ORIGINAL, 1920).endswith("/1280px-Hanuman_Surasa.jpg"))
 
+    def test_tracking_query_is_dropped(self):
+        tracked = ORIGINAL + "?utm_source=commons.wikimedia.org&utm_campaign=imageinfo"
+        self.assertTrue(art.thumb_url(tracked, 2500).endswith("/Hanuman_Surasa.jpg/1920px-Hanuman_Surasa.jpg"))
+        self.assertEqual(art.thumb_url(tracked, 900), ORIGINAL)
+
     def test_small_or_foreign_originals_are_kept(self):
         self.assertEqual(art.thumb_url(ORIGINAL, 900), ORIGINAL)
         self.assertEqual(art.thumb_url("https://example.org/x.jpg", 4000), "https://example.org/x.jpg")
@@ -64,6 +69,14 @@ class Download(unittest.TestCase):
             got = art.download([pic(1), pic(2), pic(3), pic(4)], self.tmp / "pics")
         self.assertEqual(got[1], 1)
         self.assertEqual(sum(isinstance(g, dict) for g in got), 3)
+
+    def test_failed_first_picture_shows_the_first_that_downloaded(self):
+        replies = iter([Response(400), Response(200, _jpeg()), Response(200, _jpeg()), Response(200, _jpeg())])
+        with mock.patch.object(art.requests, "get", side_effect=lambda *a, **k: next(replies)):
+            got = art.download([pic(1), pic(2), pic(3), pic(4), 1], self.tmp / "pics")
+        self.assertEqual(got[0]["path"], "pics/pic01.jpg")
+        self.assertEqual(got[1]["path"], "pics/pic01.jpg")
+        self.assertEqual(got[4]["path"], "pics/pic01.jpg")
 
     def test_too_few_pictures_is_an_error(self):
         with mock.patch.object(art.requests, "get", return_value=Response(404)), self.assertRaises(LookupError):
