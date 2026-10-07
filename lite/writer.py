@@ -60,13 +60,17 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         " passage, leave it out. Never invent numbers, names, verse numbers or dialogue. Do not dramatise or"
         " intensify: no 'never', 'not even for a moment', 'all', 'first ever', superlatives, motives or feelings"
         " unless the passage itself says so. Each beat must say no more than its evidence quote says.",
-        "2. Tell ONE story through a lesser-known true detail from this passage.",
+        "2. Tell ONE story through a lesser-known true detail from this passage. Use the concrete details the"
+        " passage gives (numbers, sizes, how many people, sounds, objects) wherever they carry the story.",
         "3. Beat 1 is the hook, spoken in the first 2 seconds: a sharp question or a surprising statement, at most"
         f" {HOOK_MAX_WORDS} words. Never start with a greeting, the channel name, 'क्या आप जानते', 'कल्पना कीजिए',"
-        " 'आज हम' or 'आइए'.",
-        "4. The last beat closes the loop: it should lead naturally back into beat 1 so the video can replay"
-        " (for example, end on the open question or the image the hook raised). Do not ask viewers to like,"
-        " subscribe or follow in the narration.",
+        " 'आज हम' or 'आइए'. Build it on the most surprising concrete fact in the passage, as a 'why' or 'only'"
+        " question the rest of the Short answers. The channel's best Reel (9,000 views, 2026-10-07) opened"
+        " 'शिव धनुष टूटने पर केवल चार लोग ही होश में क्यों बचे?'. Hooks that only retell a famous story"
+        " ('X ने Y कैसे पार की?') did far worse.",
+        "4. The last beat closes the loop: it repeats the hook's question in the same or nearly the same words"
+        " (for example 'यही कारण है कि लोग पूछते हैं, <the hook question>'), so the video replays into beat 1. Do not"
+        " ask viewers to like, subscribe or follow in the narration.",
         f"5. Length: {TARGET} Hindi words in total across {BEATS_MIN}-{BEATS_MAX} beats; one or two short spoken"
         f" sentences per beat. Simple spoken Hindi (Devanagari only, no English words, no digits; write numbers as"
         f" Hindi words). {length_hint}",

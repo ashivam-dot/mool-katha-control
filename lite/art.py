@@ -224,8 +224,9 @@ def cleveland_candidates(query: str) -> list[dict]:
     return found
 
 
-def pick(queries: list[str], used: set[str]) -> dict | None:
-    """The best unused painting for the first query that finds one."""
+def pick(queries: list[str], used: set[str], portrait_first: bool = False) -> dict | None:
+    """The best unused painting for the first query that finds one; with portrait_first, an upright painting
+    beats a better-matching wide one (the opening frame should fill the screen)."""
     for query in queries:
         for search in (commons_candidates, cleveland_candidates):
             try:
@@ -233,6 +234,8 @@ def pick(queries: list[str], used: set[str]) -> dict | None:
             except Exception as err:  # one source being down must not stop the Short
                 log.warning("%s failed for %r: %s", search.__name__, query, err)
                 continue
+            if portrait_first:
+                candidates = sorted(candidates, key=lambda c: not c.get("portrait"))
             for cand in candidates:
                 if cand["key"] not in used:
                     used.add(cand["key"])
@@ -260,7 +263,7 @@ def choose(beats: list[dict], work: str, blocked: set[str] = frozenset()) -> lis
             chosen.append(1)
             continue
         query = beat.get("visual_query") or ""
-        found = pick(queries_for(beat), used)
+        found = pick(queries_for(beat), used, portrait_first=i == 0)
         if found is None and i > 0:
             # Repeat the previous distinct picture rather than reach for a weak match.
             earlier = next(n for n in range(i, 0, -1) if isinstance(chosen[n - 1], dict))
