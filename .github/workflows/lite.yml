@@ -16,7 +16,12 @@ on:
         type: choice
         required: true
         default: dry-run
-        options: [dry-run, publish]
+        options: [dry-run, publish, picture-probe]
+      episodes:
+        description: 'picture-probe only: comma-separated ledger episode ids to run past the picture check'
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -86,7 +91,13 @@ jobs:
           BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
           BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
-        run: uv run --no-sync python -m lite run --mode "$MODE" --out "$RUNNER_TEMP/lite-out" --producer-root "$GITHUB_WORKSPACE/producer"
+          EPISODES: ${{ inputs.episodes }}
+        run: |
+          if [ "$MODE" = picture-probe ]; then
+            uv run --no-sync python -m lite probe --episodes "$EPISODES"
+          else
+            uv run --no-sync python -m lite run --mode "$MODE" --out "$RUNNER_TEMP/lite-out" --producer-root "$GITHUB_WORKSPACE/producer"
+          fi
       - name: Upload the Short and its records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

@@ -32,6 +32,9 @@ MAX_TOPIC_STRIKES = 2
 # 80 minutes; the lane gives up early and a later run (or the 07:00 UTC quota reset) picks the topic up again.
 TEXT_WAIT_PER_CALL = 480
 TEXT_WAIT_PER_RUN = 2400
+# A picture the models won't answer about (an empty, safety-blocked reply) looks like an overload to llm.generate;
+# the check gives up after this long and nothing is published.
+VISION_WAIT = 300
 VOICE = "Sulafat"
 # Sargas per kanda on valmikiramayan.net, for picking fresh passages once the curated topics are used.
 VALMIKI_SARGAS = {1: 77, 2: 119, 3: 75, 4: 67, 5: 68, 6: 128}
@@ -96,6 +99,7 @@ class Calls:
         self.gemini_text = 0
         self.gemini_tts = 0
         self.fallback = 0
+        self.vision_calls = 0
         self._wrapped = False
         self._text_deadline = time.monotonic() + TEXT_WAIT_PER_RUN
 
@@ -131,6 +135,24 @@ class Calls:
                         self.gemini_text += 1
         return call
 
+    def vision(self):
+        """The picture check's model call: Flash Lite and Gemma first, on quota the script and narration don't
+        use, then the free vision backups. Not counted against MAX_GEMINI_CALLS."""
+        from ytc import llm
+
+        models = (*llm.FLASH_LITE, *llm.GEMMA, *(m for m, spec in llm.BACKUPS.items() if spec.get("vision")))
+
+        def call(prompt: list, schema: dict):
+            llm.OVERLOAD_WAIT = min(llm.OVERLOAD_WAIT, VISION_WAIT)
+            before = len(llm.calls)
+            try:
+                return llm.generate(prompt, schema=schema, models=models, temperature=0.0, purpose="lite picture check")
+            except (llm.OutOfQuota, llm.Overloaded) as err:
+                raise WaitForQuota(f"picture check: {err}") from err
+            finally:
+                self.vision_calls += len(llm.calls) - before
+        return call
+
     def wrap_tts(self) -> None:
         from ytc import tts
 
@@ -148,7 +170,7 @@ class Calls:
 
     def to_json(self) -> dict:
         return {"gemini_text": self.gemini_text, "gemini_tts": self.gemini_tts, "gemini_total": self.gemini,
-                "free_fallback": self.fallback}
+                "free_fallback": self.fallback, "picture_check": self.vision_calls}
 
 
 # --- episode ----------------------------------------------------------------------------------------------------
@@ -196,6 +218,13 @@ def episode_record(ep_id: str, topic: dict, script: dict, passage: sources.Passa
         "shloka": {"number": verse.number, "sanskrit": verse.sanskrit} if verse and verse.sanskrit else None,
         "pictures": [{"url": p["url"], "credit": p["credit"]} for p in pictures if isinstance(p, dict)],
     }
+
+
+def story(script: dict, passage: sources.Passage) -> str:
+    """What the picture check needs to know: which work and passage, the title and the people in it."""
+    names = ", ".join(n for n in script.get("names") or [] if n.strip())
+    return (f"{passage.work.replace('_', ' ').title()}, {passage.page_title}. Short title: {script['title']}."
+            + (f" People in it: {names}." if names else ""))
 
 
 def frames(video: Path, out: Path) -> list[str]:
@@ -259,15 +288,27 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         passage = sources.fetch(topic)
     else:
         script, passage, review_record = prepare(topic, calls)
-    pictures = art.choose(script["beats"], passage.work)
+    blocked = set(ledger.get("blocked_pictures") or [])
+    pictures = art.choose(script["beats"], passage.work, blocked)
     ledger["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": review_record,
-                         "gate_attempts": pending.get("gate_attempts", 0) if resumed else 0}
+                         "gate_attempts": pending.get("gate_attempts", 0) if resumed else 0,
+                         **({"replaces": pending["replaces"]} if resumed and pending.get("replaces") else {})}
     for attempt in range(2):
         work = producer_root / "lite-work" / ep_id
         if work.exists():
             shutil.rmtree(work)
         work.mkdir(parents=True)
         pictures = art.download(pictures, work / "pics")
+        checked: list[dict] = []
+        try:
+            pictures = art.screen(pictures, script["beats"], work / "pics", story(script, passage),
+                                  calls.vision(), blocked, report=checked)
+        finally:
+            out.mkdir(parents=True, exist_ok=True)
+            (out / "pictures.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1), encoding="utf-8")
+            if unsafe := {r["key"] for r in checked if r["unsafe"] and r["key"]}:
+                blocked |= unsafe
+                ledger["blocked_pictures"] = sorted(blocked)
         spec = build_spec(ep_id, script, passage, pictures)
         (work / "short.yaml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8")
         calls.wrap_tts()
@@ -291,7 +332,7 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         hint = f"The previous draft ran {duration:.0f} seconds with {words} words; write about {target} words."
         log.info("rewriting for length: %s", hint)
         script, passage, review_record = prepare(topic, calls, length_hint=hint)
-        pictures = art.choose(script["beats"], passage.work)
+        pictures = art.choose(script["beats"], passage.work, blocked)
         ledger["pending"].update({"script": script, "review": review_record})
     out.mkdir(parents=True, exist_ok=True)
     final = out / f"{ep_id}.mp4"
@@ -305,6 +346,8 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
     (out / "passage.json").write_text(json.dumps(passage.to_json(), ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "review.json").write_text(json.dumps(review_record, ensure_ascii=False, indent=2), encoding="utf-8")
     record = episode_record(ep_id, topic, script, passage, pictures)
+    if ledger["pending"].get("replaces"):
+        record["replaces"] = ledger["pending"]["replaces"]
     record.update({"gate": {"passed": result["passed"],
                             **{k: v["ok"] for k, v in result["checks"].items()},
                             "speech_coverage": result["checks"]["speech_coverage"]["coverage"],
@@ -334,7 +377,8 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
         youtube_id, instagram_id = publisher.destinations()
         yt_rows = publisher.recent_posts(youtube_id, now)
         ig_rows = publisher.recent_posts(instagram_id, now)
-        slot = slots.free_slot(now, yt_rows, ig_rows, days_ahead=slots.BOOK_AHEAD_DAYS)
+        slot = (slots.replacement_slot(now, yt_rows, ig_rows) if replacing(ledger) else
+                slots.free_slot(now, yt_rows, ig_rows, days_ahead=slots.BOOK_AHEAD_DAYS))
         summary["free_slot"] = slot.isoformat() if slot else None
         if slot is None:
             summary["status"] = "no_free_slot"
@@ -383,8 +427,9 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
     # Re-read Buffer: the signed lane may have booked a slot while this Short rendered.
     from . import publisher
 
-    slot = slots.free_slot(datetime.now(timezone.utc), publisher.recent_posts(youtube_id, now),
-                           publisher.recent_posts(instagram_id, now), days_ahead=slots.BOOK_AHEAD_DAYS)
+    rows = publisher.recent_posts(youtube_id, now), publisher.recent_posts(instagram_id, now)
+    slot = (slots.replacement_slot(datetime.now(timezone.utc), *rows) if record.get("replaces") else
+            slots.free_slot(datetime.now(timezone.utc), *rows, days_ahead=slots.BOOK_AHEAD_DAYS))
     ledger["pending"] = None
     return _schedule(record, Path(record["video"]), slot, ledger, youtube_id, instagram_id, now, summary, calls)
 
@@ -396,6 +441,11 @@ def strike(ledger: dict, key: str, reason: str) -> None:
     retryable = reason.startswith(("source review:", "script:"))
     if not retryable or strikes[key] >= MAX_TOPIC_STRIKES:
         ledger.setdefault("skipped", {})[key] = reason[:200]
+
+
+def replacing(ledger: dict) -> bool:
+    """True when the pending Short replaces one the owner deleted (set by hand in the ledger)."""
+    return bool((ledger.get("pending") or {}).get("replaces"))
 
 
 def current_topic(ledger: dict, exclude: set[str] = frozenset()) -> dict:
