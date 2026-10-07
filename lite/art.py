@@ -308,6 +308,14 @@ def screen(pictures: list[dict | int], beats: list[dict], folder: Path, story: s
     accepted: dict[int, dict] = {}
     report = [] if report is None else report
     to_check = {i: p for i, p in enumerate(pictures) if isinstance(p, dict)}
+    # A beat that would repeat an earlier picture gets a fresh one when a search finds one (the loop line keeps
+    # beat 1's picture): with few pictures one manuscript page filled five lines of a Short (2026-10-07).
+    for i, pic in enumerate(pictures):
+        if isinstance(pic, int) and not (i == len(pictures) - 1 and pic == 1):
+            while (candidate := pick([*queries_for(beats[i]), *fallbacks], used)) is not None:
+                if (saved := _save(candidate, folder, f"pic{i:02d}-fill.jpg")) is not None:
+                    to_check[i] = saved
+                    break
     for attempt in range(rounds + 1):
         if not to_check:
             break

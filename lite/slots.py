@@ -63,18 +63,23 @@ def free_slot(now: datetime, youtube_rows: list[dict], instagram_rows: list[dict
 
 
 def replacement_slot(now: datetime, youtube_rows: list[dict], instagram_rows: list[dict],
-                     last: time = time(23, 30)) -> datetime | None:
-    """For a Short that replaces one the owner deleted: the first quarter hour today, at least LEAD away and
-    MIN_GAP from every other post, no later than `last` IST. The daily cap is not applied because the deleted
-    post still shows in Buffer's history."""
+                     last: time = time(23, 30), next_day: time = time(12, 30)) -> datetime | None:
+    """For a Short that replaces one the owner deleted: the first quarter hour at least LEAD away and MIN_GAP
+    from every other post, today until `last` IST, else tomorrow from `next_day` IST (clear of the lite slots).
+    The daily cap is not applied because the deleted post still shows in Buffer's history."""
     now = now.astimezone(IST)
     taken = active_times(youtube_rows) + active_times(instagram_rows)
-    when = (now + LEAD).replace(second=0, microsecond=0)
-    when += timedelta(minutes=-when.minute % 15)
-    while when.time() <= last and when.date() == now.date():
-        if all(abs(when - t) >= MIN_GAP for t in taken):
-            return when
-        when += timedelta(minutes=15)
+    tomorrow = datetime.combine(now.date() + timedelta(days=1), next_day, IST)
+    for start, day in ((now + LEAD, now.date()), (tomorrow, tomorrow.date())):
+        when = start.replace(second=0, microsecond=0)
+        when += timedelta(minutes=-when.minute % 15)
+        if when < start:
+            when += timedelta(minutes=15)
+        end = datetime.combine(day, last, IST)
+        while when <= end:
+            if all(abs(when - t) >= MIN_GAP for t in taken):
+                return when
+            when += timedelta(minutes=15)
     return None
 
 

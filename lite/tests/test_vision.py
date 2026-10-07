@@ -115,6 +115,15 @@ class Screen(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             art.screen(pics, beats(3), self.tmp, "Gita", busy)
 
+    def test_a_repeated_picture_is_replaced_by_a_checked_new_one(self):
+        pics = [picture(self.tmp, n) for n in range(3)]
+        cand, save = self.replacement(1, "Arjuna grieving")
+        with mock.patch.object(art, "pick", side_effect=[cand, None]), mock.patch.object(art, "_save", side_effect=save):
+            got = art.screen([*pics, 3, 3, 1], beats(6), self.tmp, "Gita", Asker())
+        self.assertEqual(got[3]["credit"]["title"], "Arjuna grieving")
+        self.assertEqual(got[4], 3)
+        self.assertEqual(got[5], 1)
+
     def test_first_beat_refused_shows_the_first_accepted_picture(self):
         pics = [picture(self.tmp, n) for n in range(4)]
         ask = Asker({"Painting 0": {"gore": True}})
@@ -142,9 +151,10 @@ class ReplacementSlot(unittest.TestCase):
         got = slots.replacement_slot(now, [deleted], [deleted])
         self.assertEqual(got.astimezone(slots.IST).strftime("%H:%M"), "22:45")
 
-    def test_none_when_the_evening_is_over(self):
-        now = datetime(2026, 10, 7, 17, 45, tzinfo=timezone.utc)
-        self.assertIsNone(slots.replacement_slot(now, [], []))
+    def test_tomorrow_midday_when_the_evening_is_over(self):
+        now = datetime(2026, 10, 7, 18, 10, tzinfo=timezone.utc)
+        got = slots.replacement_slot(now, [], []).astimezone(slots.IST)
+        self.assertEqual(got.strftime("%m-%d %H:%M"), "10-08 12:30")
 
 
 if __name__ == "__main__":
