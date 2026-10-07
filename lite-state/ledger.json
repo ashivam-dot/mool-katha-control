@@ -579,16 +579,161 @@
  ],
  "skipped": {
   "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "gita-6-25": "only 2 pictures passed the picture check"
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261007-2215",
+  "topic_key": "gita-6-25",
+  "script": {
+   "usable": true,
+   "title": "भगवद्गीता के अनुसार अर्जुन का धनुष हाथ से क्यों फिसल गया था?",
+   "hook_text": "धनुष क्यों फिसला?",
+   "beats": [
+    {
+     "text": "कुरुक्षेत्र के मैदान में अर्जुन का धनुष क्यों फिसल गया?",
+     "evidence": "",
+     "visual_query": "Kurukshetra war chariot",
+     "emphasis": "धनुष"
+    },
+    {
+     "text": "युद्ध शुरू होने से ठीक पहले, अर्जुन ने कृष्ण से अपना रथ दोनों सेनाओं के बीच खड़ा करने को कहा।",
+     "evidence": "place my car (once) between the two armies, so that I may observe these that stand here desirous of battle",
+     "visual_query": "Krishna Arjuna chariot",
+     "emphasis": "रथ"
+    },
+    {
+     "text": "कृष्ण ने रथ को भीष्म, द्रोण और अन्य राजाओं के सामने खड़ा कर दिया।",
+     "evidence": "Hrishikesa, placing that excellent car between the two armies, in view of Bhishma and Drona and all the kings of the earth",
+     "visual_query": "Bhishma Drona Kauravas",
+     "emphasis": ""
+    },
+    {
+     "text": "वहां अर्जुन ने दोनों सेनाओं में अपने ही दादा, गुरु, ससुर और मित्रों को देखा।",
+     "evidence": "And there the son of Pritha beheld, standing (his) sires and grandsons, and friends, and father-in-law and well-wishers, in both the armies.",
+     "visual_query": "Arjuna looking at relatives",
+     "emphasis": "मित्रों"
+    },
+    {
+     "text": "अपने ही सगे-संबंधियों को युद्ध के लिए तैयार देखकर अर्जुन का मन करुणा से भर गया।",
+     "evidence": "Beholding all those kinsmen standing (there), the son of Kunti, possessed by excessive pity, despondingly said",
+     "visual_query": "Arjuna sad chariot",
+     "emphasis": "करुणा"
+    },
+    {
+     "text": "उनके अंग ढीले पड़ गए, शरीर कांपने लगा और त्वचा में जलन होने लगी।",
+     "evidence": "my limbs, become languid, and my mouth becomes dry. My body trembles, and my hair stands on end.",
+     "visual_query": "Arjuna grieving Krishna",
+     "emphasis": "शरीर"
+    },
+    {
+     "text": "इसी दुख में उन्होंने अपने धनुष और बाण फेंक दिए और वे रथ पर बैठ गए।",
+     "evidence": "casting aside his bow and arrows, sat down on his car.",
+     "visual_query": "Arjuna drops bow",
+     "emphasis": "धनुष"
+    },
+    {
+     "text": "इसीलिए अपनों को सामने देखकर अर्जुन का धनुष हाथ से फिसल गया।",
+     "evidence": "Gandiva slips from my hand, and my skin burns.",
+     "visual_query": "Arjuna sitting in chariot",
+     "emphasis": "फिसल"
+    }
+   ],
+   "description": "भगवद्गीता के भीष्म पर्व के अनुसार, जब अर्जुन ने कुरुक्षेत्र के मैदान में दोनों ओर अपने ही सगे-संबंधियों को देखा, तो वे अत्यंत दुखी हो गए। इस शोक के कारण उनके शरीर में कंपन होने लगा और उनका गांडीव धनुष हाथ से गिर गया। यह कथा महाभारत के मूल पाठ पर आधारित है।",
+   "hashtags": [
+    "#bhagavadgita",
+    "#mahabharat",
+    "#arjuna",
+    "#krishna",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "भगवद्गीता",
+    "अर्जुन का शोक",
+    "गांडीव धनुष",
+    "कुरुक्षेत्र युद्ध",
+    "Bhagavad Gita",
+    "Arjuna grief",
+    "Gandiva bow",
+    "Krishna chariot"
+   ],
+   "shloka_verse": "",
+   "key_quote": "Gandiva slips from my hand, and my skin burns. I am unable to stand (any longer); my mind seems to wander.",
+   "names": [
+    "कुरुक्षेत्र",
+    "अर्जुन",
+    "कृष्ण",
+    "भीष्म",
+    "द्रोण",
+    "गांडीव"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "This is a question, so it is not factual and thus supported."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna asked Krishna to place his chariot between the two armies."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Krishna placed the chariot in view of Bhishma, Drona, and other kings."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna saw his relatives, teachers, and friends in both armies."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna was filled with excessive pity upon seeing his kinsmen."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna's limbs became languid, his body trembled, and his skin burned."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna cast aside his bow and arrows and sat down on his chariot."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Arjuna's bow slipped from his hand upon seeing his kinsmen."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "The video accurately depicts the events from the Bhagavad Gita where Arjuna, overwhelmed with pity upon seeing his kinsmen ready for battle, experiences physical distress and his bow slips from his hand."
+   }
+  },
+  "gate_attempts": 0,
+  "replaces": "lite-20261007-1629"
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
   "vishnu_purana-1-11": 1,
-  "mahabharata-5-7": 1,
-  "gita-6-25": 1
+  "mahabharata-5-7": 1
  },
  "blocked_pictures": [
   "commons:Arjuna and river Nymph.jpg",

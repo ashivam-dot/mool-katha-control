@@ -290,7 +290,8 @@ def choose(beats: list[dict], work: str, blocked: set[str] = frozenset()) -> lis
 
 
 def screen(pictures: list[dict | int], beats: list[dict], folder: Path, story: str, ask,
-           blocked: set[str] = frozenset(), rounds: int = 3, report: list | None = None) -> list[dict | int]:
+           blocked: set[str] = frozenset(), rounds: int = 3, report: list | None = None,
+           fallbacks: list[str] = ()) -> list[dict | int]:
     """Run downloaded pictures past the vision check (lite/vision.py) and replace every refused one.
 
     A refused picture gives way to the next candidate for its beat, which is checked in turn, up to `rounds`
@@ -325,7 +326,7 @@ def screen(pictures: list[dict | int], beats: list[dict], folder: Path, story: s
             log.warning("picture for beat %d refused (%s): %s", i + 1, pic["credit"].get("title"), why)
             if attempt == rounds:
                 continue
-            while (candidate := pick(queries_for(beats[i]), used)) is not None:
+            while (candidate := pick([*queries_for(beats[i]), *fallbacks], used)) is not None:
                 saved = _save(candidate, folder, f"pic{i:02d}-{attempt + 1}.jpg")
                 if saved is not None:
                     retry[i] = saved

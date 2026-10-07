@@ -143,13 +143,14 @@ class Calls:
         models = (*llm.FLASH_LITE, *llm.GEMMA, *(m for m, spec in llm.BACKUPS.items() if spec.get("vision")))
 
         def call(prompt: list, schema: dict):
-            llm.OVERLOAD_WAIT = min(llm.OVERLOAD_WAIT, VISION_WAIT)
+            wait, llm.OVERLOAD_WAIT = llm.OVERLOAD_WAIT, min(llm.OVERLOAD_WAIT, VISION_WAIT)
             before = len(llm.calls)
             try:
                 return llm.generate(prompt, schema=schema, models=models, temperature=0.0, purpose="lite picture check")
             except (llm.OutOfQuota, llm.Overloaded) as err:
                 raise WaitForQuota(f"picture check: {err}") from err
             finally:
+                llm.OVERLOAD_WAIT = wait
                 self.vision_calls += len(llm.calls) - before
         return call
 
@@ -302,7 +303,8 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         checked: list[dict] = []
         try:
             pictures = art.screen(pictures, script["beats"], work / "pics", story(script, passage),
-                                  calls.vision(), blocked, report=checked)
+                                  calls.vision(), blocked, report=checked,
+                                  fallbacks=art.WORK_FALLBACKS.get(passage.work, []))
         finally:
             out.mkdir(parents=True, exist_ok=True)
             (out / "pictures.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -406,6 +408,11 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
         except (ValueError, LookupError, sources.SourceError) as err:
             log.warning("topic %s failed: %s", topic["key"], err)
             summary.setdefault("failed_topics", []).append({"topic": topic["key"], "reason": str(err)[:400]})
+            if replacing(ledger):
+                # A replacement for a deleted Short stays queued for the owner to retry; no other topic is started.
+                save_ledger(ledger)
+                summary.update(status="failed", calls=calls.to_json())
+                return summary
             if "gate failed" not in str(err):
                 strike(ledger, topic["key"], str(err))
                 ledger["pending"] = None
