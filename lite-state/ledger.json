@@ -682,70 +682,15 @@
     }
    },
    "deleted_by_owner": "2026-10-07: too few distinct pictures; replaced by lite-20261008-1230"
-  }
- ],
- "skipped": {
-  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
- },
- "pending": {
-  "id": "lite-20261008-1230",
-  "topic_key": "gita-6-25",
-  "script": {
-   "usable": true,
+  },
+  {
+   "id": "lite-20261008-1230",
+   "topic_key": "gita-6-25",
    "title": "भगवद्गीता के अनुसार अर्जुन का धनुष हाथ से क्यों फिसल गया था?",
-   "hook_text": "धनुष क्यों फिसला?",
-   "beats": [
-    {
-     "text": "कुरुक्षेत्र के मैदान में अर्जुन का धनुष क्यों फिसल गया?",
-     "evidence": "",
-     "visual_query": "Kurukshetra war chariot",
-     "emphasis": "धनुष"
-    },
-    {
-     "text": "युद्ध शुरू होने से ठीक पहले, अर्जुन ने कृष्ण से अपना रथ दोनों सेनाओं के बीच खड़ा करने को कहा।",
-     "evidence": "place my car (once) between the two armies, so that I may observe these that stand here desirous of battle",
-     "visual_query": "Krishna Arjuna chariot",
-     "emphasis": "रथ"
-    },
-    {
-     "text": "कृष्ण ने रथ को भीष्म, द्रोण और अन्य राजाओं के सामने खड़ा कर दिया।",
-     "evidence": "Hrishikesa, placing that excellent car between the two armies, in view of Bhishma and Drona and all the kings of the earth",
-     "visual_query": "Bhishma Drona Kauravas",
-     "emphasis": ""
-    },
-    {
-     "text": "वहां अर्जुन ने दोनों सेनाओं में अपने ही दादा, गुरु, ससुर और मित्रों को देखा।",
-     "evidence": "And there the son of Pritha beheld, standing (his) sires and grandsons, and friends, and father-in-law and well-wishers, in both the armies.",
-     "visual_query": "Arjuna looking at relatives",
-     "emphasis": "मित्रों"
-    },
-    {
-     "text": "अपने ही सगे-संबंधियों को युद्ध के लिए तैयार देखकर अर्जुन का मन करुणा से भर गया।",
-     "evidence": "Beholding all those kinsmen standing (there), the son of Kunti, possessed by excessive pity, despondingly said",
-     "visual_query": "Arjuna sad chariot",
-     "emphasis": "करुणा"
-    },
-    {
-     "text": "उनके अंग ढीले पड़ गए, शरीर कांपने लगा और त्वचा में जलन होने लगी।",
-     "evidence": "my limbs, become languid, and my mouth becomes dry. My body trembles, and my hair stands on end.",
-     "visual_query": "Arjuna grieving Krishna",
-     "emphasis": "शरीर"
-    },
-    {
-     "text": "इसी दुख में उन्होंने अपने धनुष और बाण फेंक दिए और वे रथ पर बैठ गए।",
-     "evidence": "casting aside his bow and arrows, sat down on his car.",
-     "visual_query": "Arjuna drops bow",
-     "emphasis": "धनुष"
-    },
-    {
-     "text": "इसीलिए अपनों को सामने देखकर अर्जुन का धनुष हाथ से फिसल गया।",
-     "evidence": "Gandiva slips from my hand, and my skin burns.",
-     "visual_query": "Arjuna sitting in chariot",
-     "emphasis": "फिसल"
-    }
-   ],
    "description": "भगवद्गीता के भीष्म पर्व के अनुसार, जब अर्जुन ने कुरुक्षेत्र के मैदान में दोनों ओर अपने ही सगे-संबंधियों को देखा, तो वे अत्यंत दुखी हो गए। इस शोक के कारण उनके शरीर में कंपन होने लगा और उनका गांडीव धनुष हाथ से गिर गया। यह कथा महाभारत के मूल पाठ पर आधारित है।",
+   "citation": "भगवद्गीता · भीष्म पर्व खंड 25 (गांगुली अनुवाद)",
+   "source_url": "https://archive.sacred-texts.com/hin/m06/m06025.htm",
+   "translator": "Kisari Mohan Ganguli (1883-1896), sacred-texts.com",
    "hashtags": [
     "#bhagavadgita",
     "#mahabharat",
@@ -763,79 +708,133 @@
     "Gandiva bow",
     "Krishna chariot"
    ],
-   "shloka_verse": "",
    "key_quote": "Gandiva slips from my hand, and my skin burns. I am unable to stand (any longer); my mind seems to wander.",
-   "names": [
-    "कुरुक्षेत्र",
-    "अर्जुन",
-    "कृष्ण",
-    "भीष्म",
-    "द्रोण",
-    "गांडीव"
-   ]
-  },
-  "review": {
-   "ok": true,
-   "issues": [],
-   "result": {
-    "items": [
-     {
-      "beat": 1,
-      "factual": false,
-      "supported": true,
-      "note": "This is a question, so it is not factual and thus supported."
-     },
-     {
-      "beat": 2,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna asked Krishna to place his chariot between the two armies."
-     },
-     {
-      "beat": 3,
-      "factual": true,
-      "supported": true,
-      "note": "Krishna placed the chariot in view of Bhishma, Drona, and other kings."
-     },
-     {
-      "beat": 4,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna saw his relatives, teachers, and friends in both armies."
-     },
-     {
-      "beat": 5,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna was filled with excessive pity upon seeing his kinsmen."
-     },
-     {
-      "beat": 6,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna's limbs became languid, his body trembled, and his skin burned."
-     },
-     {
-      "beat": 7,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna cast aside his bow and arrows and sat down on his chariot."
-     },
-     {
-      "beat": 8,
-      "factual": true,
-      "supported": true,
-      "note": "Arjuna's bow slipped from his hand upon seeing his kinsmen."
+   "shloka": null,
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Dhritarashtra_hearing_narratives_on_Kurukshetra_war_from_Sanjaya_Wellcome_L0030649.jpg/1920px-Dhritarashtra_hearing_narratives_on_Kurukshetra_war_from_Sanjaya_Wellcome_L0030649.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Dhritarashtra hearing narratives on Kurukshetra war from Sanjaya Wellcome L0030649",
+      "credit": "Unknown artist",
+      "license": "CC BY 4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Dhritarashtra_hearing_narratives_on_Kurukshetra_war_from_Sanjaya_Wellcome_L0030649.jpg"
      }
-    ],
-    "respectful": true,
-    "title_reveals_answer": false,
-    "summary": "The video accurately depicts the events from the Bhagavad Gita where Arjuna, overwhelmed with pity upon seeing his kinsmen ready for battle, experiences physical distress and his bow slips from his hand."
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Subhadra%2C_the_half_sister_of_Krishna%2C_drives_a_chariot_away_from_Dwarka_with_Arjuna_and_Krishna_inside.jpg/1920px-Subhadra%2C_the_half_sister_of_Krishna%2C_drives_a_chariot_away_from_Dwarka_with_Arjuna_and_Krishna_inside.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Subhadra, the half sister of Krishna, drives a chariot away from Dwarka with Arjuna and Krishna inside",
+      "credit": "Unknown artist",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Subhadra,_the_half_sister_of_Krishna,_drives_a_chariot_away_from_Dwarka_with_Arjuna_and_Krishna_inside.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/The_Kauravas_Confer_%28cropped%29.JPG",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "The Kauravas Confer (cropped)",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:The_Kauravas_Confer_(cropped).JPG"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Hindu_Ravi_Verma%27s_Mahabharata_Arjuna_Pandava_Brother.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hindu Ravi Verma's Mahabharata Arjuna Pandava Brother",
+      "credit": "Raja Ravi Varma",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hindu_Ravi_Verma%27s_Mahabharata_Arjuna_Pandava_Brother.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg/1280px-Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Arjuna BattlesWith the Kauravas At Kuruksheta Bhagavad Gita",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Arjuna_and_Bhimen_preparing_for_battle%2C_from_Razmnameh.jpg/1920px-Arjuna_and_Bhimen_preparing_for_battle%2C_from_Razmnameh.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Arjuna and Bhimen preparing for battle, from Razmnameh",
+      "credit": "Mughal Style",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Arjuna_and_Bhimen_preparing_for_battle,_from_Razmnameh.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Arjuna_and_Bhishma_in_their_war_chariots_attacking_one_another_from_opposing_sides..jpg/1920px-Arjuna_and_Bhishma_in_their_war_chariots_attacking_one_another_from_opposing_sides..jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Arjuna and Bhishma in their war chariots attacking one another from opposing sides.",
+      "credit": "Bandi",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Arjuna_and_Bhishma_in_their_war_chariots_attacking_one_another_from_opposing_sides..jpg"
+     }
+    }
+   ],
+   "replaces": "lite-20261007-2215",
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.957,
+    "duration": true,
+    "loudness": true,
+    "seconds": 47.63,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 0,
+    "gemini_tts": 1,
+    "gemini_total": 1,
+    "free_fallback": 0,
+    "picture_check": 3
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261008-1230-d4a08a349db6d05c",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791396739/mool-katha/lite-20261008-1230-d4a08a349db6d05c.mp4",
+    "due_at": "2026-10-08T12:30:00+05:30",
+    "youtube": {
+     "id": "6ac68b864610dcaf932fd6dd",
+     "status": "scheduled",
+     "due_at": "2026-10-08T07:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac68b8720b8d89a0679ae13",
+     "status": "scheduled",
+     "due_at": "2026-10-08T07:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T07:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T07:00:00.000Z",
+      "externalLink": null
+     }
+    }
    }
-  },
-  "gate_attempts": 0,
-  "replaces": "lite-20261007-2215"
+  }
+ ],
+ "skipped": {
+  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
+ "pending": null,
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -843,6 +842,7 @@
   "mahabharata-5-7": 1
  },
  "blocked_pictures": [
+  "cleveland:170831",
   "commons:Arjuna and river Nymph.jpg",
   "commons:Paraśurāma fighting King Kartavirya Arjuna..jpg",
   "commons:Shri Gobinda Chandra Roy - Jatayu (Rama'a Mythical Bird) Hinders Ravana's Chariot, Trying to Prevent Abduction of Sita (recto), Battle Scene (verso) - 2003.111 - Cleveland Museum of Art.jpg"
