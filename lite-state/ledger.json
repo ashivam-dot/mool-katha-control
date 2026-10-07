@@ -277,8 +277,13 @@
    }
   }
  ],
- "skipped": {},
+ "skipped": {
+  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp"
+ },
  "pending": null,
  "ready": null,
- "strikes": {}
+ "strikes": {
+  "ramayana-1-67": 1,
+  "vishnu_purana-1-11": 1
+ }
 }
