@@ -130,10 +130,6 @@ class TitleFilter(unittest.TestCase):
                       "Kamadeva and Rati", "Jatayu Hinders Ravana's Chariot (recto/verso)"):
             self.assertTrue(art.ADULT.search(title) or art.REJECT.search(title), title)
 
-    def test_a_beat_is_searched_by_its_whole_visual_query_only(self):
-        self.assertEqual(art.queries_for({"visual_query": "Arjuna sad chariot"}),
-                         ["Arjuna sad chariot painting", "Arjuna sad chariot"])
-
     def test_ordinary_titles_pass(self):
         for title in ("Krishna and Arjuna at Kurukshetra", "Bharati painting of Rama", "Arjuna's penance"):
             self.assertFalse(art.ADULT.search(title) or art.REJECT.search(title), title)

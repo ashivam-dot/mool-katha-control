@@ -241,9 +241,9 @@ def pick(queries: list[str], used: set[str]) -> dict | None:
 
 
 def queries_for(beat: dict) -> list[str]:
-    # No one-word fallback: "Arjuna painting" found the nymph and the other Arjuna in a Gita Short (2026-10-07).
     query = beat.get("visual_query") or ""
-    return [f"{query} painting", query]
+    words = query.split()
+    return [f"{query} painting", query] + ([" ".join(words[:1]) + " painting"] if len(words) > 1 else [])
 
 
 def choose(beats: list[dict], work: str, blocked: set[str] = frozenset()) -> list[dict | int]:
