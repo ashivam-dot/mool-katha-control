@@ -828,6 +828,122 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261008-0711",
+   "topic_key": "ramayana-1-45",
+   "title": "रामायण के अनुसार समुद्र मंथन की साठ करोड़ अप्सराओं से किसी ने विवाह क्यों नहीं किया?",
+   "description": "वाल्मीकि रामायण के बालकाण्ड में ऋषि विश्वामित्र ने समुद्र मंथन की अद्भुत कथा सुनाई है। इसमें बताया गया है कि मंथन के दौरान साठ करोड़ अप्सराएं प्रकट हुई थीं, जिन्हें किसी भी देव या दानव ने पत्नी के रूप में नहीं अपनाया।",
+   "citation": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 45",
+   "source_url": "https://www.valmikiramayan.net/utf8/baala/sarga45/balasans45.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#ramayan",
+    "#samudramanthan",
+    "#valmikirayan",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Valmiki Ramayana",
+    "Samudra Manthan",
+    "Apsaras",
+    "Dhanvantari",
+    "Vishvamitra",
+    "Mool Katha",
+    "रामायण"
+   ],
+   "key_quote": "Six hundred millions of such Apsaras with amazing dazzle have emerged from the churning of Milky Ocean, oh, descendent of Kakutstha, and their maidservants who emerged along with them are innumerable.",
+   "shloka": {
+    "number": "1-45-34",
+    "sanskrit": "षष्टिः कोट्योऽभवंस्तासामप्सराणां सुवर्चसाम्। असन्ख्येयास्तु काकुत्स्थ यास्तासां परिचारिकाः॥ १-४५-३४"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Churning_of_the_ocean_-_Manthan.jpg/1920px-Churning_of_the_ocean_-_Manthan.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Churning of the ocean - Manthan",
+      "credit": "Fattu (16th century) (attr. to)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Churning_of_the_ocean_-_Manthan.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Nainsukh_-_Rama_and_Lakshmana_as_Boys_Assist_the_Sage_Vishvamitra%2C_Folio_from_a_dispersed_Ramayana_series_-_1976.14_-_Metropolitan_Museum_of_Art.jpg/1920px-Nainsukh_-_Rama_and_Lakshmana_as_Boys_Assist_the_Sage_Vishvamitra%2C_Folio_from_a_dispersed_Ramayana_series_-_1976.14_-_Metropolitan_Museum_of_Art.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Nainsukh - Rama and Lakshmana as Boys Assist the Sage Vishvamitra, Folio from a dispersed Ramayana series - 1976.14 - Metropolitan Museum of Art",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Nainsukh_-_Rama_and_Lakshmana_as_Boys_Assist_the_Sage_Vishvamitra,_Folio_from_a_dispersed_Ramayana_series_-_1976.14_-_Metropolitan_Museum_of_Art.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Valmiki_Reciting_the_Ramayana_to_His_Pupil_Bharadvaja%2C_Folio_from_the_%27Shangri%27_Ramayana_%28Adventures_of_Rama%29_LACMA_M.83.105.9.jpg/1920px-Valmiki_Reciting_the_Ramayana_to_His_Pupil_Bharadvaja%2C_Folio_from_the_%27Shangri%27_Ramayana_%28Adventures_of_Rama%29_LACMA_M.83.105.9.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Valmiki Reciting the Ramayana to His Pupil Bharadvaja, Folio from the 'Shangri' Ramayana (Adventures of Rama) LACMA M.83.105.9",
+      "credit": "Unknown artist",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Valmiki_Reciting_the_Ramayana_to_His_Pupil_Bharadvaja,_Folio_from_the_%27Shangri%27_Ramayana_(Adventures_of_Rama)_LACMA_M.83.105.9.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Churning_of_Milky_Ocean_by_Devas_and_Asuras.jpg/960px-Churning_of_Milky_Ocean_by_Devas_and_Asuras.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Churning of Milky Ocean by Devas and Asuras",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Churning_of_Milky_Ocean_by_Devas_and_Asuras.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.967,
+    "duration": true,
+    "loudness": true,
+    "seconds": 52.33,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 6
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261008-0711-653e53cde8b7aa9f",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791425023/mool-katha/lite-20261008-0711-653e53cde8b7aa9f.mp4",
+    "due_at": "2026-10-08T17:30:00+05:30",
+    "youtube": {
+     "id": "6ac6fa0201166a3e1c101d00",
+     "status": "scheduled",
+     "due_at": "2026-10-08T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac6fa032977c961bdc12723",
+     "status": "scheduled",
+     "due_at": "2026-10-08T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
