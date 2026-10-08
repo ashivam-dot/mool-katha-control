@@ -944,6 +944,119 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261008-1324",
+   "topic_key": "mahabharata-1-19",
+   "title": "महाभारत के अनुसार राहु का सिर सूर्य और चंद्रमा को क्यों निगलता है?",
+   "description": "महाभारत के आदि पर्व के अनुसार जानिए राहु द्वारा अमृत पीने की मूल कथा। कैसे सूर्य और सोम की शिकायत पर नारायण ने उसका सिर काटा। जानिए क्यों राहु का सिर आज भी ग्रहण का कारण बनता है।",
+   "citation": "महाभारत · आदि पर्व · खंड 19 (गांगुली अनुवाद)",
+   "source_url": "https://archive.sacred-texts.com/hin/m01/m01020.htm",
+   "translator": "Kisari Mohan Ganguli (1883-1896), sacred-texts.com",
+   "hashtags": [
+    "#mahabharat",
+    "#rahu",
+    "#solareclipse",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Mahabharat",
+    "Rahu Ketu story",
+    "Solar Eclipse myth",
+    "Amrit Manthan",
+    "Lord Vishnu",
+    "Surya and Chandra",
+    "Mool Katha"
+   ],
+   "key_quote": "And from that time there is a long-standing quarrel between Rahu's head and Surya and Soma. And to this day it swalloweth Surya and Soma",
+   "shloka": null,
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/The_Planet_Rahu_and_other_Astral_Figures.jpg/1280px-The_Planet_Rahu_and_other_Astral_Figures.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "The Planet Rahu and other Astral Figures",
+      "credit": "Mahesh of Chamba",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:The_Planet_Rahu_and_other_Astral_Figures.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Narayani_Mohini.jpg/960px-Narayani_Mohini.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Narayani Mohini",
+      "credit": "M. V. Dhurandhar (1867- 1944)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Narayani_Mohini.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/1/11/A_royal_couple_in_a_pavilion_with_attendants.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "A royal couple in a pavilion with attendants",
+      "credit": "Sub-imperial Mughal",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:A_royal_couple_in_a_pavilion_with_attendants.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Surya_Narayana.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Surya Narayana",
+      "credit": "Ravi Varma Press",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Surya_Narayana.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.965,
+    "duration": true,
+    "loudness": true,
+    "seconds": 46.29,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261008-1324-36cea63002e8e668",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791446859/mool-katha/lite-20261008-1324-36cea63002e8e668.mp4",
+    "due_at": "2026-10-08T21:45:00+05:30",
+    "youtube": {
+     "id": "6ac74f4e86faa136a9d49bc9",
+     "status": "scheduled",
+     "due_at": "2026-10-08T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac74f4f2e427e004c42299c",
+     "status": "scheduled",
+     "due_at": "2026-10-08T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-08T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
@@ -959,6 +1072,7 @@
  },
  "blocked_pictures": [
   "cleveland:170831",
+  "commons:A Composite Illustration from the Razmnama - Mughal Painting 1616-17.jpg",
   "commons:Arjuna and river Nymph.jpg",
   "commons:Paraśurāma fighting King Kartavirya Arjuna..jpg",
   "commons:Shri Gobinda Chandra Roy - Jatayu (Rama'a Mythical Bird) Hinders Ravana's Chariot, Trying to Prevent Abduction of Sita (recto), Battle Scene (verso) - 2003.111 - Cleveland Museum of Art.jpg"
