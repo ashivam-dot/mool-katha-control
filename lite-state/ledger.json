@@ -1057,6 +1057,131 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261009-1324",
+   "topic_key": "ramayana-2-63",
+   "title": "वाल्मीकि रामायण के अनुसार राजा दशरथ से कौन सी बड़ी भूल हुई थी?",
+   "description": "वाल्मीकि रामायण के अयोध्याकाण्ड में राजा दशरथ अपनी एक पुरानी भूल का स्मरण करते हैं। वे रानी कौसल्या को बताते हैं कि कैसे युवावस्था में उन्होंने अनजाने में एक तपस्वी पर बाण चला दिया था। यह कथा कर्म के सिद्धांत को दर्शाती है।",
+   "citation": "वाल्मीकि रामायण · अयोध्याकाण्ड · सर्ग 63",
+   "source_url": "https://www.valmikiramayan.net/utf8/ayodhya/sarga63/ayodhyasans63.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#ramayan",
+    "#dasharatha",
+    "#moolkatha",
+    "#ayodhyakand"
+   ],
+   "keywords": [
+    "रामायण",
+    "राजा दशरथ",
+    "सरयू नदी",
+    "Valmiki Ramayana",
+    "Ayodhya Kanda",
+    "Dasharatha curse"
+   ],
+   "key_quote": "Meanwhile, in that darkness and not within the react of the eye, I heard the sound of a pitcher being filled up, the sound of which appeared like that of an elephant.",
+   "shloka": {
+    "number": "2-63-24",
+    "sanskrit": "अथ अन्ध कारे तु अश्रौषम् जले कुम्भस्य पर्यतः || २-६३-२४ अचक्षुर् विषये घोषम् वारणस्य इव नर्दतः |"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_DP107193.jpg/1920px-%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_DP107193.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "\"The Death of King Dasharatha, the Father of Rama\", Folio from a Ramayana MET DP107193",
+      "credit": "Unknown artist",
+      "license": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:%22The_Death_of_King_Dasharatha,_the_Father_of_Rama%22,_Folio_from_a_Ramayana_MET_DP107193.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/King_Dasharatha_cremates_Shravana_and_his_aged_Parents.jpg/1280px-King_Dasharatha_cremates_Shravana_and_his_aged_Parents.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "King Dasharatha cremates Shravana and his aged Parents",
+      "credit": "Laharu of Chamba",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:King_Dasharatha_cremates_Shravana_and_his_aged_Parents.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_DT236869.jpg/1920px-%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_DT236869.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "\"The Death of King Dasharatha, the Father of Rama\", Folio from a Ramayana MET DT236869",
+      "credit": "Unknown artist",
+      "license": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:%22The_Death_of_King_Dasharatha,_the_Father_of_Rama%22,_Folio_from_a_Ramayana_MET_DT236869.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_sf2002-506a.jpg/960px-%22The_Death_of_King_Dasharatha%2C_the_Father_of_Rama%22%2C_Folio_from_a_Ramayana_MET_sf2002-506a.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "\"The Death of King Dasharatha, the Father of Rama\", Folio from a Ramayana MET sf2002-506a",
+      "credit": "Unknown artist",
+      "license": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:%22The_Death_of_King_Dasharatha,_the_Father_of_Rama%22,_Folio_from_a_Ramayana_MET_sf2002-506a.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Painting_of_a_Ramraiya_ascetic_from_a_folio_of_a_manuscript_of_the_Silsilah-i-Jogiyan%2C_ca.1800.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Painting of a Ramraiya ascetic from a folio of a manuscript of the Silsilah-i-Jogiyan, ca.1800",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Painting_of_a_Ramraiya_ascetic_from_a_folio_of_a_manuscript_of_the_Silsilah-i-Jogiyan,_ca.1800.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.943,
+    "duration": true,
+    "loudness": true,
+    "seconds": 49.36,
+    "lufs": -14.1
+   },
+   "calls": {
+    "gemini_text": 3,
+    "gemini_tts": 1,
+    "gemini_total": 4,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261009-1324-7e3b069867c3289c",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791533038/mool-katha/lite-20261009-1324-7e3b069867c3289c.mp4",
+    "due_at": "2026-10-09T17:30:00+05:30",
+    "youtube": {
+     "id": "6ac89ff27d9f9f33012dadd3",
+     "status": "scheduled",
+     "due_at": "2026-10-09T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac89ff2987e694c3c48ecfe",
+     "status": "scheduled",
+     "due_at": "2026-10-09T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-09T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-09T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
