@@ -1063,7 +1063,146 @@
   "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
   "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261009-0713",
+  "topic_key": "ramayana-2-63",
+  "script": {
+   "usable": true,
+   "title": "वाल्मीकि रामायण: राजा दशरथ ने अंधेरे में घड़े की आवाज़ को हाथी क्यों समझा?",
+   "hook_text": "घड़े की आवाज़?",
+   "beats": [
+    {
+     "text": "दशरथ ने अंधेरे में घड़े की आवाज़ को हाथी क्यों समझा?",
+     "evidence": "Meanwhile, in that darkness and not within the react of the eye, I heard the sound of a pitcher being filled up, the sound of which appeared like that of an elephant.",
+     "visual_query": "Dasharatha hunting forest",
+     "emphasis": "हाथी"
+    },
+    {
+     "text": "वाल्मीकि रामायण के अनुसार, युवा राजकुमार दशरथ वर्षा ऋतु में सरयू नदी के किनारे शिकार करने गए थे।",
+     "evidence": "With a wish to do hunting as an exercise in that most comfortable season, I went along Sarayu River, in a chariot, wearing bow and arrows.",
+     "visual_query": "Dasharatha chariot forest",
+     "emphasis": "सरयू"
+    },
+    {
+     "text": "वे रात के अंधेरे में पानी पीने आए किसी जंगली भैंसे या हाथी को मारना चाहते थे।",
+     "evidence": "Without my senses under control and with an intent to kill there a (wild) buffalo or an elephant or any other wild animal coming in the night",
+     "visual_query": "wild buffalo river night",
+     "emphasis": "भैंसे"
+    },
+    {
+     "text": "तभी उन्हें घड़े में पानी भरने की आवाज़ सुनाई दी, जो बिल्कुल हाथी जैसी लग रही थी।",
+     "evidence": "Meanwhile, in that darkness and not within the react of the eye, I heard the sound of a pitcher being filled up, the sound of which appeared like that of an elephant.",
+     "visual_query": "pitcher filling water river",
+     "emphasis": "घड़े"
+    },
+    {
+     "text": "दशरथ ने बिना देखे ही उस आवाज़ की दिशा में अपना चमकीला तीर चला दिया।",
+     "evidence": "With an intent to hit that elephant, I drew out a shining arrow resembling a serpent, targeted towards the direction sound and discharged it.",
+     "visual_query": "Dasharatha shooting arrow",
+     "emphasis": "तीर"
+    },
+    {
+     "text": "लेकिन वह तीर किसी जंगली जानवर को नहीं, बल्कि नदी के किनारे एक तपस्वी को लगा।",
+     "evidence": "saw the ascetic, hit by the arrow at the bank of Sarayu River, with his tresses of hair scattered, his pitcher of water thrown asunder",
+     "visual_query": "wounded ascetic river bank",
+     "emphasis": "तपस्वी"
+    },
+    {
+     "text": "वह तपस्वी ब्राह्मण नहीं, बल्कि वैश्य पिता और शूद्र माता के पुत्र थे।",
+     "evidence": "I am not a Brahmana. Let there be no agony in your mind. I am born through a Sudra woman by a Vysya.",
+     "visual_query": "dying ascetic Dasharatha",
+     "emphasis": "ब्राह्मण"
+    },
+    {
+     "text": "यही कारण है कि लोग पूछते हैं, दशरथ ने अंधेरे में घड़े की आवाज़ को हाथी क्यों समझा?",
+     "evidence": "Meanwhile, in that darkness and not within the react of the eye, I heard the sound of a pitcher being filled up, the sound of which appeared like that of an elephant.",
+     "visual_query": "Dasharatha mourning forest",
+     "emphasis": "दशरथ"
+    }
+   ],
+   "description": "वाल्मीकि रामायण के अयोध्याकाण्ड के अनुसार, राजा दशरथ ने अपने जीवन की एक बड़ी भूल का वर्णन किया है। उन्होंने वर्षा ऋतु में सरयू नदी के किनारे अंधेरे में एक तपस्वी पर शब्दवेधी बाण चला दिया था। यह वीडियो उस घटना के मूल विवरण को दर्शाता है।",
+   "hashtags": [
+    "#ramayan",
+    "#dasharath",
+    "#ayodhyakand",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Ramayan",
+    "Dasharath",
+    "Sarayu River",
+    "Valmiki Ramayana",
+    "Ayodhya Kanda",
+    "Sanskrit texts"
+   ],
+   "shloka_verse": "2-63-24",
+   "key_quote": "Meanwhile, in that darkness and not within the react of the eye, I heard the sound of a pitcher being filled up, the sound of which appeared like that of an elephant.",
+   "names": [
+    "दशरथ",
+    "सरयू"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "This is a question, so it is not factual."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 2-63-14 and 2-63-21."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 2-63-22."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 2-63-24."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 2-63-25."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 2-63-28 and 2-63-38."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 2-63-53."
+     },
+     {
+      "beat": 8,
+      "factual": false,
+      "supported": true,
+      "note": "This is a question/restatement, so it is not factual."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "The video accurately depicts the story from Valmiki Ramayana where King Dasharatha mistakes the sound of water filling a pitcher for an elephant and accidentally shoots an ascetic."
+   }
+  },
+  "gate_attempts": 1
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
