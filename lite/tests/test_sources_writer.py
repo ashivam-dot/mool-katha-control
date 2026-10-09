@@ -122,6 +122,25 @@ class WriterRulesTest(unittest.TestCase):
         self.assertIn("beat 4 states something without an exact evidence quote",
                       writer.problems(writer.tidy(script), self.passage))
 
+    def test_red_line_words_are_refused_but_ordinary_lookalikes_pass(self):
+        script = good_script()
+        script["beats"] = [dict(b) for b in script["beats"]]
+        script["beats"][4]["text"] = "वह तपस्वी ब्राह्मण नहीं, बल्कि वैश्य पिता और शूद्र माता के पुत्र थे।"
+        found = writer.problems(writer.tidy(script), self.passage)
+        self.assertIn("beat 5 touches a red-line topic (caste or diet: 'वैश्य'); leave that detail out", found)
+        script = good_script() | {"description": "सुन्दरकाण्ड में इसका वर्णन है; यह वर्णित प्रसंग है।"}
+        self.assertEqual(writer.red_lines(writer.tidy(script)), [])
+
+    def test_resumed_pending_script_with_a_red_line_is_dropped(self):
+        script = writer.tidy(good_script())
+        script["beats"][2]["text"] = "उस युग में जाति का प्रश्न उठा।"
+        topic = {"key": "ramayana-5-1", "work": "ramayana", "book": 5, "chapter": 1}
+        ledger = {"episodes": [], "skipped": {}, "ready": None,
+                  "pending": {"id": "lite-x", "topic_key": topic["key"], "script": script,
+                              "review": {"ok": True, "issues": []}}}
+        with self.assertRaisesRegex(ValueError, "^script: beat 3 touches a red-line topic"):
+            run.produce("lite-x", topic, ledger, run.Calls(), None, None)
+
     def test_write_retries_once_with_the_problems(self):
         prompts = []
         bad = good_script() | {"title": "कोई प्रश्न नहीं"}

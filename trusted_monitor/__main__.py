@@ -34,6 +34,9 @@ QA_WORKFLOW_SHA = "a5668a05fd3ccc1506f72fd3e3efda219b851fd7"
 QA_QUIET_HOURS = 10
 QA_DISPATCH_HOURS = (0, 6, 12, 18)
 QA_DISPATCH_MINUTE = 10
+# A failed Buffer post stays in Buffer for good; it alerts for two days, then stays in the report as a warning.
+FAILED_POST_ALERT_HOURS = 48
+FAILED_POST_ALERT = timedelta(hours=FAILED_POST_ALERT_HOURS)
 METRICS = ("views", "reach", "reactions", "comments", "shares", "saves", "follows")
 UTC = timezone.utc
 IST = ZoneInfo("Asia/Kolkata")
@@ -460,8 +463,13 @@ def collect(now: datetime, env: dict[str, str]) -> dict:
                     release_rows[service] = channel.pop("_release_rows", [])
                     if channel["disconnected"] or channel["locked"] or channel["queue_paused"]:
                         report["issues"].append(f"Buffer {service} channel is unavailable")
-                    if channel["recent_errors"]:
-                        report["issues"].append(f"Buffer {service} has {len(channel['recent_errors'])} failed posts")
+                    fresh = [row for row in channel["recent_errors"]
+                             if _time(row["due_at"]) >= now - FAILED_POST_ALERT]
+                    if fresh:
+                        report["issues"].append(f"Buffer {service} has {len(fresh)} failed posts")
+                    if older := len(channel["recent_errors"]) - len(fresh):
+                        report["warnings"].append(
+                            f"Buffer {service} has {older} failed posts older than {FAILED_POST_ALERT_HOURS} hours")
         except Exception as exc:
             # Preserve the artifact even for an unexpected provider shape. No provider
             # body, request, credential, or raw exception is written to it.

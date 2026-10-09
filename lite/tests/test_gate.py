@@ -1,4 +1,6 @@
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 from lite import gate
 
@@ -49,6 +51,35 @@ class EvaluateTest(unittest.TestCase):
                                review_issues=["beat 3 is not supported"])
         self.assertFalse(result["passed"])
         self.assertEqual(result["checks"]["source_support"]["issues"], ["beat 3 is not supported"])
+
+    def test_second_pass_by_pauses_when_the_first_drops_a_window(self):
+        passes = []
+
+        def fake(media, by_pauses=False):
+            passes.append(by_pauses)
+            return SCRIPT if by_pauses else "हनुमान ने सुरसा के मुँह में"
+
+        with patch.object(gate, "transcribe", side_effect=fake), \
+                patch.object(gate, "probe_duration", return_value=50.0), \
+                patch.object(gate, "loudness", return_value=LOUD_OK):
+            result = gate.run(Path("x.mp4"), SCRIPT, True)
+        self.assertEqual(passes, [False, True])
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["heard"], SCRIPT)
+
+    def test_no_second_pass_when_the_first_covers_the_script(self):
+        with patch.object(gate, "transcribe", return_value=SCRIPT) as transcribe, \
+                patch.object(gate, "probe_duration", return_value=50.0), \
+                patch.object(gate, "loudness", return_value=LOUD_OK):
+            gate.run(Path("x.mp4"), SCRIPT, True)
+        self.assertEqual(transcribe.call_count, 1)
+
+    def test_both_passes_short_still_fails(self):
+        with patch.object(gate, "transcribe", return_value="हनुमान ने सुरसा के मुँह में"), \
+                patch.object(gate, "probe_duration", return_value=50.0), \
+                patch.object(gate, "loudness", return_value=LOUD_OK):
+            result = gate.run(Path("x.mp4"), SCRIPT, True)
+        self.assertFalse(result["checks"]["speech_coverage"]["ok"])
 
     def test_parse_ebur128_summary(self):
         log = ("[Parsed_ebur128_0] t: 1 M: -20 S: -20 I: -30.0 LUFS\n"

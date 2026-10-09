@@ -16,6 +16,10 @@ TITLE_CHARS = 95
 BANNED_HOOK = ("क्या आप जानते", "क्या आपको पता", "कल्पना कीजिए", "कल्पना करें", "नमस्ते", "नमस्कार", "दोस्तों",
                "स्वागत", "मूल कथा", "आज हम", "आज की", "आइए")
 TEXT_NAMES = ("रामायण", "महाभारत", "गीता", "पुराण")
+# CHANNEL.md red lines (caste and varna, diet and meat): words that start with a stem, and exact words where the
+# stem would also catch ordinary words (वर्णन, जातिका).
+RED_LINE_STEMS = ("शूद्र", "शुद्र", "वैश्य", "चांडाल", "चाण्डाल", "अछूत", "दलित", "मांस", "गोमांस")
+RED_LINE_WORDS = ("वर्ण", "वर्णों", "जाति", "जातियों", "जातियाँ", "जात-पात")
 _DEVANAGARI = re.compile(r"[\u0900-\u097F]")
 _LATIN = re.compile(r"[A-Za-z]")
 
@@ -74,8 +78,8 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         f"5. Length: {TARGET} Hindi words in total across {BEATS_MIN}-{BEATS_MAX} beats; one or two short spoken"
         f" sentences per beat. Simple spoken Hindi (Devanagari only, no English words, no digits; write numbers as"
         f" Hindi words). {length_hint}",
-        "6. Respectful toward every deity and sage. No gore, no sectarian comparison, no politics, no caste"
-        " commentary.",
+        "6. Respectful toward every deity and sage. No gore, no sectarian comparison, no politics, no caste or"
+        " varna detail (not even when the passage names someone's varna), no diet or meat.",
         "7. evidence: for every beat that states a fact, copy a short exact quote (8-30 words) from the PASSAGE"
         " (English translation or Sanskrit, character for character) that supports it. The hook may use \"\""
         " only if it is a question; the loop line may use \"\" only if it repeats an earlier fact.",
@@ -107,6 +111,19 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
 
 def word_count(script: dict) -> int:
     return sum(len(b.get("text", "").split()) for b in script.get("beats", []))
+
+
+def red_lines(script: dict) -> list[str]:
+    """Red-line words in anything the viewer sees or hears (narration, title, headline, description)."""
+    parts = [(f"beat {i}", b.get("text", "")) for i, b in enumerate(script.get("beats") or [], 1)]
+    parts += [(field, script.get(field) or "") for field in ("title", "hook_text", "description")]
+    found = []
+    for where, text in parts:
+        words = [w.strip("।॥,.?!:;\"'()‘’“”-") for w in str(text).split()]
+        hits = [w for w in words if w and (w.startswith(RED_LINE_STEMS) or w in RED_LINE_WORDS)]
+        if hits:
+            found.append(f"{where} touches a red-line topic (caste or diet: {hits[0]!r}); leave that detail out")
+    return found
 
 
 def problems(script: dict, passage: Passage) -> list[str]:
@@ -165,6 +182,7 @@ def problems(script: dict, passage: Passage) -> list[str]:
         found.append("key_quote is not an exact quote from the passage")
     if not _DEVANAGARI.search(script.get("description", "")):
         found.append("description must be in Hindi")
+    found += red_lines(script)
     return found
 
 

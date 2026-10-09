@@ -286,6 +286,8 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
     resumed = bool(pending and pending["topic_key"] == topic["key"])
     if resumed:
         script, review_record, ep_id = pending["script"], pending["review"], pending["id"]
+        if red := writer.red_lines(script):
+            raise ValueError("script: " + "; ".join(red))
         passage = sources.fetch(topic)
     else:
         script, passage, review_record = prepare(topic, calls)

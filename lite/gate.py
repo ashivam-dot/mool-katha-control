@@ -58,11 +58,21 @@ def letter_words_visible(text: str) -> tuple[list[str], list[str]]:
     return letter_words(text)
 
 
-def transcribe(media: Path) -> str:
-    """faster-whisper's Hindi transcript of the final file (the same model the narration aligner uses)."""
+def transcribe(media: Path, *, by_pauses: bool = False) -> str:
+    """faster-whisper's Hindi transcript of the final file (the same model the narration aligner uses).
+
+    by_pauses cuts the audio at silences instead of fixed 30-second windows; a fixed-window pass can drop a whole
+    window of clearly spoken narration."""
     from ytc import tts
 
-    return " ".join(word for word, _start, _end in tts._heard(media, "hi"))
+    if not by_pauses:
+        return " ".join(word for word, _start, _end in tts._heard(media, "hi"))
+    from faster_whisper import WhisperModel
+
+    model = WhisperModel(tts.ALIGN_MODEL, device="cpu", compute_type="int8")
+    segments, _ = model.transcribe(str(media), language="hi", temperature=0.0, condition_on_previous_text=False,
+                                   vad_filter=True)
+    return " ".join(segment.text.strip() for segment in segments)
 
 
 def probe_duration(media: Path) -> float:
@@ -108,8 +118,14 @@ def evaluate(*, script: str, heard: str, duration: float, loud: dict, review_ok:
 
 
 def run(media: Path, script: str, review_ok: bool, review_issues: list[str] | None = None) -> dict:
-    result = evaluate(script=script, heard=transcribe(media), duration=probe_duration(media),
+    heard = transcribe(media)
+    if coverage(script, heard)["coverage"] < MIN_COVERAGE:
+        second = transcribe(media, by_pauses=True)
+        if coverage(script, second)["coverage"] > coverage(script, heard)["coverage"]:
+            heard = second
+    result = evaluate(script=script, heard=heard, duration=probe_duration(media),
                       loud=loudness(media), review_ok=review_ok, review_issues=review_issues)
+    result["heard"] = heard
     return result
 
 

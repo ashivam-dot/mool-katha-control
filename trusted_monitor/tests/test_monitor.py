@@ -219,6 +219,26 @@ class MonitorTests(unittest.TestCase):
         self.assertNotIn("raw-provider-row", json.dumps(report))
         self.assertEqual(len(signed.call_args.args[2]["youtube"]), 1)
 
+    def test_failed_buffer_post_alerts_for_two_days_then_warns(self):
+        def errors(hours):
+            return [{"id": f"post-{hours}", "due_at": (NOW - timedelta(hours=hours)).isoformat()}]
+
+        channels = {"youtube": {"disconnected": False, "locked": False, "queue_paused": False,
+                                "recent_errors": errors(3), "_release_rows": []},
+                    "instagram": {"disconnected": False, "locked": False, "queue_paused": False,
+                                  "recent_errors": errors(72), "_release_rows": []}}
+        with (patch.object(monitor, "release", return_value={"issues": [], "status": "gate_off"}),
+              patch.object(monitor, "qa", return_value={"issues": [], "status": "ok"}),
+              patch.object(monitor, "buffer", return_value={"channels": channels}),
+              patch.object(monitor, "cloudinary", return_value={"cloud_name": "exact-cloud"}),
+              patch.object(monitor, "youtube_owned", return_value={"channel": {"channel_id": monitor.YOUTUBE_ID}}),
+              patch.object(monitor, "youtube_public", return_value={"channel_id": monitor.YOUTUBE_ID}),
+              patch.object(monitor, "inspect_signed", return_value={"status": "ok", "issues": []}),
+              patch.object(monitor, "inspect_public", return_value={"status": "ok", "issues": []})):
+            report = monitor.collect(NOW, ENV | {"SOURCE_CHECKOUT": "/read-only/source"})
+        self.assertEqual(report["issues"], ["Buffer youtube has 1 failed posts"])
+        self.assertEqual(report["warnings"], ["Buffer instagram has 1 failed posts older than 48 hours"])
+
     def test_pinned_destination_ids_reject_configuration_drift(self):
         with self.assertRaisesRegex(monitor.MonitorError, "channel IDs"):
             monitor.buffer(NOW, ENV | {"BUFFER_YOUTUBE_CHANNEL_ID": "other-channel"})
