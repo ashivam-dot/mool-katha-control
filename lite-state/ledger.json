@@ -1182,6 +1182,118 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261009-1629",
+   "topic_key": "vishnu_purana-1-17",
+   "title": "विष्णु पुराण: प्रह्लाद के गुरु राजा हिरण्यकशिपु के सामने क्यों मुकर गए?",
+   "description": "विष्णु पुराण की इस कथा में जानिए जब राजा हिरण्यकशिपु ने प्रह्लाद से उनकी शिक्षा के बारे में पूछा। जब प्रह्लाद ने विष्णु भक्ति की बात की, तो उनके गुरु ने राजा से क्रोध न करने को कहा। जानिए प्रह्लाद ने अपने पिता को क्या उत्तर दिया।",
+   "citation": "विष्णु पुराण · अंश 1 · अध्याय 17 (विल्सन अनुवाद)",
+   "source_url": "https://archive.sacred-texts.com/hin/vp/vp052.htm",
+   "translator": "H. H. Wilson (1840), sacred-texts.com",
+   "hashtags": [
+    "#vishnupuran",
+    "#prahlada",
+    "#hiranyakashipu",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Vishnu Purana",
+    "Prahlada story",
+    "Hiranyakashipu",
+    "Prahlada teacher",
+    "विष्णु पुराण",
+    "प्रह्लाद"
+   ],
+   "key_quote": "Vishńu, father,\" answered Prahláda, \"is the instructor of the whole world: what else should any one teach or learn, save him the supreme spirit?",
+   "shloka": null,
+   "pictures": [
+    {
+     "url": "https://openaccess-cdn.clevelandart.org/2003.132/2003.132_web.jpg",
+     "credit": {
+      "source": "Cleveland Museum of Art",
+      "title": "Vishnu and Lakshmi",
+      "credit": "Eastern India, Bengal, Kolkata, Kalighat",
+      "license": "CC0",
+      "url": "https://clevelandart.org/art/2003.132"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Vishnu_and_Saraswati.jpg/960px-Vishnu_and_Saraswati.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Vishnu and Saraswati",
+      "credit": "Kotah, Rajasthan",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Vishnu_and_Saraswati.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Hiranyakashipu_commands_his_demon_warriors_to_threaten_and_injure_Prahlada._Preparatory_drawing_from_the_%E2%80%98Small_Bhagavata_Purana%E2%80%99_Series_MET_LC-TR_177_1_2020_sr1-001.jpg/1920px-Hiranyakashipu_commands_his_demon_warriors_to_threaten_and_injure_Prahlada._Preparatory_drawing_from_the_%E2%80%98Small_Bhagavata_Purana%E2%80%99_Series_MET_LC-TR_177_1_2020_sr1-001.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hiranyakashipu commands his demon warriors to threaten and injure Prahlada. Preparatory drawing from the ‘Small Bhagavata Purana’ Series MET LC-TR 177 1 2020 sr1-001",
+      "credit": "Attributed to Manaku",
+      "license": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:Hiranyakashipu_commands_his_demon_warriors_to_threaten_and_injure_Prahlada._Preparatory_drawing_from_the_%E2%80%98Small_Bhagavata_Purana%E2%80%99_Series_MET_LC-TR_177_1_2020_sr1-001.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Narasimha_oil_colour.jpg/1920px-Narasimha_oil_colour.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Narasimha oil colour",
+      "credit": "Anonymous Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Narasimha_oil_colour.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.952,
+    "duration": true,
+    "loudness": true,
+    "seconds": 47.49,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 4,
+    "gemini_tts": 1,
+    "gemini_total": 5,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261009-1629-d20769361ac1dc60",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791544165/mool-katha/lite-20261009-1629-d20769361ac1dc60.mp4",
+    "due_at": "2026-10-09T21:45:00+05:30",
+    "youtube": {
+     "id": "6ac8cb673cdd14dcd26b7f8a",
+     "status": "scheduled",
+     "due_at": "2026-10-09T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac8cb685f6080fedf42f464",
+     "status": "scheduled",
+     "due_at": "2026-10-09T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-09T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-09T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
@@ -1200,6 +1312,7 @@
   "cleveland:170831",
   "commons:A Composite Illustration from the Razmnama - Mughal Painting 1616-17.jpg",
   "commons:Arjuna and river Nymph.jpg",
+  "commons:Painting of Bhagat Prahlad, from a folio within an illustrated manuscript of the Prem Ambodh Pothi.jpg",
   "commons:Paraśurāma fighting King Kartavirya Arjuna..jpg",
   "commons:Shri Gobinda Chandra Roy - Jatayu (Rama'a Mythical Bird) Hinders Ravana's Chariot, Trying to Prevent Abduction of Sita (recto), Battle Scene (verso) - 2003.111 - Cleveland Museum of Art.jpg"
  ]
