@@ -1294,11 +1294,124 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261010-0712",
+   "topic_key": "gita-6-35",
+   "title": "गीता में विश्वरूप देखकर अर्जुन ने किस बात के लिए क्षमा मांगी?",
+   "description": "भगवद्गीता के भीष्म पर्व खंड ३५ में भगवान श्रीकृष्ण ने अर्जुन को अपना अद्भुत विश्वरूप दिखाया। उस असीम तेज और सार्वभौमिक रूप को देखकर अर्जुन ने कृष्ण से अपने पूर्व व्यवहार के लिए क्षमा क्यों मांगी, जानिए मूल पाठ के आधार पर।",
+   "citation": "भगवद्गीता · भीष्म पर्व खंड 35 (गांगुली अनुवाद)",
+   "source_url": "https://archive.sacred-texts.com/hin/m06/m06035.htm",
+   "translator": "Kisari Mohan Ganguli (1883-1896), sacred-texts.com",
+   "hashtags": [
+    "#bhagavadgita",
+    "#mahabharat",
+    "#krishna",
+    "#vishvarupa"
+   ],
+   "keywords": [
+    "Bhagavad Gita",
+    "Krishna Vishvarupa",
+    "Arjuna",
+    "Mahabharat",
+    "Bheeshma Parva",
+    "Mool Katha"
+   ],
+   "key_quote": "Regarding (thee) a friend whatever hath been said by me carelessly, such as--O Krishna, O Yadava, O friend,--not knowing this thy greatness from want of judgement or from love either",
+   "shloka": null,
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Sri_Krishna_as_Envoy.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Sri Krishna as Envoy",
+      "credit": "Raja Ravi Varma",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Sri_Krishna_as_Envoy.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Hindu_Ravi_Verma%27s_Mahabharata_Arjuna_Pandava_Brother.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hindu Ravi Verma's Mahabharata Arjuna Pandava Brother",
+      "credit": "Raja Ravi Varma",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hindu_Ravi_Verma%27s_Mahabharata_Arjuna_Pandava_Brother.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg/1280px-Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Arjuna BattlesWith the Kauravas At Kuruksheta Bhagavad Gita",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Arjuna_BattlesWith_the_Kauravas_At_Kuruksheta_Bhagavad_Gita.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Arjuna_and_Bhimen_preparing_for_battle%2C_from_Razmnameh.jpg/1920px-Arjuna_and_Bhimen_preparing_for_battle%2C_from_Razmnameh.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Arjuna and Bhimen preparing for battle, from Razmnameh",
+      "credit": "Mughal Style",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Arjuna_and_Bhimen_preparing_for_battle,_from_Razmnameh.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.975,
+    "duration": true,
+    "loudness": true,
+    "seconds": 51.23,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261010-0712-c4f81192132c553b",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791597083/mool-katha/lite-20261010-0712-c4f81192132c553b.mp4",
+    "due_at": "2026-10-10T17:30:00+05:30",
+    "youtube": {
+     "id": "6ac99a1ebba9419ccbe8a329",
+     "status": "scheduled",
+     "due_at": "2026-10-10T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ac99a1fbba9419ccbe8a353",
+     "status": "scheduled",
+     "due_at": "2026-10-10T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-10T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-10T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
   "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
  "pending": null,
  "ready": null,
@@ -1306,7 +1419,8 @@
   "ramayana-1-67": 1,
   "vishnu_purana-1-11": 1,
   "mahabharata-5-7": 1,
-  "ramayana-2-63": 1
+  "ramayana-2-63": 1,
+  "mahabharata-1-134": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
