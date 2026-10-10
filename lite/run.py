@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-from . import art, gate, review, slots, sources, writer
+from . import art, gate, learn, review, slots, sources, writer
 
 log = logging.getLogger("lite")
 
@@ -76,9 +76,9 @@ def used_keys(ledger: dict) -> set[str]:
 
 def next_topic(ledger: dict, rng: random.Random | None = None, exclude: set[str] = frozenset()) -> dict:
     used = used_keys(ledger) | set(exclude)
-    for topic in json.loads(TOPICS.read_text(encoding="utf-8")):
-        if topic["key"] not in used:
-            return topic
+    free = [t for t in json.loads(TOPICS.read_text(encoding="utf-8")) if t["key"] not in used]
+    if free:
+        return learn.prefer(free, ledger)[0]
     rng = rng or random.Random()
     for _ in range(200):
         kanda = rng.choice(list(VALMIKI_SARGAS))
@@ -379,6 +379,13 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
         from . import publisher
 
         youtube_id, instagram_id = publisher.destinations()
+        try:
+            learned = learn.refresh(ledger, youtube_id, instagram_id, now, report_path=LEDGER.with_name("LEARNINGS.md"))
+            if learned is not None:
+                summary["learned"] = learned
+                save_ledger(ledger)
+        except Exception as err:  # the numbers steer topic order; reading them must never stop a Short
+            summary["learn_error"] = f"{type(err).__name__}: {err}"[:300]
         yt_rows = publisher.recent_posts(youtube_id, now)
         ig_rows = publisher.recent_posts(instagram_id, now)
         slot = (slots.replacement_slot(now, yt_rows, ig_rows) if replacing(ledger) else
