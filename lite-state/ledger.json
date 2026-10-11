@@ -1532,12 +1532,149 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261011-0711",
+   "topic_key": "ramayana-4-6",
+   "title": "रामायण: लक्ष्मण केवल सीता के नूपुर ही क्यों पहचान सके?",
+   "description": "वाल्मीकि रामायण के किष्किन्धाकाण्ड में जब सुग्रीव ने सीता के आभूषण दिखाए, तब लक्ष्मण ने केवल उनके नूपुर पहचाने। जानिए इसके पीछे लक्ष्मण ने क्या कारण बताया था।",
+   "citation": "वाल्मीकि रामायण · किष्किन्धाकाण्ड · सर्ग 6",
+   "source_url": "https://www.valmikiramayan.net/utf8/kish/sarga6/kishkindhasans6.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#lakshman",
+    "#sita",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Valmiki Ramayana",
+    "Lakshmana",
+    "Sita jewels",
+    "Kishkindha Kanda",
+    "Sugriva",
+    "Ramayan facts"
+   ],
+   "key_quote": "I know not the bracelets and I know not the earrings But because I always salute her feet I know these anklets well...",
+   "shloka": {
+    "number": "4-6-22",
+    "sanskrit": "एवम् उक्तसः तु रामेण लक्ष्मणो वाक्यम् इदम् अब्रवीत् | न अहम् जानामि केयूरे न अहम् जानामि कुण्डले || ४-६-२२ नूपुरे तु अभिजनामि नित्यम् पाद अभिवंदनात् |"
+   },
+   "pictures": [
+    {
+     "url": "https://openaccess-cdn.clevelandart.org/2018.129/2018.129_web.jpg",
+     "credit": {
+      "source": "Cleveland Museum of Art",
+      "title": "Rama, Sita, and Lakshmana visit the hermitage of the sage Bharadvaja at Prayaga, from Chapter 48 of the Ayodhya Kanda (Book of Ayodhya) of a Ramayana (Rama’s Journey)",
+      "credit": "Central India, Malwa Region, Madhya Pradesh",
+      "license": "CC0",
+      "url": "https://clevelandart.org/art/2018.129"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/South_India%2C_Tanjore%2C_18th_century_-_Sugriva%2C_the_Monkey_King_-_1975.73_-_Cleveland_Museum_of_Art.jpg/1920px-South_India%2C_Tanjore%2C_18th_century_-_Sugriva%2C_the_Monkey_King_-_1975.73_-_Cleveland_Museum_of_Art.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "South India, Tanjore, 18th century - Sugriva, the Monkey King - 1975.73 - Cleveland Museum of Art",
+      "credit": "anonymous",
+      "license": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:South_India,_Tanjore,_18th_century_-_Sugriva,_the_Monkey_King_-_1975.73_-_Cleveland_Museum_of_Art.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Ravi_Varma-Ravana_Sita_Jathayu.jpg/1920px-Ravi_Varma-Ravana_Sita_Jathayu.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Ravi Varma-Ravana Sita Jathayu",
+      "credit": "Raja Ravi Varma",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Ravi_Varma-Ravana_Sita_Jathayu.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg/1920px-Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama and Hanuman fighting Ravana, an album painting on paper, c1820",
+      "credit": "Anonymous Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama_and_Hanuman_fighting_Ravana,_an_album_painting_on_paper,_c1820.jpg"
+     }
+    },
+    {
+     "url": "https://openaccess-cdn.clevelandart.org/1973.103/1973.103_web.jpg",
+     "credit": {
+      "source": "Cleveland Museum of Art",
+      "title": "Sugriva challenges his brother Vali, King of the Forest Dwellers, to a duel, folio 10 from the Kishkindha Kanda (Book of Kishkindha) of a Ramayana (Rama’s Journey)",
+      "credit": "Northern India, Pahari kingdoms",
+      "license": "CC0",
+      "url": "https://clevelandart.org/art/1973.103"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Rama%2C_Sita_and_Lakshmana_leaving_the_palace_of_Ayodhya_for_exile.jpg/1920px-Rama%2C_Sita_and_Lakshmana_leaving_the_palace_of_Ayodhya_for_exile.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama, Sita and Lakshmana leaving the palace of Ayodhya for exile",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama,_Sita_and_Lakshmana_leaving_the_palace_of_Ayodhya_for_exile.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.931,
+    "duration": true,
+    "loudness": true,
+    "seconds": 48.6,
+    "lufs": -14.1
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 3
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261011-0711-f5bf7d0bb5713fb7",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791683451/mool-katha/lite-20261011-0711-f5bf7d0bb5713fb7.mp4",
+    "due_at": "2026-10-11T17:30:00+05:30",
+    "youtube": {
+     "id": "6acaeb7ebba9419ccb1f66dc",
+     "status": "scheduled",
+     "due_at": "2026-10-11T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6acaeb7ec4de2d2b1247420c",
+     "status": "scheduled",
+     "due_at": "2026-10-11T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-11T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-11T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
   "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
   "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
+  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
  "pending": null,
  "ready": null,
@@ -1546,7 +1683,8 @@
   "vishnu_purana-1-11": 1,
   "mahabharata-5-7": 1,
   "ramayana-2-63": 1,
-  "mahabharata-1-134": 1
+  "mahabharata-1-134": 1,
+  "mahabharata-1-100": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
@@ -1573,6 +1711,19 @@
      "instagram_shares": 2,
      "instagram_saves": 3,
      "instagram_reach": 359
+    },
+    {
+     "age_h": 109.69,
+     "views": 473,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 26,
+     "instagram_comments": 1,
+     "instagram_views": 468,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 365
     }
    ],
    "views_at_48h": 334.6866497105137
@@ -1593,6 +1744,19 @@
      "instagram_shares": 2,
      "instagram_saves": 11,
      "instagram_reach": 1462
+    },
+    {
+     "age_h": 105.44,
+     "views": 1403,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 64,
+     "instagram_comments": 0,
+     "instagram_views": 1397,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1470
     }
    ],
    "views_at_48h": 1032.566393469556
@@ -1613,6 +1777,19 @@
      "instagram_shares": 198,
      "instagram_saves": 236,
      "instagram_reach": 26621
+    },
+    {
+     "age_h": 85.69,
+     "views": 35312,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 25,
+     "instagram_reactions": 2227,
+     "instagram_comments": 6,
+     "instagram_views": 35287,
+     "instagram_shares": 202,
+     "instagram_saves": 241,
+     "instagram_reach": 26872
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -1623,6 +1800,13 @@
    "snapshots": [
     {
      "age_h": 63.61,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 81.44,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1641,6 +1825,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 79.69,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -1651,6 +1842,13 @@
    "snapshots": [
     {
      "age_h": 48.86,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 66.69,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1675,9 +1873,22 @@
      "instagram_shares": 102,
      "instagram_saves": 116,
      "instagram_reach": 6773
+    },
+    {
+     "age_h": 61.69,
+     "views": 10275,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 33,
+     "instagram_reactions": 520,
+     "instagram_comments": 4,
+     "instagram_views": 10242,
+     "instagram_shares": 287,
+     "instagram_saves": 125,
+     "instagram_reach": 7026
     }
    ],
-   "views_at_48h": null
+   "views_at_48h": 9984.001121704992
   },
   "lite-20261008-1324": {
    "topic_key": "mahabharata-1-19",
@@ -1695,9 +1906,22 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 2952
+    },
+    {
+     "age_h": 57.44,
+     "views": 3740,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 4,
+     "instagram_reactions": 83,
+     "instagram_comments": 1,
+     "instagram_views": 3736,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 2986
     }
    ],
-   "views_at_48h": null
+   "views_at_48h": 3717.233875490746
   },
   "lite-20261009-1324": {
    "topic_key": "ramayana-2-63",
@@ -1715,6 +1939,19 @@
      "instagram_shares": 9,
      "instagram_saves": 13,
      "instagram_reach": 2674
+    },
+    {
+     "age_h": 37.69,
+     "views": 3547,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 115,
+     "instagram_comments": 2,
+     "instagram_views": 3547,
+     "instagram_shares": 14,
+     "instagram_saves": 14,
+     "instagram_reach": 2963
     }
    ],
    "views_at_48h": null
@@ -1735,6 +1972,19 @@
      "instagram_shares": 1,
      "instagram_saves": 9,
      "instagram_reach": 1280
+    },
+    {
+     "age_h": 33.44,
+     "views": 2745,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 111,
+     "instagram_comments": 1,
+     "instagram_views": 2745,
+     "instagram_shares": 5,
+     "instagram_saves": 12,
+     "instagram_reach": 2216
     }
    ],
    "views_at_48h": null
@@ -1742,15 +1992,49 @@
   "lite-20261010-0712": {
    "topic_key": "gita-6-35",
    "due_at": "2026-10-10T17:30:00+05:30",
-   "snapshots": [],
+   "snapshots": [
+    {
+     "age_h": 13.69,
+     "views": 1356,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 45,
+     "instagram_comments": 2,
+     "instagram_views": 1356,
+     "instagram_shares": 3,
+     "instagram_saves": 9,
+     "instagram_reach": 1156
+    }
+   ],
+   "views_at_48h": null
+  },
+  "lite-20261010-1321": {
+   "topic_key": "ramayana-3-74",
+   "due_at": "2026-10-10T21:45:00+05:30",
+   "snapshots": [
+    {
+     "age_h": 9.44,
+     "views": 337,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 18,
+     "instagram_comments": 1,
+     "instagram_views": 337,
+     "instagram_shares": 0,
+     "instagram_saves": 0,
+     "instagram_reach": 286
+    }
+   ],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-10T07:51:23+00:00",
-  "scored": 6,
+  "at": "2026-10-11T01:41:35+00:00",
+  "scored": 8,
   "min_samples": 4,
   "lifts": {},
-  "baseline_views": 46
+  "baseline_views": 156
  }
 }
