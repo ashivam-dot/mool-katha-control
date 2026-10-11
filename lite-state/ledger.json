@@ -1668,13 +1668,150 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261011-1322",
+   "topic_key": "ramayana-4-12",
+   "title": "रामायण: श्रीराम का एक बाण सात वृक्ष भेदकर कहाँ समा गया?",
+   "description": "वाल्मीकि रामायण के किष्किन्धाकाण्ड में सुग्रीव का संशय दूर करने के लिए श्रीराम ने धनुष उठाया। उनके एक ही स्वर्ण बाण ने सात साल वृक्षों और पर्वत को चीर दिया। जानिए उस बाण के अद्भुत पराक्रम की मूल कथा।",
+   "citation": "वाल्मीकि रामायण · किष्किन्धाकाण्ड · सर्ग 12",
+   "source_url": "https://www.valmikiramayan.net/utf8/kish/sarga12/kishkindhasans12.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#valmikiramayan",
+    "#ramayan",
+    "#kishkindhakanda",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Valmiki Ramayana",
+    "Rama arrow",
+    "Sugriva",
+    "Saptatala",
+    "Kishkindha Kanda",
+    "वाल्मीकि रामायण",
+    "श्रीराम"
+   ],
+   "key_quote": "Thus that arrow which briskly drilled all the sala trees, came up in a moment from under the earth, and again swiftly re-entered the quiver of Rama.",
+   "shloka": {
+    "number": "4-12-4",
+    "sanskrit": "सायकः तु मुहूर्तेन सालान् भित्त्वा महाजवः | निष्पत्य च पुनः तूर्णम् तम् एव प्रविवेश ह || ४-१२-४"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Lord_Rama_with_arrows.jpg/1280px-Lord_Rama_with_arrows.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Lord Rama with arrows",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Lord_Rama_with_arrows.jpg"
+     }
+    },
+    {
+     "url": "https://openaccess-cdn.clevelandart.org/1973.103/1973.103_web.jpg",
+     "credit": {
+      "source": "Cleveland Museum of Art",
+      "title": "Sugriva challenges his brother Vali, King of the Forest Dwellers, to a duel, folio 10 from the Kishkindha Kanda (Book of Kishkindha) of a Ramayana (Rama’s Journey)",
+      "credit": "Northern India, Pahari kingdoms",
+      "license": "CC0",
+      "url": "https://clevelandart.org/art/1973.103"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Raja_Sansar_Chand_and_saint_Tulsidas_paying_homage_to_Rama_and_Sita.jpg/1920px-Raja_Sansar_Chand_and_saint_Tulsidas_paying_homage_to_Rama_and_Sita.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Raja Sansar Chand and saint Tulsidas paying homage to Rama and Sita",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Raja_Sansar_Chand_and_saint_Tulsidas_paying_homage_to_Rama_and_Sita.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Rama_and_SIta_in_Forest%2C_Kangra_Style_1780.jpg/1920px-Rama_and_SIta_in_Forest%2C_Kangra_Style_1780.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama and SIta in Forest, Kangra Style 1780",
+      "credit": "Unknown",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama_and_SIta_in_Forest,_Kangra_Style_1780.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rama_kills_Taraka.jpg/1920px-Rama_kills_Taraka.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama kills Taraka",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama_kills_Taraka.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Indian_-_Sugriva%27s_Farewell_-_Walters_W868.jpg/1280px-Indian_-_Sugriva%27s_Farewell_-_Walters_W868.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Indian - Sugriva's Farewell - Walters W868",
+      "credit": "Unknown artist",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Indian_-_Sugriva%27s_Farewell_-_Walters_W868.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.884,
+    "duration": true,
+    "loudness": true,
+    "seconds": 48.43,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 2,
+    "gemini_tts": 1,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261011-1322-4b52deaa398924c7",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791705589/mool-katha/lite-20261011-1322-4b52deaa398924c7.mp4",
+    "due_at": "2026-10-11T21:45:00+05:30",
+    "youtube": {
+     "id": "6acb41f9bba9419ccb2b4c5f",
+     "status": "scheduled",
+     "due_at": "2026-10-11T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6acb41f9d9cab260a7ee5113",
+     "status": "scheduled",
+     "due_at": "2026-10-11T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-11T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-11T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
   "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
   "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
   "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
+  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
  "pending": null,
  "ready": null,
@@ -1684,7 +1821,8 @@
   "mahabharata-5-7": 1,
   "ramayana-2-63": 1,
   "mahabharata-1-134": 1,
-  "mahabharata-1-100": 1
+  "mahabharata-1-100": 1,
+  "mahabharata-3-146": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
@@ -1714,6 +1852,19 @@
     },
     {
      "age_h": 109.69,
+     "views": 473,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 26,
+     "instagram_comments": 1,
+     "instagram_views": 468,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 365
+    },
+    {
+     "age_h": 115.88,
      "views": 473,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1757,6 +1908,19 @@
      "instagram_shares": 2,
      "instagram_saves": 11,
      "instagram_reach": 1470
+    },
+    {
+     "age_h": 111.63,
+     "views": 1403,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 64,
+     "instagram_comments": 0,
+     "instagram_views": 1397,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1470
     }
    ],
    "views_at_48h": 1032.566393469556
@@ -1790,6 +1954,19 @@
      "instagram_shares": 202,
      "instagram_saves": 241,
      "instagram_reach": 26872
+    },
+    {
+     "age_h": 91.88,
+     "views": 35312,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 25,
+     "instagram_reactions": 2227,
+     "instagram_comments": 6,
+     "instagram_views": 35287,
+     "instagram_shares": 202,
+     "instagram_saves": 241,
+     "instagram_reach": 26872
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -1807,6 +1984,13 @@
     },
     {
      "age_h": 81.44,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 87.63,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1832,6 +2016,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 85.88,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -1849,6 +2040,13 @@
     },
     {
      "age_h": 66.69,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 72.88,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1876,6 +2074,19 @@
     },
     {
      "age_h": 61.69,
+     "views": 10275,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 33,
+     "instagram_reactions": 520,
+     "instagram_comments": 4,
+     "instagram_views": 10242,
+     "instagram_shares": 287,
+     "instagram_saves": 125,
+     "instagram_reach": 7026
+    },
+    {
+     "age_h": 67.88,
      "views": 10275,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1919,6 +2130,19 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 2986
+    },
+    {
+     "age_h": 63.63,
+     "views": 3740,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 4,
+     "instagram_reactions": 83,
+     "instagram_comments": 1,
+     "instagram_views": 3736,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 2986
     }
    ],
    "views_at_48h": 3717.233875490746
@@ -1942,6 +2166,19 @@
     },
     {
      "age_h": 37.69,
+     "views": 3547,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 115,
+     "instagram_comments": 2,
+     "instagram_views": 3547,
+     "instagram_shares": 14,
+     "instagram_saves": 14,
+     "instagram_reach": 2963
+    },
+    {
+     "age_h": 43.88,
      "views": 3547,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -1985,6 +2222,19 @@
      "instagram_shares": 5,
      "instagram_saves": 12,
      "instagram_reach": 2216
+    },
+    {
+     "age_h": 39.63,
+     "views": 2745,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 111,
+     "instagram_comments": 1,
+     "instagram_views": 2745,
+     "instagram_shares": 5,
+     "instagram_saves": 12,
+     "instagram_reach": 2216
     }
    ],
    "views_at_48h": null
@@ -1995,6 +2245,19 @@
    "snapshots": [
     {
      "age_h": 13.69,
+     "views": 1356,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 45,
+     "instagram_comments": 2,
+     "instagram_views": 1356,
+     "instagram_shares": 3,
+     "instagram_saves": 9,
+     "instagram_reach": 1156
+    },
+    {
+     "age_h": 19.88,
      "views": 1356,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2025,13 +2288,32 @@
      "instagram_shares": 0,
      "instagram_saves": 0,
      "instagram_reach": 286
+    },
+    {
+     "age_h": 15.63,
+     "views": 337,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 18,
+     "instagram_comments": 1,
+     "instagram_views": 337,
+     "instagram_shares": 0,
+     "instagram_saves": 0,
+     "instagram_reach": 286
     }
    ],
+   "views_at_48h": null
+  },
+  "lite-20261011-0711": {
+   "topic_key": "ramayana-4-6",
+   "due_at": "2026-10-11T17:30:00+05:30",
+   "snapshots": [],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-11T01:41:35+00:00",
+  "at": "2026-10-11T07:52:35+00:00",
   "scored": 8,
   "min_samples": 4,
   "lifts": {},
