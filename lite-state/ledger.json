@@ -1958,7 +1958,163 @@
   "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
   "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261012-1328",
+  "topic_key": "ramayana-5-38",
+  "script": {
+   "usable": true,
+   "title": "रामायण: श्रीराम ने एक कौए पर तिनके का ब्रह्मास्त्र क्यों चलाया था?",
+   "hook_text": "कौए पर ब्रह्मास्त्र क्यों?",
+   "beats": [
+    {
+     "text": "श्रीराम ने एक कौए पर घास का ब्रह्मास्त्र क्यों चलाया था?",
+     "evidence": "",
+     "visual_query": "Rama aiming arrow",
+     "emphasis": "ब्रह्मास्त्र"
+    },
+    {
+     "text": "सीताजी ने हनुमानजी को पहचान के लिए चित्रकूट की गुप्त घटना बताई।",
+     "evidence": "give me a token of remembrance which Rama can recognise.",
+     "visual_query": "Hanuman Sita Ashoka Vatika",
+     "emphasis": "चित्रकूट"
+    },
+    {
+     "text": "वहां एक कौआ सीताजी को अपने पंजों से लगातार घायल कर रहा था।",
+     "evidence": "Descending all of a sudden, the crow clawed me at the space between the breasts, even as I awoke from my sleep",
+     "visual_query": "Rama Sita forest exile",
+     "emphasis": "कौआ"
+    },
+    {
+     "text": "उनके रक्त से जब सोए हुए श्रीराम जागे, तो वे बहुत क्रोधित हुए।",
+     "evidence": "Then, Rama got wet by the discharged drops of blood. Thereafter, that splendorous Rama, the annihilator of enemies, who was in a pleasant slumber, was woken up",
+     "visual_query": "Rama Sita hermitage",
+     "emphasis": "क्रोधित"
+    },
+    {
+     "text": "वह कौआ देवराज इंद्र का पुत्र था और वायु की गति से उड़ता था।",
+     "evidence": "That crow, the best among birds, seems to be the son of Indra the Lord of celestials, staying in mountains and moving with a peed equal to the wind.",
+     "visual_query": "Indra son crow Rama",
+     "emphasis": "इंद्र"
+    },
+    {
+     "text": "श्रीराम ने कुशा घास का एक तिनका उठाकर उस पर ब्रह्मास्त्र चला दिया।",
+     "evidence": "Taking a blade of Kusa grass from his bed ( made of Kusa grass), Rama employed it to work with Brahma's missile",
+     "visual_query": "Rama shooting grass arrow",
+     "emphasis": "कुशा"
+    },
+    {
+     "text": "जलते तिनके से डरे उस कौए को तीनों लोकों में किसी ने शरण नहीं दी।",
+     "evidence": "Roaming the three worlds in search of a saviour, that crow was abandoned by Indra; its father, the celestials and the sages.",
+     "visual_query": "crow flying sky Rama",
+     "emphasis": "शरण"
+    },
+    {
+     "text": "अंत में उसने श्रीराम की शरण ली और दाहिनी आंख देकर प्राण बचाए।",
+     "evidence": "Then that blade of Kusa grass shooted the right eye of that crow. By giving away its right eye in that way, the crow saved its life.",
+     "visual_query": "Rama pardoning crow",
+     "emphasis": "दाहिनी"
+    },
+    {
+     "text": "तभी पूछा जाता है, श्रीराम ने एक कौए पर घास का ब्रह्मास्त्र क्यों चलाया था?",
+     "evidence": "",
+     "visual_query": "Rama Sita Chitrakoot",
+     "emphasis": "घास"
+    }
+   ],
+   "description": "वाल्मीकि रामायण के सुन्दरकाण्ड में सीताजी ने हनुमानजी को पहचान के रूप में चित्रकूट की यह कथा सुनाई। जब एक कौए ने माता सीता को घायल किया, तब श्रीराम ने कुशा के एक तिनके से उस पर ब्रह्मास्त्र चला दिया था।",
+   "hashtags": [
+    "#ramayan",
+    "#valmiki",
+    "#sundarkand",
+    "#moolkatha",
+    "#ram"
+   ],
+   "keywords": [
+    "valmiki ramayan",
+    "sundar kand",
+    "sarga 38",
+    "sita hanuman samvad",
+    "crow chitrakoot",
+    "brahmastra kusha grass",
+    "indra son crow"
+   ],
+   "shloka_verse": "5-38-30",
+   "key_quote": "Taking a blade of Kusa grass from his bed ( made of Kusa grass), Rama employed it to work with Brahma's missile.",
+   "names": [
+    "श्रीराम",
+    "सीता",
+    "हनुमान",
+    "चित्रकूट",
+    "इंद्र"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Opening rhetorical question."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 10-14 where Sita narrates the incident at Chitrakuta as an abhijnanam."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 15-23."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 24-25."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 28."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 30."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 30-33."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 33-37."
+     },
+     {
+      "beat": 9,
+      "factual": false,
+      "supported": true,
+      "note": "Closing rhetorical question."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All beats faithfully reflect the events described in Valmiki Ramayana Sundarakanda Sarga 38."
+   }
+  },
+  "gate_attempts": 1
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -2033,6 +2189,19 @@
      "instagram_shares": 2,
      "instagram_saves": 3,
      "instagram_reach": 369
+    },
+    {
+     "age_h": 139.97,
+     "views": 478,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 26,
+     "instagram_comments": 1,
+     "instagram_views": 473,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 369
     }
    ],
    "views_at_48h": 334.6866497105137
@@ -2082,6 +2251,19 @@
     },
     {
      "age_h": 129.5,
+     "views": 1406,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 64,
+     "instagram_comments": 0,
+     "instagram_views": 1400,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1474
+    },
+    {
+     "age_h": 135.72,
      "views": 1406,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2151,6 +2333,19 @@
      "instagram_shares": 206,
      "instagram_saves": 246,
      "instagram_reach": 27579
+    },
+    {
+     "age_h": 115.97,
+     "views": 35950,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 30,
+     "instagram_reactions": 2268,
+     "instagram_comments": 6,
+     "instagram_views": 35920,
+     "instagram_shares": 206,
+     "instagram_saves": 246,
+     "instagram_reach": 27579
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -2182,6 +2377,13 @@
     },
     {
      "age_h": 105.5,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 111.72,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2221,6 +2423,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 109.97,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -2252,6 +2461,13 @@
     },
     {
      "age_h": 90.75,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 96.97,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2305,6 +2521,19 @@
     },
     {
      "age_h": 85.75,
+     "views": 10461,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 525,
+     "instagram_comments": 4,
+     "instagram_views": 10422,
+     "instagram_shares": 289,
+     "instagram_saves": 127,
+     "instagram_reach": 7130
+    },
+    {
+     "age_h": 91.97,
      "views": 10461,
      "youtube_reactions": 1,
      "youtube_comments": 0,
@@ -2374,6 +2603,19 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 2988
+    },
+    {
+     "age_h": 87.72,
+     "views": 3756,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 9,
+     "instagram_reactions": 83,
+     "instagram_comments": 1,
+     "instagram_views": 3747,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 2988
     }
    ],
    "views_at_48h": 3717.233875490746
@@ -2423,6 +2665,19 @@
     },
     {
      "age_h": 61.75,
+     "views": 3573,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 2,
+     "instagram_reactions": 117,
+     "instagram_comments": 2,
+     "instagram_views": 3571,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 2984
+    },
+    {
+     "age_h": 67.97,
      "views": 3573,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2492,6 +2747,19 @@
      "instagram_shares": 5,
      "instagram_saves": 12,
      "instagram_reach": 2231
+    },
+    {
+     "age_h": 63.72,
+     "views": 2765,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 1,
+     "instagram_reactions": 111,
+     "instagram_comments": 1,
+     "instagram_views": 2764,
+     "instagram_shares": 5,
+     "instagram_saves": 12,
+     "instagram_reach": 2231
     }
    ],
    "views_at_48h": 2754.3676552881925
@@ -2528,6 +2796,19 @@
     },
     {
      "age_h": 37.75,
+     "views": 1657,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 22,
+     "instagram_reactions": 65,
+     "instagram_comments": 2,
+     "instagram_views": 1635,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1407
+    },
+    {
+     "age_h": 43.97,
      "views": 1657,
      "youtube_reactions": 2,
      "youtube_comments": 0,
@@ -2584,6 +2865,19 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 499
+    },
+    {
+     "age_h": 39.72,
+     "views": 649,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 25,
+     "instagram_reactions": 31,
+     "instagram_comments": 1,
+     "instagram_views": 624,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 499
     }
    ],
    "views_at_48h": null
@@ -2594,6 +2888,19 @@
    "snapshots": [
     {
      "age_h": 13.75,
+     "views": 1695,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 4,
+     "instagram_reactions": 61,
+     "instagram_comments": 0,
+     "instagram_views": 1691,
+     "instagram_shares": 0,
+     "instagram_saves": 6,
+     "instagram_reach": 1414
+    },
+    {
+     "age_h": 19.97,
      "views": 1695,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2624,13 +2931,32 @@
      "instagram_shares": 12,
      "instagram_saves": 11,
      "instagram_reach": 2514
+    },
+    {
+     "age_h": 15.72,
+     "views": 3121,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 194,
+     "instagram_comments": 0,
+     "instagram_views": 3121,
+     "instagram_shares": 12,
+     "instagram_saves": 11,
+     "instagram_reach": 2514
     }
    ],
+   "views_at_48h": null
+  },
+  "lite-20261012-0714": {
+   "topic_key": "ramayana-5-36",
+   "due_at": "2026-10-12T17:30:00+05:30",
+   "snapshots": [],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-12T01:44:55+00:00",
+  "at": "2026-10-12T07:58:13+00:00",
   "scored": 10,
   "min_samples": 4,
   "lifts": {

@@ -1,12 +1,13 @@
 # What Mool Katha's own numbers say
 
-Updated 2026-10-12T01:44:55+00:00. Scored Shorts (YouTube + Instagram views 48 h after the slot): 10. A work needs 4 scored Shorts for a lift; it is shrunk toward 1, kept within 0.75-1.35, and only reorders the next 3 topics.
+Updated 2026-10-12T07:58:13+00:00. Scored Shorts (YouTube + Instagram views 48 h after the slot): 10. A work needs 4 scored Shorts for a lift; it is shrunk toward 1, kept within 0.75-1.35, and only reorders the next 3 topics.
 
 Baseline: a typical Short has 285 views at 48 h.
 - ramayana: x1.35 (4 Shorts, typical 4324 views)
 
 | Short | topic | slot | YouTube views | Instagram views | views at 48 h |
 |---|---|---|---|---|---|
+| lite-20261012-0714 | ramayana-5-36 | 2026-10-12T17:30 |  |  |  |
 | lite-20261011-1322 | ramayana-4-12 | 2026-10-11T21:45 | 0 | 3121 |  |
 | lite-20261011-0711 | ramayana-4-6 | 2026-10-11T17:30 | 4 | 1691 |  |
 | lite-20261010-1321 | ramayana-3-74 | 2026-10-10T21:45 | 25 | 624 |  |
