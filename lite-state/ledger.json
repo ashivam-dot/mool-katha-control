@@ -1804,6 +1804,151 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261012-0714",
+   "topic_key": "ramayana-5-36",
+   "title": "रामायण: श्रीराम की मुद्रिका पाकर सीता का मुख चंद्रमा जैसा क्यों चमका?",
+   "description": "वाल्मीकि रामायण के सुन्दरकाण्ड में जब हनुमान जी ने माता सीता को श्रीराम के नाम से अंकित मुद्रिका सौंपी, तब सीता जी को कैसा अनुभव हुआ? जानिए मूल पाठ का यह अद्भुत प्रसंग।",
+   "citation": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 36",
+   "source_url": "https://www.valmikiramayan.net/utf8/sundara/sarga36/sundarasans36.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#valmikirayan",
+    "#sundarkand",
+    "#hanumanji",
+    "#ramayan"
+   ],
+   "keywords": [
+    "Valmiki Ramayana",
+    "Sundara Kanda",
+    "Hanuman Sita Mudrika",
+    "वाल्मीकि रामायण",
+    "सुन्दरकाण्ड",
+    "सीता हनुमान संवाद"
+   ],
+   "key_quote": "The countenance of that large-eyed Seetha, which appeared charming with red and white eyes shone like a moon the king of stars liberated by Rahu the demon.",
+   "shloka": {
+    "number": "5-36-4",
+    "sanskrit": "गृहीत्वा प्रेक्षमाणा सा भर्तुः कर विभूषणम् | भर्तारम् इव सम्प्राप्ता जानकी मुदिता अभवत् || ५-३६-४"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Hanuman_carrying_Rama_on_his_shoulders.jpg/1920px-Hanuman_carrying_Rama_on_his_shoulders.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman carrying Rama on his shoulders",
+      "credit": "anonymous",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_carrying_Rama_on_his_shoulders.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman%2C_M_V_Dhurandar.jpg/1280px-Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman%2C_M_V_Dhurandar.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Sree Raghunandan - Ram Laxman Sita and Hanuman, M V Dhurandar",
+      "credit": "M. V. Dhurandhar (1867- 1944)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Sree_Raghunandan_-_Ram_Laxman_Sita_and_Hanuman,_M_V_Dhurandar.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Hanuman_painted_by_Pahari_Painter.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman painted by Pahari Painter",
+      "credit": "Probably Nurpur, Punjab Hills, Northern India",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_painted_by_Pahari_Painter.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hanuman_slaying_demons_on_each_side.jpg/1920px-Hanuman_slaying_demons_on_each_side.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman slaying demons on each side",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_slaying_demons_on_each_side.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Sita_in_exile.jpg/960px-Sita_in_exile.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Sita in exile",
+      "credit": "Ravi Varma Press",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Sita_in_exile.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita%2C_ca.1790.jpg/1280px-Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita%2C_ca.1790.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Painting of Raja Jagat Prakash of Sirmur State worshipping Rama and Sita, ca.1790",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita,_ca.1790.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Sita_in_Ashoka_Grove.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Sita in Ashoka Grove",
+      "credit": "Raja Ravi Varma",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Sita_in_Ashoka_Grove.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.976,
+    "duration": true,
+    "loudness": true,
+    "seconds": 48.77,
+    "lufs": -14.1
+   },
+   "calls": {
+    "gemini_text": 5,
+    "gemini_tts": 1,
+    "gemini_total": 6,
+    "free_fallback": 0,
+    "picture_check": 3
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261012-0714-45d57fb38d64e877",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791769996/mool-katha/lite-20261012-0714-45d57fb38d64e877.mp4",
+    "due_at": "2026-10-12T17:30:00+05:30",
+    "youtube": {
+     "id": "6acc3d8efa026cfb8120f3a6",
+     "status": "scheduled",
+     "due_at": "2026-10-12T12:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6acc3d8f8e8dd50ffc6200e4",
+     "status": "scheduled",
+     "due_at": "2026-10-12T12:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-12T12:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-12T12:00:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
@@ -1875,6 +2020,19 @@
      "instagram_shares": 2,
      "instagram_saves": 3,
      "instagram_reach": 365
+    },
+    {
+     "age_h": 133.75,
+     "views": 478,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 26,
+     "instagram_comments": 1,
+     "instagram_views": 473,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 369
     }
    ],
    "views_at_48h": 334.6866497105137
@@ -1921,6 +2079,19 @@
      "instagram_shares": 2,
      "instagram_saves": 11,
      "instagram_reach": 1470
+    },
+    {
+     "age_h": 129.5,
+     "views": 1406,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 64,
+     "instagram_comments": 0,
+     "instagram_views": 1400,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1474
     }
    ],
    "views_at_48h": 1032.566393469556
@@ -1967,6 +2138,19 @@
      "instagram_shares": 202,
      "instagram_saves": 241,
      "instagram_reach": 26872
+    },
+    {
+     "age_h": 109.75,
+     "views": 35950,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 30,
+     "instagram_reactions": 2268,
+     "instagram_comments": 6,
+     "instagram_views": 35920,
+     "instagram_shares": 206,
+     "instagram_saves": 246,
+     "instagram_reach": 27579
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -1991,6 +2175,13 @@
     },
     {
      "age_h": 87.63,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 105.5,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2023,6 +2214,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 103.75,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -2047,6 +2245,13 @@
     },
     {
      "age_h": 72.88,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 90.75,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2097,6 +2302,19 @@
      "instagram_shares": 287,
      "instagram_saves": 125,
      "instagram_reach": 7026
+    },
+    {
+     "age_h": 85.75,
+     "views": 10461,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 525,
+     "instagram_comments": 4,
+     "instagram_views": 10422,
+     "instagram_shares": 289,
+     "instagram_saves": 127,
+     "instagram_reach": 7130
     }
    ],
    "views_at_48h": 9984.001121704992
@@ -2143,6 +2361,19 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 2986
+    },
+    {
+     "age_h": 81.5,
+     "views": 3756,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 9,
+     "instagram_reactions": 83,
+     "instagram_comments": 1,
+     "instagram_views": 3747,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 2988
     }
    ],
    "views_at_48h": 3717.233875490746
@@ -2189,9 +2420,22 @@
      "instagram_shares": 14,
      "instagram_saves": 14,
      "instagram_reach": 2963
+    },
+    {
+     "age_h": 61.75,
+     "views": 3573,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 2,
+     "instagram_reactions": 117,
+     "instagram_comments": 2,
+     "instagram_views": 3571,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 2984
     }
    ],
-   "views_at_48h": null
+   "views_at_48h": 3552.994404029099
   },
   "lite-20261009-1629": {
    "topic_key": "vishnu_purana-1-17",
@@ -2235,9 +2479,22 @@
      "instagram_shares": 5,
      "instagram_saves": 12,
      "instagram_reach": 2216
+    },
+    {
+     "age_h": 57.5,
+     "views": 2765,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 1,
+     "instagram_reactions": 111,
+     "instagram_comments": 1,
+     "instagram_views": 2764,
+     "instagram_shares": 5,
+     "instagram_saves": 12,
+     "instagram_reach": 2231
     }
    ],
-   "views_at_48h": null
+   "views_at_48h": 2754.3676552881925
   },
   "lite-20261010-0712": {
    "topic_key": "gita-6-35",
@@ -2268,6 +2525,19 @@
      "instagram_shares": 3,
      "instagram_saves": 9,
      "instagram_reach": 1156
+    },
+    {
+     "age_h": 37.75,
+     "views": 1657,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 22,
+     "instagram_reactions": 65,
+     "instagram_comments": 2,
+     "instagram_views": 1635,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1407
     }
    ],
    "views_at_48h": null
@@ -2301,6 +2571,19 @@
      "instagram_shares": 0,
      "instagram_saves": 0,
      "instagram_reach": 286
+    },
+    {
+     "age_h": 33.5,
+     "views": 649,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 25,
+     "instagram_reactions": 31,
+     "instagram_comments": 1,
+     "instagram_views": 624,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 499
     }
    ],
    "views_at_48h": null
@@ -2308,15 +2591,55 @@
   "lite-20261011-0711": {
    "topic_key": "ramayana-4-6",
    "due_at": "2026-10-11T17:30:00+05:30",
-   "snapshots": [],
+   "snapshots": [
+    {
+     "age_h": 13.75,
+     "views": 1695,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 4,
+     "instagram_reactions": 61,
+     "instagram_comments": 0,
+     "instagram_views": 1691,
+     "instagram_shares": 0,
+     "instagram_saves": 6,
+     "instagram_reach": 1414
+    }
+   ],
+   "views_at_48h": null
+  },
+  "lite-20261011-1322": {
+   "topic_key": "ramayana-4-12",
+   "due_at": "2026-10-11T21:45:00+05:30",
+   "snapshots": [
+    {
+     "age_h": 9.5,
+     "views": 3121,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 194,
+     "instagram_comments": 0,
+     "instagram_views": 3121,
+     "instagram_shares": 12,
+     "instagram_saves": 11,
+     "instagram_reach": 2514
+    }
+   ],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-11T07:52:35+00:00",
-  "scored": 8,
+  "at": "2026-10-12T01:44:55+00:00",
+  "scored": 10,
   "min_samples": 4,
-  "lifts": {},
-  "baseline_views": 156
+  "lifts": {
+   "ramayana": {
+    "n": 4,
+    "lift": 1.35,
+    "typical_views": 4324
+   }
+  },
+  "baseline_views": 285
  }
 }
