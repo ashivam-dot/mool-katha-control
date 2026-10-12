@@ -1949,79 +1949,15 @@
      }
     }
    }
-  }
- ],
- "skipped": {
-  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
- },
- "pending": {
-  "id": "lite-20261012-1328",
-  "topic_key": "ramayana-5-38",
-  "script": {
-   "usable": true,
+  },
+  {
+   "id": "lite-20261012-1328",
+   "topic_key": "ramayana-5-38",
    "title": "रामायण: श्रीराम ने एक कौए पर तिनके का ब्रह्मास्त्र क्यों चलाया था?",
-   "hook_text": "कौए पर ब्रह्मास्त्र क्यों?",
-   "beats": [
-    {
-     "text": "श्रीराम ने एक कौए पर घास का ब्रह्मास्त्र क्यों चलाया था?",
-     "evidence": "",
-     "visual_query": "Rama aiming arrow",
-     "emphasis": "ब्रह्मास्त्र"
-    },
-    {
-     "text": "सीताजी ने हनुमानजी को पहचान के लिए चित्रकूट की गुप्त घटना बताई।",
-     "evidence": "give me a token of remembrance which Rama can recognise.",
-     "visual_query": "Hanuman Sita Ashoka Vatika",
-     "emphasis": "चित्रकूट"
-    },
-    {
-     "text": "वहां एक कौआ सीताजी को अपने पंजों से लगातार घायल कर रहा था।",
-     "evidence": "Descending all of a sudden, the crow clawed me at the space between the breasts, even as I awoke from my sleep",
-     "visual_query": "Rama Sita forest exile",
-     "emphasis": "कौआ"
-    },
-    {
-     "text": "उनके रक्त से जब सोए हुए श्रीराम जागे, तो वे बहुत क्रोधित हुए।",
-     "evidence": "Then, Rama got wet by the discharged drops of blood. Thereafter, that splendorous Rama, the annihilator of enemies, who was in a pleasant slumber, was woken up",
-     "visual_query": "Rama Sita hermitage",
-     "emphasis": "क्रोधित"
-    },
-    {
-     "text": "वह कौआ देवराज इंद्र का पुत्र था और वायु की गति से उड़ता था।",
-     "evidence": "That crow, the best among birds, seems to be the son of Indra the Lord of celestials, staying in mountains and moving with a peed equal to the wind.",
-     "visual_query": "Indra son crow Rama",
-     "emphasis": "इंद्र"
-    },
-    {
-     "text": "श्रीराम ने कुशा घास का एक तिनका उठाकर उस पर ब्रह्मास्त्र चला दिया।",
-     "evidence": "Taking a blade of Kusa grass from his bed ( made of Kusa grass), Rama employed it to work with Brahma's missile",
-     "visual_query": "Rama shooting grass arrow",
-     "emphasis": "कुशा"
-    },
-    {
-     "text": "जलते तिनके से डरे उस कौए को तीनों लोकों में किसी ने शरण नहीं दी।",
-     "evidence": "Roaming the three worlds in search of a saviour, that crow was abandoned by Indra; its father, the celestials and the sages.",
-     "visual_query": "crow flying sky Rama",
-     "emphasis": "शरण"
-    },
-    {
-     "text": "अंत में उसने श्रीराम की शरण ली और दाहिनी आंख देकर प्राण बचाए।",
-     "evidence": "Then that blade of Kusa grass shooted the right eye of that crow. By giving away its right eye in that way, the crow saved its life.",
-     "visual_query": "Rama pardoning crow",
-     "emphasis": "दाहिनी"
-    },
-    {
-     "text": "तभी पूछा जाता है, श्रीराम ने एक कौए पर घास का ब्रह्मास्त्र क्यों चलाया था?",
-     "evidence": "",
-     "visual_query": "Rama Sita Chitrakoot",
-     "emphasis": "घास"
-    }
-   ],
    "description": "वाल्मीकि रामायण के सुन्दरकाण्ड में सीताजी ने हनुमानजी को पहचान के रूप में चित्रकूट की यह कथा सुनाई। जब एक कौए ने माता सीता को घायल किया, तब श्रीराम ने कुशा के एक तिनके से उस पर ब्रह्मास्त्र चला दिया था।",
+   "citation": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 38",
+   "source_url": "https://www.valmikiramayan.net/utf8/sundara/sarga38/sundarasans38.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
    "hashtags": [
     "#ramayan",
     "#valmiki",
@@ -2038,83 +1974,148 @@
     "brahmastra kusha grass",
     "indra son crow"
    ],
-   "shloka_verse": "5-38-30",
    "key_quote": "Taking a blade of Kusa grass from his bed ( made of Kusa grass), Rama employed it to work with Brahma's missile.",
-   "names": [
-    "श्रीराम",
-    "सीता",
-    "हनुमान",
-    "चित्रकूट",
-    "इंद्र"
-   ]
-  },
-  "review": {
-   "ok": true,
-   "issues": [],
-   "result": {
-    "items": [
-     {
-      "beat": 1,
-      "factual": false,
-      "supported": true,
-      "note": "Opening rhetorical question."
-     },
-     {
-      "beat": 2,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 10-14 where Sita narrates the incident at Chitrakuta as an abhijnanam."
-     },
-     {
-      "beat": 3,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 15-23."
-     },
-     {
-      "beat": 4,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 24-25."
-     },
-     {
-      "beat": 5,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 28."
-     },
-     {
-      "beat": 6,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 30."
-     },
-     {
-      "beat": 7,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 30-33."
-     },
-     {
-      "beat": 8,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 33-37."
-     },
-     {
-      "beat": 9,
-      "factual": false,
-      "supported": true,
-      "note": "Closing rhetorical question."
+   "shloka": {
+    "number": "5-38-30",
+    "sanskrit": "स दर्भ संस्तरात् गृह्य ब्रह्मणो अस्त्रेण योजयः || ५-३८-३० स दीप्त इव काल अग्निः जज्वाल अभिमुखो द्विजम् |"
+   },
+   "pictures": [
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita%2C_ca.1790.jpg/1280px-Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita%2C_ca.1790.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Painting of Raja Jagat Prakash of Sirmur State worshipping Rama and Sita, ca.1790",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Painting_of_Raja_Jagat_Prakash_of_Sirmur_State_worshipping_Rama_and_Sita,_ca.1790.jpg"
      }
-    ],
-    "respectful": true,
-    "title_reveals_answer": false,
-    "summary": "All beats faithfully reflect the events described in Valmiki Ramayana Sundarakanda Sarga 38."
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Hanuman_painted_by_Pahari_Painter.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Hanuman painted by Pahari Painter",
+      "credit": "Probably Nurpur, Punjab Hills, Northern India",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Hanuman_painted_by_Pahari_Painter.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Rama%2C_Sita%2C_Lakshmana_in_exile_in_forest_having_a_meal%2C_pahari_painting.jpg/960px-Rama%2C_Sita%2C_Lakshmana_in_exile_in_forest_having_a_meal%2C_pahari_painting.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama, Sita, Lakshmana in exile in forest having a meal, pahari painting",
+      "credit": "Unknown pahari painter, ca. 1780-1815.",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama,_Sita,_Lakshmana_in_exile_in_forest_having_a_meal,_pahari_painting.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Rama%2C_Lakshmana%2C_and_Sita_at_a_Hermitage_LACMA_M.79.252.1.jpg/1920px-Rama%2C_Lakshmana%2C_and_Sita_at_a_Hermitage_LACMA_M.79.252.1.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama, Lakshmana, and Sita at a Hermitage LACMA M.79.252.1",
+      "credit": "Unknown artist",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama,_Lakshmana,_and_Sita_at_a_Hermitage_LACMA_M.79.252.1.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Tiruchchirappalli_painting_Indra_%28cropped%29.jpg/1280px-Tiruchchirappalli_painting_Indra_%28cropped%29.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Tiruchchirappalli painting Indra (cropped)",
+      "credit": "unknown from Tiruchchirappalli (made)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Tiruchchirappalli_painting_Indra_(cropped).jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg/1920px-Rama_and_Hanuman_fighting_Ravana%2C_an_album_painting_on_paper%2C_c1820.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Rama and Hanuman fighting Ravana, an album painting on paper, c1820",
+      "credit": "Anonymous Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Rama_and_Hanuman_fighting_Ravana,_an_album_painting_on_paper,_c1820.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Bruno_Liljefors_-_Twilight_scene_with_crow_1892.jpg/1920px-Bruno_Liljefors_-_Twilight_scene_with_crow_1892.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Bruno Liljefors - Twilight scene with crow 1892",
+      "credit": "Bruno Liljefors",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Bruno_Liljefors_-_Twilight_scene_with_crow_1892.jpg"
+     }
+    },
+    {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Lord_Rama_with_arrows.jpg/1280px-Lord_Rama_with_arrows.jpg",
+     "credit": {
+      "source": "Wikimedia Commons",
+      "title": "Lord Rama with arrows",
+      "credit": "Unknown author Unknown author",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Lord_Rama_with_arrows.jpg"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.933,
+    "duration": true,
+    "loudness": true,
+    "seconds": 51.13,
+    "lufs": -14.1
+   },
+   "calls": {
+    "gemini_text": 0,
+    "gemini_tts": 3,
+    "gemini_total": 3,
+    "free_fallback": 0,
+    "picture_check": 5
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261012-1328-64e58040e5a96753",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1791803489/mool-katha/lite-20261012-1328-64e58040e5a96753.mp4",
+    "due_at": "2026-10-12T21:45:00+05:30",
+    "youtube": {
+     "id": "6accc06432da9d8379ea9966",
+     "status": "scheduled",
+     "due_at": "2026-10-12T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6accc0640b1f16abcb04b308",
+     "status": "scheduled",
+     "due_at": "2026-10-12T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-12T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-12T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
    }
-  },
-  "gate_attempts": 1
+  }
+ ],
+ "skipped": {
+  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
+ "pending": null,
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
