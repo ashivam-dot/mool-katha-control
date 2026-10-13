@@ -112,8 +112,9 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         "8. scene: in English, 20-50 words describing ONE painting for this beat: who is in it (use these English"
         " names: Rama, Sita, Lakshmana, Hanuman, Ravana, Dasharatha, Bharata, Vishvamitra, Vasishtha, Jatayu,"
         " Sugriva, Vali, Shiva, Ganga, Krishna, Arjuna, Bhishma, Draupadi, and so on), what they are doing at this"
-        " exact moment, their expression, the setting, the light and time of day, and the framing (close-up,"
-        " medium or wide). Beat 1's scene is a close-up of the face at the heart of the hook. Vary framing between"
+        " exact moment, the expression of EVERY person in it as fits the moment (a captive is frightened or"
+        " grieving, never smiling), the setting, the light and time of day, and the framing (close-up, medium or"
+        " wide). Beat 1's scene is a close-up of the face at the heart of the hook. Vary framing between"
         " beats. Show only what the line and passage say. For violence show the moment before or after, or a"
         " symbol (an arrow in flight, the glow of fire), never wounds. Deities and sages always dignified, never"
         " comic. No text or letters in the picture.",

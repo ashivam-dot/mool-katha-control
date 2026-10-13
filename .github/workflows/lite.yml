@@ -66,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.ref_name }}
           path: control
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -107,7 +108,7 @@ jobs:
             uv run --no-sync python -m lite plan --mode "$MODE" --out "$RUNNER_TEMP/plan"
           fi
       - name: Upload the plan
-        if: steps.plan.outputs.paint == 'true'
+        if: steps.plan.outcome == 'success'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: plan-${{ github.run_id }}
@@ -116,7 +117,7 @@ jobs:
       - name: Is the image model cached?
         id: cached
         if: steps.plan.outputs.paint == 'true'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/lite-art
           key: ${{ env.ART_CACHE_KEY }}
@@ -127,7 +128,7 @@ jobs:
         run: python3 -m lite.imagegen fetch --model zimage --root "$HOME/.cache/lite-art"
       - name: Cache the image model
         if: steps.plan.outputs.paint == 'true' && steps.cached.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/lite-art
           key: ${{ env.ART_CACHE_KEY }}
@@ -152,7 +153,7 @@ jobs:
         with:
           name: plan-${{ github.run_id }}
           path: ${{ runner.temp }}/plan
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/lite-art
           key: ${{ env.ART_CACHE_KEY }}
@@ -187,6 +188,7 @@ jobs:
       - name: Check out control (lite code and ledger)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.ref_name }}
           path: control
       - name: Check out pinned producer code (read-only)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -221,7 +223,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/control
         run: uv run --no-sync python -m pytest -q "$GITHUB_WORKSPACE/control/lite/tests"
       - name: Fetch the plan
-        if: needs.plan.outputs.paint == 'true'
+        if: needs.plan.result != 'skipped'
         continue-on-error: true
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:

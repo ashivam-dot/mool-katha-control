@@ -323,10 +323,12 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
                 pictures = aiart.pictures(painted, script["beats"], work / "pics", story(script, passage),
                                           calls.vision(), report=checked)
                 ai_art = True
-            except LookupError as err:
+            except (WaitForQuota, Budget):
+                raise
+            except Exception as err:
                 # Publishing never waits on the image model: museum paintings illustrate this Short instead.
                 log.warning("AI paintings not used: %s", err)
-                ledger["pending"]["ai_art_note"] = str(err)[:200]
+                ledger["pending"]["ai_art_note"] = f"{type(err).__name__}: {err}"[:200]
             finally:
                 (out / "pictures-ai.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1),
                                                       encoding="utf-8")
@@ -347,7 +349,18 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         calls.wrap_tts()
         calls.check(1)
         try:
-            video = render.make_short(work / "short.yaml")
+            try:
+                video = render.make_short(work / "short.yaml")
+            except tts.TTSRejected:
+                raise
+            except Exception as err:
+                if not spec["depth_motion"] or "429" in str(err) or "quota" in str(err).lower():
+                    raise
+                log.warning("depth motion failed, rendering with plain camera moves: %s", err)
+                spec["depth_motion"] = False
+                (work / "short.yaml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False),
+                                                 encoding="utf-8")
+                video = render.make_short(work / "short.yaml")
         except tts.TTSRejected as err:
             raise ValueError(f"narration rejected: {err}") from err
         except RuntimeError as err:
@@ -357,11 +370,11 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         spoken = "\n".join(b["text"] for b in script["beats"])
         result = gate.run(video, spoken, review_record["ok"], review_record["issues"])
         duration = result["checks"]["duration"]["seconds"]
-        if (result["passed"] or result["checks"]["duration"]["ok"] or attempt or ai_art
+        if (result["passed"] or result["checks"]["duration"]["ok"] or attempt
                 or calls.gemini + 5 > MAX_GEMINI_CALLS):
             break
-        # Wrong length: one shorter or longer rewrite (writer + review), then a fresh narration. (A Short with AI
-        # paintings keeps its script, since the paintings were made for it; the gate's verdict stands.)
+        # Wrong length: one shorter or longer rewrite (writer + review), then a fresh narration. The AI paintings
+        # were made for the old script, so the rewrite is illustrated with museum paintings.
         words = writer.word_count(script)
         target = max(writer.WORDS_MIN, min(writer.WORDS_MAX, int(words * 70.0 / max(duration, 1.0))))
         hint = f"The previous draft ran {duration:.0f} seconds with {words} words; write about {target} words."
@@ -432,12 +445,20 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
     ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
     tried: set[str] = set()
     planned = load_plan()
+    save = save_ledger
     if planned.get("failed"):
         failed = planned["failed"]
         strike(ledger, failed["topic"], failed["reason"])
         tried.add(failed["topic"])
         summary.setdefault("failed_topics", []).append({"topic": failed["topic"], "reason": failed["reason"][:400]})
-    if (planned.get("pending") and not ledger.get("pending")
+    if planned.get("replay") and mode == "dry-run":
+        # A replayed script is rendered, never queued: whatever happens, this run leaves the ledger untouched.
+        def save(_ledger: dict) -> None:
+            pass
+
+        ledger["pending"] = planned["pending"]
+        summary["replay"] = planned["pending"]["topic_key"]
+    elif (planned.get("pending") and not planned.get("replay") and not ledger.get("pending")
             and planned["pending"]["topic_key"] not in used_keys(ledger)):
         ledger["pending"] = planned["pending"]
     while len(tried) < 2:
@@ -448,26 +469,26 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
             break
         except WaitForQuota as err:
             summary.update(status="waiting_for_quota", reason=str(err)[:300], calls=calls.to_json())
-            save_ledger(ledger)
+            save(ledger)
             return summary
         except Budget as err:
             summary.update(status="budget_stop", reason=str(err), calls=calls.to_json())
-            save_ledger(ledger)
+            save(ledger)
             return summary
         except (ValueError, LookupError, sources.SourceError) as err:
             log.warning("topic %s failed: %s", topic["key"], err)
             summary.setdefault("failed_topics", []).append({"topic": topic["key"], "reason": str(err)[:400]})
             if replacing(ledger):
                 # A replacement for a deleted Short stays queued for the owner to retry; no other topic is started.
-                save_ledger(ledger)
+                save(ledger)
                 summary.update(status="failed", calls=calls.to_json())
                 return summary
             if "gate failed" not in str(err):
                 strike(ledger, topic["key"], str(err))
                 ledger["pending"] = None
-            save_ledger(ledger)
+            save(ledger)
             tried.add(topic["key"])
-            if calls.gemini + 6 > MAX_GEMINI_CALLS or "gate failed" in str(err):
+            if summary.get("replay") or calls.gemini + 6 > MAX_GEMINI_CALLS or "gate failed" in str(err):
                 summary.update(status="failed", calls=calls.to_json())
                 return summary
     else:
@@ -548,6 +569,7 @@ def plan(mode: str, out: Path, now: datetime | None = None, replay: Path | None 
         ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
         result["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": data["review"],
                              "gate_attempts": 0}
+        result["replay"] = True
     elif pending:
         beats = pending["script"].get("beats") or []
         if not all(b.get("scene") for b in beats):

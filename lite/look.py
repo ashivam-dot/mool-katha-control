@@ -21,8 +21,8 @@ CHARACTERS: tuple[tuple[str, str], ...] = (
      " long black hair, yellow silk dhoti and upper cloth, a tall bow and a quiver of arrows"),
     (r"Lakshmana|Lakshman", "Lakshmana: young prince with fair golden skin, golden crown, saffron dhoti, bow,"
      " alert and devoted"),
-    (r"\bSita\b|Seetha|Janaki|Vaidehi", "Sita: graceful princess with a calm radiant face, red and gold silk saree"
-     " covering her fully, gold jewellery, long black braid"),
+    (r"\bSita\b|Seetha|Janaki|Vaidehi", "Sita: graceful dignified princess, red and gold silk saree covering her"
+     " fully, gold jewellery, long black braid; never smiling near Ravana"),
     (r"Hanuman|Hanuma\b|Maruti", "Hanuman: mighty vanara monkey god with a distinctly monkey face and muzzle, wise"
      " kind eyes, golden-orange fur on his body, red-gold crown, gold earrings, a golden mace (gada), long tail"),
     (r"Ravana|Dashanana", "Ravana: ten-headed rakshasa king, dark skin, ten golden crowns, ornate golden armour,"
@@ -38,8 +38,9 @@ CHARACTERS: tuple[tuple[str, str], ...] = (
     (r"Vasishtha|Vashishtha", "sage Vasishtha: calm old sage with a flowing white beard, white robes, holding a"
      " wooden staff"),
     (r"Valmiki", "sage Valmiki: old sage with a white beard in white robes beside a river"),
-    (r"Jatayu", "Jatayu: giant noble old vulture with grey-brown feathers and a golden crest"),
-    (r"Sampati", "Sampati: giant aged vulture with burnt, featherless wings"),
+    (r"Jatayu", "Jatayu: a real giant old vulture bird (not a man, no clothes, no crown) with grey-brown feathers,"
+     " a bare wrinkled neck and a white ruff"),
+    (r"Sampati", "Sampati: a real giant aged vulture bird (not a man) with burnt, featherless wings"),
     (r"Sugriva", "Sugriva: vanara king with golden-brown fur, a gold crown and necklace"),
     (r"\bVali\b|\bBali\b", "Vali: powerful vanara king with bright golden fur and a golden necklace"),
     (r"Angada", "Angada: young vanara prince with golden fur and a gold armband"),

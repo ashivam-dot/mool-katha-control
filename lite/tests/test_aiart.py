@@ -149,5 +149,60 @@ class PlanTest(unittest.TestCase):
         self.assertFalse((self.out / "art-plan.json").exists())
 
 
+class RunWithPlanTest(unittest.TestCase):
+    def setUp(self):
+        self.out = Path(tempfile.mkdtemp())
+        self.ledger = {"episodes": [], "skipped": {}, "pending": None, "ready": None}
+        self.pending = {"id": "lite-1", "topic_key": "ramayana-5-1", "script": good_script(),
+                        "review": {"ok": True, "issues": []}, "gate_attempts": 0}
+
+    def run_with(self, planned: dict, error: Exception):
+        topic = {"key": "ramayana-5-1"}
+        with mock.patch.object(run, "load_ledger", return_value=self.ledger), \
+                mock.patch.object(run, "load_plan", return_value=planned), \
+                mock.patch.object(run, "current_topic", return_value=topic), \
+                mock.patch.object(run, "produce", side_effect=error), \
+                mock.patch.object(run, "save_ledger") as save:
+            summary = run.run("dry-run", self.out, self.out)
+        return summary, save
+
+    def test_a_replay_never_reaches_the_saved_ledger(self):
+        self.ledger["pending"] = {"id": "lite-0", "topic_key": "ramayana-1-1", "script": {}, "review": {}}
+        summary, save = self.run_with({"paint": True, "replay": True, "pending": self.pending},
+                                      ValueError("script: too long"))
+        save.assert_not_called()
+        self.assertEqual(summary["replay"], "ramayana-5-1")
+        self.assertEqual(summary["status"], "failed")
+        self.assertEqual(len(summary["failed_topics"]), 1)
+
+    def test_a_planned_script_becomes_the_pending_short(self):
+        summary, save = self.run_with({"paint": True, "pending": self.pending}, run.WaitForQuota("TTS"))
+        self.assertEqual(self.ledger["pending"]["id"], "lite-1")
+        save.assert_called_once()
+        self.assertEqual(summary["status"], "waiting_for_quota")
+
+
+class ProduceFallbackTest(unittest.TestCase):
+    def test_any_ai_painting_error_falls_back_to_museum_paintings(self):
+        tmp = Path(tempfile.mkdtemp())
+        script = good_script()
+        ledger = {"episodes": [], "pending": {"id": "lite-1", "topic_key": "ramayana-5-1", "script": script,
+                                              "review": {"ok": True, "issues": []}}}
+        passage = sources.parse_valmiki(VALMIKI_PAGE, "https://x")
+
+        class Museum(Exception):
+            pass
+
+        with mock.patch.object(run.sources, "fetch", return_value=passage), \
+                mock.patch.object(run.aiart, "collect", return_value={0: tmp / "beat00.png"}), \
+                mock.patch.object(run.aiart, "copy_report"), \
+                mock.patch.object(run.aiart, "pictures", side_effect=OSError("cannot identify image file")), \
+                mock.patch.object(run.art, "choose", return_value=[]), \
+                mock.patch.object(run.art, "download", side_effect=Museum):
+            with self.assertRaises(Museum):
+                run.produce("lite-1", {"key": "ramayana-5-1"}, ledger, run.Calls(), tmp, tmp / "out")
+        self.assertIn("OSError", ledger["pending"]["ai_art_note"])
+
+
 if __name__ == "__main__":
     unittest.main()
