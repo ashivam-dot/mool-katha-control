@@ -23,6 +23,11 @@ on:
         required: false
         default: ai
         options: [ai, paintings]
+      replay:
+        description: 'dry-run only: repository path of a reviewed script JSON to paint and render again'
+        type: string
+        required: false
+        default: ''
       episodes:
         description: 'picture-probe only: comma-separated ledger episode ids to run past the picture check'
         type: string
@@ -94,7 +99,13 @@ jobs:
           BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
           BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
           BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
-        run: uv run --no-sync python -m lite plan --mode "$MODE" --out "$RUNNER_TEMP/plan"
+          REPLAY: ${{ inputs.replay }}
+        run: |
+          if [ -n "$REPLAY" ] && [ "$MODE" = dry-run ]; then
+            uv run --no-sync python -m lite plan --mode "$MODE" --out "$RUNNER_TEMP/plan" --replay "$GITHUB_WORKSPACE/control/$REPLAY"
+          else
+            uv run --no-sync python -m lite plan --mode "$MODE" --out "$RUNNER_TEMP/plan"
+          fi
       - name: Upload the plan
         if: steps.plan.outputs.paint == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

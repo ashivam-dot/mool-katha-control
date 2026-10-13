@@ -504,10 +504,15 @@ def chunks(beats: list[dict], jobs: int = PAINT_JOBS) -> list[str]:
     return [",".join(map(str, g)) for g in groups if g]
 
 
-def plan(mode: str, out: Path, now: datetime | None = None) -> dict:
+def plan(mode: str, out: Path, now: datetime | None = None, replay: Path | None = None) -> dict:
     """Before the paint jobs: decide whether this run will make a Short and, if so, write and review its script and
     the image prompts for each beat. `lite run` picks the script up as its pending Short. Never fails the workflow:
-    when there is nothing to paint, `lite run` still runs as before (museum paintings)."""
+    when there is nothing to paint, `lite run` still runs as before (museum paintings).
+
+    `replay` (dry-run only) is a JSON file with a reviewed script ({"topic_key", "script", "review"}) to paint
+    and render again instead of writing a new one; it must still pass the writer's checks."""
+    if replay is not None and mode != "dry-run":
+        raise ValueError("a replay is for dry runs only")
     now = now or datetime.now(timezone.utc)
     ledger = load_ledger()
     calls = Calls()
@@ -532,7 +537,18 @@ def plan(mode: str, out: Path, now: datetime | None = None) -> dict:
         if ledger.get("ready"):
             return done(reason="a finished Short is waiting for its slot")
     pending = ledger.get("pending")
-    if pending:
+    if replay is not None:
+        data = json.loads(replay.read_text(encoding="utf-8"))
+        topic = next((t for t in json.loads(TOPICS.read_text(encoding="utf-8")) if t["key"] == data["topic_key"]), None)
+        script = writer.tidy(data["script"])
+        if topic is None:
+            return done(reason=f"no topic {data['topic_key']!r} to replay")
+        if found := writer.problems(script, sources.fetch(topic)):
+            return done(reason="the replayed script fails the writer's checks: " + "; ".join(found[:4]))
+        ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
+        result["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": data["review"],
+                             "gate_attempts": 0}
+    elif pending:
         beats = pending["script"].get("beats") or []
         if not all(b.get("scene") for b in beats):
             return done(reason="the pending script predates AI paintings")

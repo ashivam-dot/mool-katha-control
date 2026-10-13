@@ -125,6 +125,20 @@ class PlanTest(unittest.TestCase):
         self.assertFalse(result["paint"])
         self.assertTrue(result["failed"]["reason"].startswith("script:"))
 
+    def test_replay_paints_a_reviewed_script_after_the_writer_checks(self):
+        replay = self.out / "replay.json"
+        replay.write_text(json.dumps({"topic_key": "ramayana-5-1", "script": good_script(),
+                                      "review": {"ok": True, "issues": []}}), encoding="utf-8")
+        passage = sources.parse_valmiki(VALMIKI_PAGE, "https://x")
+        with mock.patch.object(run, "load_ledger", return_value=self.ledger), \
+                mock.patch.object(run.sources, "fetch", return_value=passage), \
+                mock.patch.object(run, "prepare", side_effect=AssertionError("no new script")):
+            result = run.plan("dry-run", self.out, replay=replay)
+            self.assertTrue(result["paint"])
+            self.assertEqual(result["pending"]["topic_key"], "ramayana-5-1")
+            with self.assertRaises(ValueError):
+                run.plan("publish", self.out, replay=replay)
+
     def test_a_pending_script_from_before_ai_art_is_not_painted(self):
         old = good_script()
         old["beats"] = [{k: v for k, v in b.items() if k != "scene"} for b in old["beats"]]

@@ -1,0 +1,178 @@
+{
+ "topic_key": "ramayana-3-51",
+ "source_run": 38373200687,
+ "script": {
+  "usable": true,
+  "title": "जटायु ने रावण के दस हाथ क्यों उखाड़ फेंके? | रामायण",
+  "hook_text": "रावण के दस हाथ कटे!",
+  "beats": [
+   {
+    "text": "बूढ़े जटायु ने रावण के दस बाएँ हाथ क्यों काट डाले?",
+    "evidence": "",
+    "scene": "Close-up of Jatayu fierce face with piercing eyes and sharp golden beak, set against a stormy sky with dark clouds and dramatic sunlight, wide angle view.",
+    "visual_query": "Jatayu portrait",
+    "emphasis": "दस"
+   },
+   {
+    "text": "आकाश में रावण विलाप करती सीता को अपने रथ में चुराए लिए जा रहा था।",
+    "evidence": "That Jataayu on seeing teary-eyed Jaanaki in the chariot of the demon forcefully lunged towards that demon",
+    "scene": "Medium shot of Ravana flying in his celestial golden chariot holding weeping Sita, her tearful face turned back in distress, midday sky.",
+    "visual_query": "Ravana abducting Sita",
+    "emphasis": "विलाप"
+   },
+   {
+    "text": "जटायु ने तीखे बाणों की परवाह किए बिना अपने पंजों से रावण का रत्नजड़ित धनुष तोड़ दिया।",
+    "evidence": "That unexcelled bird of high refulgence then shattered Ravana's bow which is decorated with pearls and gemstones",
+    "scene": "Medium shot of the giant eagle Jatayu swooping down with talons outstretching to snap Ravana gem-encrusted golden bow mid-air, bright sunlight.",
+    "visual_query": "Jatayu attacks Ravana",
+    "emphasis": "धनुष"
+   },
+   {
+    "text": "फिर उन्होंने रावण का विशाल रथ चकनाचूर किया और चोंच से उसके सारथी का सिर काट गिराया।",
+    "evidence": "Jataayu splintered down even that chariot of Ravana. Again that highly energetic and imposing king of birds pecked off the robust head of the charioteer of Ravana with beak.",
+    "scene": "Wide shot of Ravana's golden chariot breaking apart in mid-air as the giant old vulture Jatayu swoops over it with wings spread wide, the startled charioteer falling away, dramatic stormy sky",
+    "visual_query": "Jatayu breaks Ravana chariot",
+    "emphasis": "चकनाचूर"
+   },
+   {
+    "text": "रथ टूटने पर रावण धरती पर गिरा, लेकिन जटायु को बुढ़ापे से थका देखकर वह सीता सहित फिर आकाश में उड़ा।",
+    "evidence": "But on seeing the commandant of birds Jataayu is fatigued owing to his senescence, Ravana is gladdened and he again rose up to skies taking Maithili.",
+    "scene": "Wide shot of Ravana standing on ground clutching Sita, looking up with malicious delight as elderly Jatayu hovers weary in the sky, late afternoon light.",
+    "visual_query": "Ravana on ground Sita",
+    "emphasis": "बुढ़ापे"
+   },
+   {
+    "text": "जटायु तुरंत झपटे और रावण की पीठ पर बैठकर अपने तीखे पंजों से उसे बुरी तरह नोच डाला।",
+    "evidence": "On clasping Ravana with incisive claws Jataayu lacerated deeply and rampantly, as a mahout, an elephant-trainer-controller",
+    "scene": "Close-up of the old vulture Jatayu clinging to Ravana's back high above the forest, great wings beating, Ravana straining in fury, golden afternoon light",
+    "visual_query": "Jatayu fighting Ravana",
+    "emphasis": "नोच"
+   },
+   {
+    "text": "जिस बाएँ पहलू में रावण ने सीता को जकड़ा था, जटायु ने अपनी चोंच से उसके दसों बाएँ हाथ उखाड़ दिए!",
+    "evidence": "Jataayu, the lord of birds, being a vanquisher of enemies outstripped Ravana and ripped off ten left-arms of Ravana with his beak",
+    "scene": "Medium shot of Jatayu attacking Ravana's left side with his great beak and talons as Ravana twists away clutching Sita, feathers flying, bright daylight",
+    "visual_query": "Jatayu tears Ravana arms",
+    "emphasis": "उखाड़"
+   },
+   {
+    "text": "मगर कटे हुए वे बाहु विषैले साँपों की तरह फौरन नए सिरे से निकल आए।",
+    "evidence": "Though his arms are mutilated thus, they instantaneously ricocheted from his body like snakes possessing a series of venomous blazes",
+    "scene": "Close-up of Ravana's furious face as new arms rise from his shoulders like coiling dark serpents, glowing with demonic power, stormy sky behind",
+    "visual_query": "Ravana multiple arms",
+    "emphasis": "साँपों"
+   },
+   {
+    "text": "तब रावण ने तलवार खींचकर राम के लिए लड़ रहे उस महान पक्षी के पंख और पैर काट डाले।",
+    "evidence": "Ravana brandishing his sword at Jataayu, who is revolting for the sake of Rama, hewed off both of his wings, sides, and feet.",
+    "scene": "Medium shot of Ravana raising a gleaming sword against Jatayu, the heavy blade flashing against the evening sky, capturing the tragic duel.",
+    "visual_query": "Ravana sword Jatayu",
+    "emphasis": "तलवार"
+   },
+   {
+    "text": "धरती पर तड़पते जटायु से लिपटकर सीता रो पड़ीं—जिन्होंने अकेले ही रावण के दस हाथ उखाड़ फेंके थे।",
+    "evidence": "On seeing Jataayu fallen on earth and dampened with blood Vaidehi fell into a fit of weeping and ran towards him as if he is her own relative.",
+    "scene": "Wide shot of weeping Sita kneeling upon the forest floor, embracing the fallen Jatayu lying peacefully like a cloud, soft golden dusk light.",
+    "visual_query": "Sita weeps for Jatayu",
+    "emphasis": "रो"
+   }
+  ],
+  "description": "वाल्मीकि रामायण · अरण्यकाण्ड · सर्ग 51। सीता को बचाने के लिए वृद्ध जटायु ने अकेले ही रावण के रथ और धनुष को नष्ट कर दिया। यहाँ जानिए उस अद्भुत और भीषण संग्राम की मूल कथा।",
+  "hashtags": [
+   "#ramayan",
+   "#valmikiramayan",
+   "#jatayu",
+   "#ravana",
+   "#moolkatha"
+  ],
+  "keywords": [
+   "वाल्मीकि रामायण",
+   "जटायु",
+   "रावण",
+   "सीता हरण",
+   "Valmiki Ramayana",
+   "Jatayu",
+   "Ravana"
+  ],
+  "shloka_verse": "3-51-38",
+  "key_quote": "Jataayu, the lord of birds, being a vanquisher of enemies outstripped Ravana and ripped off ten left-arms of Ravana with his beak, with which left arms Ravana is clutching Vaidehi",
+  "names": [
+   "जटायु",
+   "रावण",
+   "सीता",
+   "जानकी",
+   "राम"
+  ]
+ },
+ "review": {
+  "ok": true,
+  "issues": [],
+  "result": {
+   "items": [
+    {
+     "beat": 1,
+     "factual": false,
+     "supported": true,
+     "note": "Hook question; non-factual."
+    },
+    {
+     "beat": 2,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verse 3-51-9."
+    },
+    {
+     "beat": 3,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-9 and 3-51-10."
+    },
+    {
+     "beat": 4,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-16 and 3-51-18."
+    },
+    {
+     "beat": 5,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-19 and 3-51-21."
+    },
+    {
+     "beat": 6,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-33 and 3-51-34."
+    },
+    {
+     "beat": 7,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-37 and 3-51-38."
+    },
+    {
+     "beat": 8,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verse 3-51-39."
+    },
+    {
+     "beat": 9,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verse 3-51-42."
+    },
+    {
+     "beat": 10,
+     "factual": true,
+     "supported": true,
+     "note": "Supported by verses 3-51-44 and 3-51-46."
+    }
+   ],
+   "respectful": true,
+   "title_reveals_answer": false,
+   "summary": "All beats faithfully reflect the events described in Valmiki Ramayana Aranya Kanda Sarga 51."
+  }
+ }
+}
