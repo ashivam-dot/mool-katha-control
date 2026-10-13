@@ -21,6 +21,8 @@ log = logging.getLogger(__name__)
 
 TITLE_CHARS, DESCRIPTION_BYTES, CAPTION_CHARS = 100, 5000, 2200
 DISCLOSURE = "मूल कथा की शोध और प्रस्तुति। आवाज़ AI से बनाई गई है।"
+DISCLOSURE_AI_ART = "मूल कथा की शोध और प्रस्तुति। कथा मूल ग्रंथ से है; चित्र और आवाज़ AI से बनाए गए हैं।"
+AI_ART_CREDIT = "चित्र: AI से बनाए गए (Z-Image-Turbo, Apache-2.0)"
 SHARE_LINE = ("इस कथा को अपने परिवार और मित्रों को भेजें, ताकि मूल ग्रंथ की बात उन तक भी पहुँचे।\n"
               "मूल ग्रंथों की कथाओं के लिए फ़ॉलो करें @moolkatha.hindi")
 YOUTUBE_ONLY_TAGS = {"shorts", "youtubeshorts", "ytshorts"}
@@ -38,16 +40,21 @@ def _safe(text: str) -> str:
     return text.replace("<", "‹").replace(">", "›")
 
 
+def disclosure(ep: dict) -> str:
+    return DISCLOSURE_AI_ART if ep.get("ai_art") else DISCLOSURE
+
+
 def youtube_description(ep: dict) -> str:
     credits = []
     for pic in ep["pictures"]:
         c = pic["credit"]
         credits.append("- " + ", ".join(x for x in (f'"{c.get("title", "Untitled")}"', c.get("credit"),
                                                       c.get("license"), c.get("source"), c.get("url")) if x))
+    pictures = (AI_ART_CREDIT if ep.get("ai_art") else
+                "चित्र (सार्वजनिक डोमेन / CC0):\n" + "\n".join(credits) if credits else "")
     blocks = [ep["description"],
               f"स्रोत: {ep['citation']}\n{ep['source_url']}\nअनुवाद: {ep['translator']}",
-              "चित्र (सार्वजनिक डोमेन / CC0):\n" + "\n".join(credits) if credits else "",
-              DISCLOSURE, " ".join(ep["hashtags"][:3])]
+              pictures, disclosure(ep), " ".join(ep["hashtags"][:3])]
     text = _safe("\n\n".join(b for b in blocks if b))
     if len(text.encode()) > DESCRIPTION_BYTES:
         blocks[2] = "चित्र: " + ", ".join(dict.fromkeys(p["credit"].get("source", "") for p in ep["pictures"]))
@@ -65,10 +72,10 @@ def instagram_caption(ep: dict) -> str:
         source_line = f"स्रोत: {ep['citation']}"
     keywords = " · ".join(ep.get("keywords") or [])
     tail = " ".join(tags)
-    fixed = [ep["title"], source_line, SHARE_LINE, keywords, DISCLOSURE, f"Source: {ep['source_url']}"]
+    fixed = [ep["title"], source_line, SHARE_LINE, keywords, disclosure(ep), f"Source: {ep['source_url']}"]
     room = CAPTION_CHARS - len("\n\n".join(b for b in fixed if b)) - len(tail) - 8
     description = ep["description"][:max(room, 0)].rstrip()
-    text = "\n\n".join(b for b in (ep["title"], description, source_line, SHARE_LINE, keywords, DISCLOSURE,
+    text = "\n\n".join(b for b in (ep["title"], description, source_line, SHARE_LINE, keywords, disclosure(ep),
                                    f"Source: {ep['source_url']}") if b)
     return text[:CAPTION_CHARS - len(tail) - 2].rstrip() + ("\n\n" + tail if tail else "")
 
@@ -82,7 +89,8 @@ def youtube_payload(channel_id: str, ep: dict, due: datetime, media_url: str) ->
         "dueAt": due.isoformat(),
         "assets": [{"video": {"url": media_url}}],
         "metadata": {"youtube": {"title": _safe(ep["title"])[:TITLE_CHARS], "categoryId": "27", "privacy": "public",
-                                 "madeForKids": False, "notifySubscribers": True, "isAiGenerated": False,
+                                 "madeForKids": False, "notifySubscribers": True,
+                                 "isAiGenerated": bool(ep.get("ai_art")),
                                  "embeddable": True}},
     }
 

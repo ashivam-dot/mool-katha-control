@@ -17,6 +17,12 @@ on:
         required: true
         default: dry-run
         options: [dry-run, publish, picture-probe]
+      art:
+        description: 'ai paints each beat with Z-Image-Turbo (museum paintings if that fails); paintings skips it'
+        type: choice
+        required: false
+        default: ai
+        options: [ai, paintings]
       episodes:
         description: 'picture-probe only: comma-separated ledger episode ids to run past the picture check'
         type: string
@@ -30,13 +36,137 @@ concurrency:
   group: mool-katha-lite
   cancel-in-progress: false
 
+env:
+  ART_CACHE_KEY: lite-art-zimage-q4k-sd959-v1
+
 jobs:
-  lite:
+  # Scripts the next Short and writes one image prompt per beat. Anything going wrong here only means the run job
+  # illustrates the Short with museum paintings, as before.
+  plan:
     if: >-
-      github.ref == 'refs/heads/main' &&
+      (github.ref == 'refs/heads/main' || inputs.mode == 'dry-run') &&
+      (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_LITE == '1') &&
+      inputs.mode != 'picture-probe' && inputs.art != 'paintings' && vars.LITE_AI_ART != '0'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    continue-on-error: true
+    outputs:
+      paint: ${{ steps.plan.outputs.paint }}
+      chunks: ${{ steps.plan.outputs.chunks }}
+    env:
+      PRODUCER_SHA: 274da8a4d1155845e71047b8361efa36b1bdc57e
+      BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+      MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'publish' }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: control
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ashivam-dot/mool-katha
+          ref: ${{ env.PRODUCER_SHA }}
+          ssh-key: ${{ secrets.SOURCE_READONLY_DEPLOY_KEY }}
+          path: producer
+          persist-credentials: false
+      - name: Verify pinned producer and Buffer organization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C producer rev-parse HEAD)" = "$PRODUCER_SHA"
+          test "$BUFFER_ORG_ID" = '6ac066851cde9b9edca25c7b'
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          working-directory: producer/pipeline
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install producer dependencies
+        working-directory: producer/pipeline
+        run: uv sync --frozen
+      - name: Script the Short and plan its paintings
+        id: plan
+        working-directory: producer/pipeline
+        env:
+          PYTHONPATH: ${{ github.workspace }}/control
+          LITE_LEDGER: ${{ github.workspace }}/control/lite-state/ledger.json
+          YTC_GEMINI_API_KEY: ${{ secrets.QA_GEMINI_API_KEY }}
+          YTC_CONTACT: moolkatha-lite (github.com/ashivam-dot)
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_YOUTUBE_CHANNEL_ID: ${{ secrets.BUFFER_YOUTUBE_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+        run: uv run --no-sync python -m lite plan --mode "$MODE" --out "$RUNNER_TEMP/plan"
+      - name: Upload the plan
+        if: steps.plan.outputs.paint == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/plan
+          retention-days: 3
+      - name: Is the image model cached?
+        id: cached
+        if: steps.plan.outputs.paint == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/lite-art
+          key: ${{ env.ART_CACHE_KEY }}
+          lookup-only: true
+      - name: Download the image model once
+        if: steps.plan.outputs.paint == 'true' && steps.cached.outputs.cache-hit != 'true'
+        working-directory: control
+        run: python3 -m lite.imagegen fetch --model zimage --root "$HOME/.cache/lite-art"
+      - name: Cache the image model
+        if: steps.plan.outputs.paint == 'true' && steps.cached.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/lite-art
+          key: ${{ env.ART_CACHE_KEY }}
+
+  # One job per couple of beats, in parallel: Z-Image-Turbo (Apache-2.0) through stable-diffusion.cpp on the CPU.
+  paint:
+    needs: plan
+    if: needs.plan.outputs.paint == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        beats: ${{ fromJSON(needs.plan.outputs.chunks) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          sparse-checkout: lite
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/plan
+      - uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/lite-art
+          key: ${{ env.ART_CACHE_KEY }}
+      - name: Paint
+        env:
+          BEATS: ${{ matrix.beats }}
+        run: >-
+          python3 -m lite.imagegen beats --prompts "$RUNNER_TEMP/plan/art-plan.json" --only "$BEATS"
+          --out "$RUNNER_TEMP/art" --root "$HOME/.cache/lite-art"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: art-${{ github.run_id }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/art
+          retention-days: 3
+          if-no-files-found: ignore
+
+  lite:
+    needs: [plan, paint]
+    if: >-
+      always() &&
+      (github.ref == 'refs/heads/main' || inputs.mode == 'dry-run') &&
       (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_LITE == '1')
     runs-on: ubuntu-24.04
-    timeout-minutes: 80
+    timeout-minutes: 90
     env:
       PRODUCER_SHA: 274da8a4d1155845e71047b8361efa36b1bdc57e
       BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
@@ -79,6 +209,21 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/control
         run: uv run --no-sync python -m pytest -q "$GITHUB_WORKSPACE/control/lite/tests"
+      - name: Fetch the plan
+        if: needs.plan.outputs.paint == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/plan
+      - name: Fetch the paintings
+        if: needs.plan.outputs.paint == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: art-${{ github.run_id }}-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/art
       - name: Make at most one Short
         id: lite
         working-directory: producer/pipeline
@@ -92,6 +237,8 @@ jobs:
           BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
           EPISODES: ${{ inputs.episodes }}
+          LITE_PLAN: ${{ runner.temp }}/plan/plan.json
+          LITE_ART_DIR: ${{ runner.temp }}/art
         run: |
           if [ "$MODE" = picture-probe ]; then
             uv run --no-sync python -m lite probe --episodes "$EPISODES"
@@ -107,7 +254,7 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
       - name: Save the ledger
-        if: always()
+        if: always() && github.ref == 'refs/heads/main'
         working-directory: control
         shell: bash
         run: |

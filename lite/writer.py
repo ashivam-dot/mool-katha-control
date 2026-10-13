@@ -7,15 +7,30 @@ import re
 
 from .sources import Passage, quote_on_page
 
-WORDS_MIN, WORDS_MAX = 100, 138
-TARGET = "110-130"
-BEATS_MIN, BEATS_MAX = 6, 10
+# 2026-10-13 research: Hindi mythology Shorts that reach millions run 60-136 seconds and tell one emotional story
+# with a payoff; the lane's 48-second retellings got 1-50 YouTube views. About 140 spoken words a minute.
+WORDS_MIN, WORDS_MAX = 130, 185
+TARGET = "140-175"
+BEATS_MIN, BEATS_MAX = 8, 12
 HOOK_MAX_WORDS = 12
-TITLE_CHARS = 95
+TITLE_CHARS = 80
+SCENE_WORDS = (8, 70)
 # Openers the channel never uses: greetings, its own name, and worn-out phrasing.
 BANNED_HOOK = ("क्या आप जानते", "क्या आपको पता", "कल्पना कीजिए", "कल्पना करें", "नमस्ते", "नमस्कार", "दोस्तों",
                "स्वागत", "मूल कथा", "आज हम", "आज की", "आइए")
+# The closing formula every Short used until 2026-10-13; the same sentence in every video reads as a template.
+BANNED_ANYWHERE = ("यही कारण है कि लोग पूछते", "यही कारण है कि पूछा जाता", "लाइक", "सब्सक्राइब", "फॉलो")
 TEXT_NAMES = ("रामायण", "महाभारत", "गीता", "पुराण")
+# How a Short ends, rotated so consecutive Shorts don't close the same way.
+ENDINGS = {
+    "loop": "The last beat brings back the hook's question in fresh words (not a formula), so the video replays"
+            " naturally into beat 1.",
+    "question": "The last beat asks the viewer one short, sincere question about the story's choice or meaning,"
+                " to answer in the comments (never ask for likes, subscriptions or follows).",
+    "lesson": "The last beat says in one plain sentence what this moment shows, staying within what the passage"
+              " itself shows (no sermon, no modern moral the passage doesn't carry).",
+}
+ENDING_ORDER = ("loop", "question", "lesson")
 # CHANNEL.md red lines (caste and varna, diet and meat): words that start with a stem, and exact words where the
 # stem would also catch ordinary words (वर्णन, जातिका).
 RED_LINE_STEMS = ("शूद्र", "शुद्र", "वैश्य", "चांडाल", "चाण्डाल", "अछूत", "दलित", "मांस", "गोमांस")
@@ -32,9 +47,10 @@ SCHEMA = {
         "beats": {"type": "array", "items": {"type": "object", "properties": {
             "text": {"type": "string"},
             "evidence": {"type": "string"},
+            "scene": {"type": "string"},
             "visual_query": {"type": "string"},
             "emphasis": {"type": "string"},
-        }, "required": ["text", "evidence", "visual_query"]}},
+        }, "required": ["text", "evidence", "scene", "visual_query"]}},
         "description": {"type": "string"},
         "hashtags": {"type": "array", "items": {"type": "string"}},
         "keywords": {"type": "array", "items": {"type": "string"}},
@@ -47,60 +63,75 @@ SCHEMA = {
 }
 
 
+def ending_for(published: int) -> str:
+    return ENDING_ORDER[published % len(ENDING_ORDER)]
+
+
 def prompt(passage: Passage, angle: str, problems: list[str] | None = None, previous: dict | None = None,
-           length_hint: str = "") -> str:
+           length_hint: str = "", ending: str = "loop") -> str:
     has_sanskrit = any(v.sanskrit for v in passage.verses)
     lines = [
-        "You write one Hindi YouTube Short / Instagram Reel script (45-60 seconds spoken) for the channel"
-        " 'Mool Katha' (मूल कथा), which tells stories straight from the original Hindu texts.",
-        f"Text: {passage.text_name_hi}. On-screen source line (fixed, do not change): {passage.citation_hi}.",
+        "You write one Hindi YouTube Short / Instagram Reel script (60-80 seconds spoken) for the channel"
+        " 'Mool Katha' (मूल कथा), which tells gripping stories straight from the original Hindu texts.",
+        f"Text: {passage.text_name_hi}. Source line for the description (fixed, do not change): {passage.citation_hi}.",
         f"Translation the passage comes from: {passage.translator}.",
-        f"Suggested angle (use it only if the passage supports it; otherwise pick the most surprising true detail"
-        f" in the passage): {angle}",
+        f"Suggested angle (use it only if the passage supports it; otherwise pick the most moving or mysterious true"
+        f" moment in the passage): {angle}",
         "",
         "STRICT RULES",
         "1. Every factual statement must be directly supported by the PASSAGE below. Add nothing from memory,"
         " other versions (Tulsidas, TV serials, folk tellings) or later commentary. If a popular detail is not in the"
-        " passage, leave it out. Never invent numbers, names, verse numbers or dialogue. Do not dramatise or"
-        " intensify: no 'never', 'not even for a moment', 'all', 'first ever', superlatives, motives or feelings"
-        " unless the passage itself says so. Each beat must say no more than its evidence quote says.",
-        "2. Tell ONE story through a lesser-known true detail from this passage. Use the concrete details the"
-        " passage gives (numbers, sizes, how many people, sounds, objects) wherever they carry the story.",
-        "3. Beat 1 is the hook, spoken in the first 2 seconds: a sharp question or a surprising statement, at most"
-        f" {HOOK_MAX_WORDS} words. Never start with a greeting, the channel name, 'क्या आप जानते', 'कल्पना कीजिए',"
-        " 'आज हम' or 'आइए'. Build it on the most surprising concrete fact in the passage, as a 'why' or 'only'"
-        " question the rest of the Short answers. The channel's best Reel (9,000 views, 2026-10-07) opened"
-        " 'शिव धनुष टूटने पर केवल चार लोग ही होश में क्यों बचे?'. Hooks that only retell a famous story"
-        " ('X ने Y कैसे पार की?') did far worse.",
-        "4. The last beat closes the loop: it repeats the hook's question in the same or nearly the same words"
-        " (for example 'यही कारण है कि लोग पूछते हैं, <the hook question>'), so the video replays into beat 1. Do not"
-        " ask viewers to like, subscribe or follow in the narration.",
+        " passage, leave it out. Never invent numbers, names, verse numbers or dialogue. No 'never', 'all', 'first"
+        " ever' or superlatives unless the passage says so. Feelings and motives only where the passage states them;"
+        " Valmiki often does (wept, trembled, rejoiced, was furious), and those feelings carry the story, so use them."
+        " Each beat must say no more than its evidence quote says.",
+        "2. Tell ONE story with an emotional arc: hook, one line of who and where, rising tension, the turn, then"
+        " the payoff that answers the hook, then the ending. Use the concrete details the passage gives (numbers,"
+        " sizes, sounds, objects, exact words spoken).",
+        "3. Beat 1 is the hook, spoken in the first 2 seconds, at most"
+        f" {HOOK_MAX_WORDS} words: a 'क्यों' question about the most striking concrete fact in the passage, or a"
+        " stakes statement that makes the viewer need the answer. Never start with a greeting, the channel name,"
+        " 'क्या आप जानते', 'कल्पना कीजिए', 'आज हम' or 'आइए'. Strong: 'शिव धनुष टूटने पर केवल चार लोग ही होश में"
+        " क्यों बचे?' (the channel's best Reel). Weak: hooks that only retell a famous story ('X ने Y कैसे पार की?').",
+        "4. The payoff beat answers the hook explicitly with the passage's own detail. " + ENDINGS[ending]
+        + " Do not use the sentence 'यही कारण है कि लोग पूछते हैं' or any like/subscribe/follow request.",
         f"5. Length: {TARGET} Hindi words in total across {BEATS_MIN}-{BEATS_MAX} beats; one or two short spoken"
-        f" sentences per beat. Simple spoken Hindi (Devanagari only, no English words, no digits; write numbers as"
-        f" Hindi words). {length_hint}",
+        " sentences per beat. Write the way a gripping kathavachak talks to a friend: everyday spoken Hindi, short"
+        " sentences, active voice; present tense is fine for drama ('हनुमान छलाँग लगाते हैं'). Avoid textbook and"
+        " translation phrasing (तत्पश्चात, उपरोक्त, अत्यंत, chains of 'द्वारा'). Devanagari only, no English words, no"
+        f" digits; write numbers as Hindi words. {length_hint}",
         "6. Respectful toward every deity and sage. No gore, no sectarian comparison, no politics, no caste or"
         " varna detail (not even when the passage names someone's varna), no diet or meat.",
         "7. evidence: for every beat that states a fact, copy a short exact quote (8-30 words) from the PASSAGE"
         " (English translation or Sanskrit, character for character) that supports it. The hook may use \"\""
-        " only if it is a question; the loop line may use \"\" only if it repeats an earlier fact.",
-        "8. visual_query: 2-5 English words to find a public-domain Indian painting for the beat on Wikimedia"
-        " Commons, naming the characters and scene (e.g. 'Hanuman Surasa', 'Rama breaking bow', 'Bhishma vow')."
-        " Never ask for photos, idols or modern art.",
-        "9. emphasis: one word copied from that beat's text to highlight, or \"\".",
-        "10. title: a Hindi curiosity question that names the text (रामायण / महाभारत / गीता / पुराण), at most 90"
-        " characters, ending with '?', that does NOT give away the answer.",
-        "11. hook_text: a 2-6 word Hindi on-screen headline (a question) for the first frame, different from the"
-        " title.",
-        "12. description: 2-3 Hindi sentences for YouTube that say what the passage tells, without hype.",
-        "13. hashtags: 3-5 relevant hashtags (lowercase Latin or Hindi, each starting with #, e.g. #ramayan).",
-        "14. keywords: 5-8 search keywords (Hindi and English) for the Instagram caption.",
-        ("15. shloka_verse: the printed verse number (exactly as shown in [brackets], e.g. 5-1-145) of the one"
+        " only if it is a question; the last beat may use \"\" only if it repeats an earlier fact or asks the viewer.",
+        "8. scene: in English, 20-50 words describing ONE painting for this beat: who is in it (use these English"
+        " names: Rama, Sita, Lakshmana, Hanuman, Ravana, Dasharatha, Bharata, Vishvamitra, Vasishtha, Jatayu,"
+        " Sugriva, Vali, Shiva, Ganga, Krishna, Arjuna, Bhishma, Draupadi, and so on), what they are doing at this"
+        " exact moment, their expression, the setting, the light and time of day, and the framing (close-up,"
+        " medium or wide). Beat 1's scene is a close-up of the face at the heart of the hook. Vary framing between"
+        " beats. Show only what the line and passage say. For violence show the moment before or after, or a"
+        " symbol (an arrow in flight, the glow of fire), never wounds. Deities and sages always dignified, never"
+        " comic. No text or letters in the picture.",
+        "9. visual_query: 2-5 English words to find a public-domain Indian painting for the beat on Wikimedia"
+        " Commons, naming the characters and scene (e.g. 'Hanuman Surasa', 'Rama breaking bow', 'Bhishma vow').",
+        "10. emphasis: one word copied from that beat's text to highlight, or \"\".",
+        f"11. title: Hindi, at most {TITLE_CHARS - 10} characters, ending with '?' or '!' (optionally followed by one"
+        " fitting emoji such as 🙏 🔱 🚩 😢 😱). Front-load the emotional or mysterious detail and name the text at"
+        " the end after ' | ', e.g. 'हनुमान ने खुद को ब्रह्मास्त्र से क्यों बँधने दिया? | रामायण'. Make the"
+        " viewer curious; never give away the answer.",
+        "12. hook_text: a 2-6 word Hindi on-screen headline for the first frame, different from the title, that"
+        " teases the mystery or the emotion.",
+        "13. description: 2-3 Hindi sentences for YouTube that say what the passage tells, without hype.",
+        "14. hashtags: 3-5 relevant hashtags (lowercase Latin or Hindi, each starting with #, e.g. #ramayan).",
+        "15. keywords: 5-8 search keywords (Hindi and English) for the Instagram caption.",
+        ("16. shloka_verse: the printed verse number (exactly as shown in [brackets], e.g. 5-1-145) of the one"
          " Sanskrit verse that best carries the detail, or \"\"." if has_sanskrit else
-         "15. shloka_verse: \"\" (this passage has no Sanskrit)."),
-        "16. key_quote: one exact English sentence or clause (10-35 words) copied from the PASSAGE that best"
+         "16. shloka_verse: \"\" (this passage has no Sanskrit)."),
+        "17. key_quote: one exact English sentence or clause (10-35 words) copied from the PASSAGE that best"
         " carries the detail.",
-        "17. names: the Devanagari proper nouns in the script that the narrator must pronounce clearly.",
-        "If the passage holds no clear, interesting story for a Short, return usable=false with empty fields.",
+        "18. names: the Devanagari proper nouns in the script that the narrator must pronounce clearly.",
+        "If the passage holds no clear, moving story for a Short, return usable=false with empty fields.",
     ]
     if problems and previous:
         lines += ["", "YOUR PREVIOUS DRAFT FAILED THESE CHECKS; fix every one and return the full corrected JSON:",
@@ -146,13 +177,18 @@ def problems(script: dict, passage: Passage) -> list[str]:
             found.append(f"beat {i} has Latin letters or digits; use Devanagari words only")
         if any(c in text for c in "{}\\<>"):
             found.append(f"beat {i} has a forbidden character")
+        if any(b in text for b in BANNED_ANYWHERE):
+            found.append(f"beat {i} uses a worn-out formula or a like/subscribe request; say it in fresh words")
         evidence = (beat.get("evidence") or "").strip()
-        is_hook, is_loop = i == 1, i == len(beats)
+        is_hook, is_last = i == 1, i == len(beats)
         if evidence:
             if not quote_on_page(evidence, passage):
                 found.append(f"beat {i}: its evidence is not an exact quote from the passage: {evidence[:80]!r}")
-        elif not (is_hook and "?" in text) and not is_loop:
+        elif not (is_hook and "?" in text) and not is_last:
             found.append(f"beat {i} states something without an exact evidence quote")
+        scene = beat.get("scene") or ""
+        if not SCENE_WORDS[0] <= len(scene.split()) <= SCENE_WORDS[1] or _DEVANAGARI.search(scene):
+            found.append(f"beat {i} needs an English scene of {SCENE_WORDS[0]}-{SCENE_WORDS[1]} words")
         if not (beat.get("visual_query") or "").strip():
             found.append(f"beat {i} has no visual_query")
     if beats:
@@ -162,12 +198,12 @@ def problems(script: dict, passage: Passage) -> list[str]:
         if any(hook.strip().startswith(b) or b in hook for b in BANNED_HOOK):
             found.append("beat 1 uses a banned opener (greeting, channel name, 'क्या आप जानते', 'कल्पना कीजिए')")
     title = script.get("title", "")
-    if "?" not in title:
-        found.append("title must be a question ending with '?'")
+    if "?" not in title and "!" not in title:
+        found.append("title must be a question ending with '?' (or an exclamation ending with '!')")
     if not any(name in title for name in TEXT_NAMES):
         found.append("title must name the text (रामायण / महाभारत / गीता / पुराण)")
     if len(title) > TITLE_CHARS or any(c in title for c in "<>"):
-        found.append(f"title must be at most {TITLE_CHARS} characters without < or >")
+        found.append(f"title must be at most {TITLE_CHARS - 10} characters without < or >")
     hook_text = script.get("hook_text", "")
     if not 2 <= len(hook_text.split()) <= 7 or any(c in hook_text for c in "{}\\"):
         found.append("hook_text must be 2-6 Hindi words")
@@ -199,18 +235,20 @@ def tidy(script: dict) -> dict:
         text = " ".join(str(beat.get("text", "")).split())
         emphasis = str(beat.get("emphasis") or "").strip()
         beats.append({"text": text, "evidence": str(beat.get("evidence") or "").strip(),
+                      "scene": " ".join(str(beat.get("scene") or "").split()),
                       "visual_query": " ".join(str(beat.get("visual_query") or "").split()),
                       "emphasis": emphasis if emphasis and emphasis in text.split() else ""})
     script["beats"] = beats
     return script
 
 
-def write(passage: Passage, angle: str, generate, *, length_hint: str = "", tries: int = 2) -> tuple[dict, list[str]]:
+def write(passage: Passage, angle: str, generate, *, length_hint: str = "", tries: int = 2,
+          ending: str = "loop") -> tuple[dict, list[str]]:
     """(script, remaining problems). `generate(prompt, schema)` is the LLM call; at most `tries` calls."""
     script: dict = {}
     found: list[str] = []
     for attempt in range(tries):
-        text = prompt(passage, angle, found if attempt else None, script if attempt else None, length_hint)
+        text = prompt(passage, angle, found if attempt else None, script if attempt else None, length_hint, ending)
         script = tidy(generate(text, SCHEMA))
         found = problems(script, passage)
         if not found or found == ["writer marked the passage unusable"]:

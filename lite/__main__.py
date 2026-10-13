@@ -17,6 +17,9 @@ def main() -> int:
     run.add_argument("--mode", choices=("dry-run", "publish"), default="dry-run")
     run.add_argument("--out", type=Path, required=True)
     run.add_argument("--producer-root", type=Path, required=True)
+    plan = sub.add_parser("plan", help="script the next Short and write its image prompts for the paint jobs")
+    plan.add_argument("--mode", choices=("dry-run", "publish"), default="dry-run")
+    plan.add_argument("--out", type=Path, required=True)
     sub.add_parser("status")
     sub.add_parser("verify")
     probe = sub.add_parser("probe", help="run published episodes' pictures past the picture check; changes nothing")
@@ -49,6 +52,21 @@ def main() -> int:
                 print(json.dumps({"episode": ep["id"], "picture": path.name, "title": title[:70],
                                   "shows": verdict.get("shows"), "refused": why}, ensure_ascii=False))
         print(f"{refused} refused")
+        return 0
+
+    if args.command == "plan":
+        from .run import plan as plan_once
+
+        try:
+            result = plan_once(args.mode, args.out.resolve())
+        except Exception as err:  # the run job still makes the Short with museum paintings
+            logging.exception("planning failed")
+            result = {"paint": False, "chunks": [], "reason": f"{type(err).__name__}: {err}"[:300]}
+        print(json.dumps({k: v for k, v in result.items() if k != "pending"}, ensure_ascii=False, indent=1))
+        if output := os.environ.get("GITHUB_OUTPUT"):
+            with open(output, "a", encoding="utf-8") as fh:
+                fh.write(f"paint={'true' if result.get('paint') else 'false'}\n")
+                fh.write(f"chunks={json.dumps(result.get('chunks') or [])}\n")
         return 0
 
     if args.command == "status":

@@ -14,13 +14,21 @@ from pathlib import Path
 
 import yaml
 
-from . import art, gate, learn, review, slots, sources, writer
+from . import aiart, art, gate, learn, look, review, slots, sources, writer
 
 log = logging.getLogger("lite")
 
 CONTROL_ROOT = Path(__file__).resolve().parents[1]
 TOPICS = Path(__file__).with_name("topics.json")
 LEDGER = Path(os.environ.get("LITE_LEDGER", CONTROL_ROOT / "lite-state" / "ledger.json"))
+# Written by `lite plan`, read by the paint jobs and `lite run` in the same workflow run.
+PLAN = Path(os.environ["LITE_PLAN"]) if os.environ.get("LITE_PLAN") else None
+ART_DIR = Path(os.environ["LITE_ART_DIR"]) if os.environ.get("LITE_ART_DIR") else None
+# One Z-Image-Turbo picture at 576x1024 and 4 steps took 913-922 s on a 4-vCPU runner (art bench, 2026-10-13;
+# 6 steps at 480x854 took 1,138-1,160 s), so each paint job draws about one beat, all in parallel. Workflow
+# max-parallel must match.
+PAINT_JOBS = 10
+PAINT_STEPS = int(os.environ.get("LITE_PAINT_STEPS", "4"))
 MAX_GEMINI_CALLS = 15
 MAX_GATE_ATTEMPTS = 2
 MAX_REPAIRS = 2
@@ -184,7 +192,7 @@ def direction(names: list[str]) -> str:
             + " Speak only the exact Devanagari transcript; add no introduction or explanation.")
 
 
-def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: list) -> dict:
+def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: list, ai_art: bool = False) -> dict:
     beats = []
     for i, (beat, pic) in enumerate(zip(script["beats"], pictures)):
         motion = "zoom_out" if i == len(script["beats"]) - 1 else MOTIONS[i % len(MOTIONS)]
@@ -198,8 +206,8 @@ def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: lis
     return {
         "id": ep_id, "title": script["title"], "series": "मूल कथा लाइट", "description": script["description"],
         "hook_text": script["hook_text"], "citation": passage.citation_hi, "sources": [passage.url],
-        "hashtags": script["hashtags"], "tags": script["keywords"], "category_id": "27", "synthetic_media": False,
-        "depth_motion": False,
+        "hashtags": script["hashtags"], "tags": script["keywords"], "category_id": "27", "synthetic_media": ai_art,
+        "depth_motion": ai_art and os.environ.get("LITE_DEPTH", "1") == "1",
         "voice": ({"engine": "kokoro", "voice": "hf_alpha", "lang_code": "h", "lead_in": 0.35}
                   if os.environ.get("LITE_LOCAL_KOKORO") == "1" else
                   {"engine": "gemini", "voice": VOICE, "lang_code": "h", "lead_in": 0.35,
@@ -210,10 +218,12 @@ def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: lis
     }
 
 
-def episode_record(ep_id: str, topic: dict, script: dict, passage: sources.Passage, pictures: list) -> dict:
+def episode_record(ep_id: str, topic: dict, script: dict, passage: sources.Passage, pictures: list,
+                   ai_art: bool = False) -> dict:
     verse = next((v for v in passage.verses if script.get("shloka_verse") and v.number == script["shloka_verse"]), None)
     return {
         "id": ep_id, "topic_key": topic["key"], "title": script["title"], "description": script["description"],
+        "ai_art": ai_art,
         "citation": passage.citation_hi, "source_url": passage.url, "translator": passage.translator,
         "hashtags": script["hashtags"], "keywords": script["keywords"], "key_quote": script.get("key_quote", ""),
         "shloka": {"number": verse.number, "sanskrit": verse.sanskrit} if verse and verse.sanskrit else None,
@@ -240,13 +250,13 @@ def frames(video: Path, out: Path) -> list[str]:
     return saved
 
 
-def prepare(topic: dict, calls: Calls, length_hint: str = "") -> tuple[dict, sources.Passage, dict]:
+def prepare(topic: dict, calls: Calls, length_hint: str = "", ending: str = "loop") -> tuple[dict, sources.Passage, dict]:
     """Script and source-support review for one topic: (script, passage, review record). Raises ValueError
     when the topic can't make a supported script."""
     passage = sources.fetch(topic)
     calls.check(2)
     script, problems = writer.write(passage, topic.get("angle", ""), calls.generate("lite script"),
-                                    length_hint=length_hint)
+                                    length_hint=length_hint, ending=ending)
     if problems:
         raise ValueError("script: " + "; ".join(problems[:6]))
     calls.check(1)
@@ -256,7 +266,7 @@ def prepare(topic: dict, calls: Calls, length_hint: str = "") -> tuple[dict, sou
             break
         log.info("source review rejected the draft; repairing: %s", "; ".join(issues[:4]))
         script, problems = writer.write(passage, topic.get("angle", ""), _repair(calls, issues, script), tries=1,
-                                        length_hint=length_hint)
+                                        length_hint=length_hint, ending=ending)
         if problems:
             ok, issues = False, [*issues, *problems]
             continue
@@ -290,9 +300,9 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
             raise ValueError("script: " + "; ".join(red))
         passage = sources.fetch(topic)
     else:
-        script, passage, review_record = prepare(topic, calls)
+        script, passage, review_record = prepare(topic, calls, ending=writer.ending_for(len(ledger["episodes"])))
     blocked = set(ledger.get("blocked_pictures") or [])
-    pictures = art.choose(script["beats"], passage.work, blocked)
+    pictures = None
     ledger["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": review_record,
                          "gate_attempts": pending.get("gate_attempts", 0) if resumed else 0,
                          **({"replaces": pending["replaces"]} if resumed and pending.get("replaces") else {})}
@@ -301,19 +311,36 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         if work.exists():
             shutil.rmtree(work)
         work.mkdir(parents=True)
-        pictures = art.download(pictures, work / "pics")
-        checked: list[dict] = []
-        try:
-            pictures = art.screen(pictures, script["beats"], work / "pics", story(script, passage),
-                                  calls.vision(), blocked, report=checked,
-                                  fallbacks=art.WORK_FALLBACKS.get(passage.work, []))
-        finally:
-            out.mkdir(parents=True, exist_ok=True)
-            (out / "pictures.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1), encoding="utf-8")
-            if unsafe := {r["key"] for r in checked if r["unsafe"] and r["key"]}:
-                blocked |= unsafe
-                ledger["blocked_pictures"] = sorted(blocked)
-        spec = build_spec(ep_id, script, passage, pictures)
+        out.mkdir(parents=True, exist_ok=True)
+        painted = aiart.collect(ART_DIR, ep_id, len(script["beats"])) if attempt == 0 else {}
+        ai_art = False
+        if painted:
+            aiart.copy_report(painted, out)
+            checked: list[dict] = []
+            try:
+                pictures = aiart.pictures(painted, script["beats"], work / "pics", story(script, passage),
+                                          calls.vision(), report=checked)
+                ai_art = True
+            except LookupError as err:
+                # Publishing never waits on the image model: museum paintings illustrate this Short instead.
+                log.warning("AI paintings not used: %s", err)
+                ledger["pending"]["ai_art_note"] = str(err)[:200]
+            finally:
+                (out / "pictures-ai.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1),
+                                                      encoding="utf-8")
+        if not ai_art:
+            pictures = art.download(art.choose(script["beats"], passage.work, blocked), work / "pics")
+            checked = []
+            try:
+                pictures = art.screen(pictures, script["beats"], work / "pics", story(script, passage),
+                                      calls.vision(), blocked, report=checked,
+                                      fallbacks=art.WORK_FALLBACKS.get(passage.work, []))
+            finally:
+                (out / "pictures.json").write_text(json.dumps(checked, ensure_ascii=False, indent=1), encoding="utf-8")
+                if unsafe := {r["key"] for r in checked if r["unsafe"] and r["key"]}:
+                    blocked |= unsafe
+                    ledger["blocked_pictures"] = sorted(blocked)
+        spec = build_spec(ep_id, script, passage, pictures, ai_art=ai_art)
         (work / "short.yaml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8")
         calls.wrap_tts()
         calls.check(1)
@@ -328,15 +355,17 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
         spoken = "\n".join(b["text"] for b in script["beats"])
         result = gate.run(video, spoken, review_record["ok"], review_record["issues"])
         duration = result["checks"]["duration"]["seconds"]
-        if result["passed"] or result["checks"]["duration"]["ok"] or attempt or calls.gemini + 5 > MAX_GEMINI_CALLS:
+        if (result["passed"] or result["checks"]["duration"]["ok"] or attempt or ai_art
+                or calls.gemini + 5 > MAX_GEMINI_CALLS):
             break
-        # Wrong length: one shorter or longer rewrite (writer + review), then a fresh narration.
+        # Wrong length: one shorter or longer rewrite (writer + review), then a fresh narration. (A Short with AI
+        # paintings keeps its script, since the paintings were made for it; the gate's verdict stands.)
         words = writer.word_count(script)
-        target = max(writer.WORDS_MIN, min(writer.WORDS_MAX, int(words * 52.0 / max(duration, 1.0))))
+        target = max(writer.WORDS_MIN, min(writer.WORDS_MAX, int(words * 70.0 / max(duration, 1.0))))
         hint = f"The previous draft ran {duration:.0f} seconds with {words} words; write about {target} words."
         log.info("rewriting for length: %s", hint)
-        script, passage, review_record = prepare(topic, calls, length_hint=hint)
-        pictures = art.choose(script["beats"], passage.work, blocked)
+        script, passage, review_record = prepare(topic, calls, length_hint=hint,
+                                                 ending=writer.ending_for(len(ledger["episodes"])))
         ledger["pending"].update({"script": script, "review": review_record})
     out.mkdir(parents=True, exist_ok=True)
     final = out / f"{ep_id}.mp4"
@@ -349,7 +378,7 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
     (out / "script.json").write_text(json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8")
     (out / "passage.json").write_text(json.dumps(passage.to_json(), ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "review.json").write_text(json.dumps(review_record, ensure_ascii=False, indent=2), encoding="utf-8")
-    record = episode_record(ep_id, topic, script, passage, pictures)
+    record = episode_record(ep_id, topic, script, passage, pictures, ai_art=ai_art)
     if ledger["pending"].get("replaces"):
         record["replaces"] = ledger["pending"]["replaces"]
     record.update({"gate": {"passed": result["passed"],
@@ -400,6 +429,15 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
                              slot, ledger, youtube_id, instagram_id, now, summary, calls)
     ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
     tried: set[str] = set()
+    planned = load_plan()
+    if planned.get("failed"):
+        failed = planned["failed"]
+        strike(ledger, failed["topic"], failed["reason"])
+        tried.add(failed["topic"])
+        summary.setdefault("failed_topics", []).append({"topic": failed["topic"], "reason": failed["reason"][:400]})
+    if (planned.get("pending") and not ledger.get("pending")
+            and planned["pending"]["topic_key"] not in used_keys(ledger)):
+        ledger["pending"] = planned["pending"]
     while len(tried) < 2:
         topic = current_topic(ledger, exclude=tried)
         summary["topic"] = topic["key"]
@@ -448,6 +486,72 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
             slots.free_slot(datetime.now(timezone.utc), *rows, days_ahead=slots.BOOK_AHEAD_DAYS))
     ledger["pending"] = None
     return _schedule(record, Path(record["video"]), slot, ledger, youtube_id, instagram_id, now, summary, calls)
+
+
+def load_plan(path: Path | None = None) -> dict:
+    path = path or PLAN
+    if not path or not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def chunks(beats: list[dict], jobs: int = PAINT_JOBS) -> list[str]:
+    """The beats each paint job draws, as comma-separated numbers, the hook's first."""
+    wanted = [b["beat"] for b in beats if b["prompt"]]
+    groups = [wanted[i::jobs] for i in range(min(jobs, len(wanted)))]
+    return [",".join(map(str, g)) for g in groups if g]
+
+
+def plan(mode: str, out: Path, now: datetime | None = None) -> dict:
+    """Before the paint jobs: decide whether this run will make a Short and, if so, write and review its script and
+    the image prompts for each beat. `lite run` picks the script up as its pending Short. Never fails the workflow:
+    when there is nothing to paint, `lite run` still runs as before (museum paintings)."""
+    now = now or datetime.now(timezone.utc)
+    ledger = load_ledger()
+    calls = Calls()
+    result: dict = {"paint": False, "chunks": []}
+    out.mkdir(parents=True, exist_ok=True)
+
+    def done(**extra) -> dict:
+        result.update(extra, calls=calls.to_json())
+        (out / "plan.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
+        return result
+
+    if mode == "publish":
+        from . import publisher
+
+        youtube_id, instagram_id = publisher.destinations()
+        rows = publisher.recent_posts(youtube_id, now), publisher.recent_posts(instagram_id, now)
+        slot = (slots.replacement_slot(now, *rows) if replacing(ledger) else
+                slots.free_slot(now, *rows, days_ahead=slots.BOOK_AHEAD_DAYS))
+        if slot is None:
+            return done(reason="no free slot")
+        if ledger.get("ready"):
+            return done(reason="a finished Short is waiting for its slot")
+    pending = ledger.get("pending")
+    if pending:
+        beats = pending["script"].get("beats") or []
+        if not all(b.get("scene") for b in beats):
+            return done(reason="the pending script predates AI paintings")
+        if writer.red_lines(pending["script"]):
+            return done(reason="the pending script touches a red line")
+        ep_id, script = pending["id"], pending["script"]
+    else:
+        topic = current_topic(ledger)
+        ep_id = f"lite-{now.astimezone(slots.IST):%Y%m%d-%H%M}"
+        try:
+            script, _, review_record = prepare(topic, calls, ending=writer.ending_for(len(ledger["episodes"])))
+        except (WaitForQuota, Budget) as err:
+            return done(reason=str(err)[:300])
+        except (ValueError, LookupError, sources.SourceError) as err:
+            return done(reason=str(err)[:300], failed={"topic": topic["key"], "reason": str(err)[:400]})
+        result["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": review_record,
+                             "gate_attempts": 0}
+    beats = look.plan(ep_id, script["beats"])
+    (out / "art-plan.json").write_text(json.dumps({"episode": ep_id, "model": "zimage", "steps": PAINT_STEPS,
+                                                   "width": 576, "height": 1024, "beats": beats},
+                                                  ensure_ascii=False, indent=1), encoding="utf-8")
+    return done(paint=True, episode=ep_id, chunks=chunks(beats))
 
 
 def strike(ledger: dict, key: str, reason: str) -> None:

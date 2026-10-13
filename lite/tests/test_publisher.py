@@ -54,6 +54,16 @@ class PayloadTest(unittest.TestCase):
         self.assertTrue(caption.rstrip().endswith("#sundarkand"))
         self.assertLessEqual(len(caption), publisher.CAPTION_CHARS)
 
+    def test_ai_paintings_are_disclosed_on_both_platforms(self):
+        self.assertFalse(publisher.youtube_payload("yt1", EP, DUE, MEDIA)["metadata"]["youtube"]["isAiGenerated"])
+        ai = EP | {"ai_art": True, "pictures": [{"url": "", "credit": {"source": "AI (Z-Image-Turbo, Apache-2.0)"}}]}
+        payload = publisher.youtube_payload("yt1", ai, DUE, MEDIA)
+        self.assertTrue(payload["metadata"]["youtube"]["isAiGenerated"])
+        self.assertIn("चित्र और आवाज़ AI से बनाए गए हैं", payload["text"])
+        self.assertIn(publisher.AI_ART_CREDIT, payload["text"])
+        self.assertNotIn("सार्वजनिक डोमेन", payload["text"])
+        self.assertIn("चित्र और आवाज़ AI से बनाए गए हैं", publisher.instagram_caption(ai))
+
     def test_caption_falls_back_to_the_quote_without_sanskrit(self):
         caption = publisher.instagram_caption(EP | {"shloka": None})
         self.assertIn("“Hanuma entered her mouth and came out”", caption)

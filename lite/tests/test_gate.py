@@ -33,7 +33,7 @@ class EvaluateTest(unittest.TestCase):
         self.assertTrue(result["passed"])
 
     def test_duration_outside_window_fails(self):
-        for seconds in (41.9, 62.1):
+        for seconds in (49.9, 95.1):
             result = gate.evaluate(script=SCRIPT, heard=SCRIPT, duration=seconds, loud=LOUD_OK, review_ok=True)
             self.assertFalse(result["passed"])
             self.assertFalse(result["checks"]["duration"]["ok"])

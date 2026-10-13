@@ -12,7 +12,7 @@ import subprocess
 from pathlib import Path
 
 MIN_COVERAGE = 0.85
-DURATION = (42.0, 62.0)
+DURATION = (50.0, 95.0)
 LOUDNESS_LUFS = (-17.0, -11.0)
 MAX_TRUE_PEAK = -0.5
 # A word the recognizer spelled a little differently still counts (vowel length, nukta, half letters).

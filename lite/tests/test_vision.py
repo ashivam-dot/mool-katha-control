@@ -44,6 +44,11 @@ class Rejected(unittest.TestCase):
         self.assertTrue(vision.rejected({**OK, "sexual": True}).startswith("sexual"))
         self.assertTrue(vision.rejected({**OK, "gore": True}).startswith("gore"))
         self.assertTrue(vision.rejected({**OK, "fits": False}).startswith("does not fit"))
+        self.assertTrue(vision.rejected({**OK, "disrespectful": True}).startswith("disrespectful"))
+
+    def test_malformed_refuses_only_ai_paintings(self):
+        self.assertIsNone(vision.rejected({**OK, "malformed": True}))
+        self.assertTrue(vision.rejected({**OK, "malformed": True}, generated=True).startswith("malformed"))
 
     def test_a_missing_verdict_is_a_refusal(self):
         tmp = Path(tempfile.mkdtemp())

@@ -34,9 +34,11 @@ SCHEMA = {
                     "sexual": {"type": "boolean"},
                     "gore": {"type": "boolean"},
                     "fits": {"type": "boolean"},
+                    "malformed": {"type": "boolean"},
+                    "disrespectful": {"type": "boolean"},
                     "reason": {"type": "string"},
                 },
-                "required": ["n", "shows", "nudity", "sexual", "gore", "fits", "reason"],
+                "required": ["n", "shows", "nudity", "sexual", "gore", "fits", "malformed", "disrespectful", "reason"],
             },
         },
     },
@@ -61,10 +63,18 @@ For each picture answer:
 - fits: true only if the picture plausibly shows this line's scene or characters from THIS story. False if it
   shows a different story, a different person who shares a name, an unrelated scene, a page of text or a
   sheet of several unrelated pictures, or a modern object. A generic painting of the right characters is fine.
+- malformed: true if a face or body is visibly broken: extra or missing limbs or fingers on a main figure,
+  melted or doubled faces, or legible garbled letters, text or a watermark. (Many-armed gods and ten-headed
+  Ravana are traditional, not malformed.)
+- disrespectful: true if a deity or sage looks comic, cartoonish, grotesque, mocking or undignified.
 - reason: why, in a few words.
-
+{extra}
 Pictures:
 {lines}"""
+GENERATED = """
+These pictures were painted by an AI model for this story; judge "fits" against the narrated line and the
+story's characters (for example Rama blue-skinned with a bow, Hanuman a vanara), not against a museum title.
+"""
 
 
 def _small(path: Path) -> bytes:
@@ -77,9 +87,10 @@ def _small(path: Path) -> bytes:
     return buf.getvalue()
 
 
-def rejected(verdict: dict) -> str | None:
-    """Why a verdict keeps its picture out of a Short, or None when the picture may be used."""
-    for flag in ("nudity", "sexual", "gore"):
+def rejected(verdict: dict, generated: bool = False) -> str | None:
+    """Why a verdict keeps its picture out of a Short, or None when the picture may be used. Museum paintings
+    often carry inscriptions, so "malformed" only refuses AI paintings."""
+    for flag in ("nudity", "sexual", "gore", "disrespectful", *(("malformed",) if generated else ())):
         if verdict.get(flag):
             return f"{flag}: {verdict.get('reason') or verdict.get('shows')}"
     if not verdict.get("fits"):
@@ -87,14 +98,14 @@ def rejected(verdict: dict) -> str | None:
     return None
 
 
-def judge(items: list[tuple[Path, str, str]], story: str, ask) -> list[dict]:
+def judge(items: list[tuple[Path, str, str]], story: str, ask, generated: bool = False) -> list[dict]:
     """One verdict per (picture file, picture title, narrated line), in order. ask(prompt_parts, schema) answers
     like llm.generate; a missing or malformed verdict counts as a rejection."""
     verdicts: list[dict] = []
     for start in range(0, len(items), PER_PROMPT):
         chunk = items[start:start + PER_PROMPT]
         lines = "\n".join(f"{n}. title: {title!r}; narrated line: {line}" for n, (_, title, line) in enumerate(chunk, 1))
-        parts: list = [PROMPT.format(story=story, lines=lines)]
+        parts: list = [PROMPT.format(story=story, lines=lines, extra=GENERATED if generated else "")]
         for n, (path, _, _) in enumerate(chunk, 1):
             parts += [f"Picture {n}:", _small(path)]
         answer = ask(parts, SCHEMA)

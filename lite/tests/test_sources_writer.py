@@ -78,14 +78,20 @@ class SourcesTest(unittest.TestCase):
             self.assertTrue(t["angle"])
 
 
+SCENE = "Close-up of Hanuman's determined face as he crouches on a mountain top above the ocean at dawn"
+
+
 def good_script():
     return {
-        "usable": True, "title": "हनुमान को समुद्र के ऊपर किसने रोका? | वाल्मीकि रामायण",
+        "usable": True, "title": "समुद्र के ऊपर हनुमान को किसने रोका? | वाल्मीकि रामायण",
         "hook_text": "हनुमान को किसने रोका?",
-        "beats": [{"text": "समुद्र लांघते हनुमान को बीच रास्ते में किसने रोका?", "evidence": "", "visual_query": "Hanuman ocean", "emphasis": ""}]
-        + [{"text": "हनुमान सीता को खोजने के लिए आकाश मार्ग से चलना चाहते थे और उनका मन दृढ़ था।",
-            "evidence": "desired to travel in the sky to search for Seetha", "visual_query": "Hanuman flying", "emphasis": "सीता"}] * 6
-        + [{"text": "तो फिर उन्हें बीच समुद्र में किसने रोका?", "evidence": "", "visual_query": "Hanuman", "emphasis": ""}],
+        "beats": [{"text": "समुद्र लांघते हनुमान को बीच रास्ते में किसने रोका?", "evidence": "", "scene": SCENE,
+                   "visual_query": "Hanuman ocean", "emphasis": ""}]
+        + [{"text": "हनुमान सीता को खोजने के लिए आकाश मार्ग से चलना चाहते थे और उनका मन बहुत दृढ़ था।",
+            "evidence": "desired to travel in the sky to search for Seetha", "scene": SCENE,
+            "visual_query": "Hanuman flying", "emphasis": "सीता"}] * 8
+        + [{"text": "तो फिर उन्हें बीच समुद्र में किसने रोका?", "evidence": "", "scene": SCENE,
+            "visual_query": "Hanuman", "emphasis": ""}],
         "description": "सुन्दरकाण्ड के पहले सर्ग का प्रसंग।", "hashtags": ["#ramayan", "#hanuman", "#sundarkand"],
         "keywords": ["हनुमान"], "shloka_verse": "5-1-1", "key_quote": "desired to travel in the sky to search for Seetha",
         "names": ["हनुमान"],
@@ -114,6 +120,24 @@ class WriterRulesTest(unittest.TestCase):
         self.assertIn("title must be a question", found)
         self.assertIn("title must name the text", found)
         self.assertIn("shloka_verse", found)
+
+    def test_template_ending_and_missing_scene_are_refused(self):
+        script = good_script()
+        script["beats"] = [dict(b) for b in script["beats"]]
+        script["beats"][-1]["text"] = "यही कारण है कि लोग पूछते हैं, हनुमान को किसने रोका?"
+        script["beats"][4]["scene"] = "Hanuman"
+        script["beats"][5]["scene"] = "हनुमान समुद्र के ऊपर उड़ते हुए, सुबह की रोशनी में, आकाश में बादल, नीचे लहरें"
+        found = writer.problems(writer.tidy(script), self.passage)
+        self.assertIn(f"beat {len(script['beats'])} uses a worn-out formula or a like/subscribe request;"
+                      " say it in fresh words", found)
+        self.assertIn("beat 5 needs an English scene of 8-70 words", found)
+        self.assertIn("beat 6 needs an English scene of 8-70 words", found)
+
+    def test_endings_rotate_and_reach_the_prompt(self):
+        self.assertEqual([writer.ending_for(n) for n in range(4)], ["loop", "question", "lesson", "loop"])
+        text = writer.prompt(self.passage, "angle", ending="question")
+        self.assertIn(writer.ENDINGS["question"], text)
+        self.assertNotIn(writer.ENDINGS["loop"], text)
 
     def test_unsupported_middle_beat_needs_evidence(self):
         script = good_script()
@@ -158,7 +182,8 @@ class WriterRulesTest(unittest.TestCase):
 class ReviewTest(unittest.TestCase):
     def test_verdict(self):
         script = writer.tidy(good_script())
-        items = [{"beat": n, "factual": n not in (1, 8), "supported": True, "note": ""} for n in range(1, 9)]
+        last = len(script["beats"])
+        items = [{"beat": n, "factual": n not in (1, last), "supported": True, "note": ""} for n in range(1, last + 1)]
         ok, issues = review.verdict({"items": items, "respectful": True, "title_reveals_answer": False}, script)
         self.assertTrue(ok, issues)
         items[2]["supported"] = False
@@ -179,12 +204,14 @@ class SpecTest(unittest.TestCase):
         script = writer.tidy(good_script())
         pic = {"url": "https://upload.wikimedia.org/a.jpg", "credit": {"source": "Wikimedia Commons", "title": "A",
                "credit": "Unknown", "license": "Public domain", "url": "https://commons.wikimedia.org/wiki/File:A.jpg"}}
-        pictures = [pic, dict(pic, url="https://upload.wikimedia.org/b.jpg"), 2, dict(pic, url="https://upload.wikimedia.org/c.jpg"), 4, 4, 4, 1]
+        pictures = [pic, dict(pic, url="https://upload.wikimedia.org/b.jpg"), 2, dict(pic, url="https://upload.wikimedia.org/c.jpg"), 4, 4, 4, 4, 4, 1]
         spec = ShortSpec.model_validate(run.build_spec("lite-test", script, passage, pictures))
+        self.assertEqual(len(spec.beats), len(script["beats"]))
         self.assertEqual(spec.voice.voice, "Sulafat")
         self.assertEqual(spec.citation, "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 1")
         self.assertEqual(spec.beats[-1].visual.reuse, 1)
         self.assertEqual(spec.captions.font_file, "Mukta-ExtraBold.ttf")
+        self.assertFalse(spec.synthetic_media or spec.depth_motion)
 
 
 class TopicTest(unittest.TestCase):
