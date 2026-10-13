@@ -27,7 +27,8 @@ titles with the mystery first.
   whose picture failed repeat the nearest earlier one. Depth-parallax motion (`depth_motion`) moves each picture.
 - **Fallback:** when the plan or paint jobs fail, or too few AI pictures pass (less than 60% of beats, or the
   hook's), the same run illustrates the Short with museum paintings as before. Publishing never waits on the image
-  model. Set the repository variable `LITE_AI_ART=0`, or dispatch with `art: paintings`, to turn AI art off.
+  model. Set the repository variable `LITE_AI_ART=off`, or dispatch with `art: paintings`, to turn AI art off.
+  (Not `0`: Actions compares an unset variable as the number 0, so `!= '0'` would turn AI art off everywhere.)
 - **Disclosure:** Shorts with AI pictures set YouTube's `isAiGenerated`, and the description and caption say the
   pictures and voice are AI-made (`publisher.DISCLOSURE_AI_ART`). The ledger entry records `ai_art`.
 - **Topics:** 36 Ramayana sargas chosen for emotion and mystery (Jatayu, Sampati, dying Vali, Sita refusing

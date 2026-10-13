@@ -46,7 +46,7 @@ jobs:
     if: >-
       (github.ref == 'refs/heads/main' || inputs.mode == 'dry-run') &&
       (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_LITE == '1') &&
-      inputs.mode != 'picture-probe' && inputs.art != 'paintings' && vars.LITE_AI_ART != '0'
+      inputs.mode != 'picture-probe' && inputs.art != 'paintings' && vars.LITE_AI_ART != 'off'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     continue-on-error: true
