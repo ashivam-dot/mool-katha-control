@@ -25,6 +25,10 @@ class LookTest(unittest.TestCase):
         self.assertIn("Ravi Varma", text)
         self.assertNotIn(look.CLOSE, look.prompt("Wide view of Lanka at night"))
 
+    def test_sita_with_ravana_is_painted_as_his_captive(self):
+        self.assertIn("captive", look.prompt("Ravana flies off in his chariot holding Sita"))
+        self.assertNotIn("captive", look.prompt("Sita waits for Rama in the forest"))
+
     def test_names_inside_other_words_are_not_characters(self):
         self.assertEqual(look.characters("Ramayana manuscript on a table, Brahmin priests"), [])
 

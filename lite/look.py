@@ -22,7 +22,7 @@ CHARACTERS: tuple[tuple[str, str], ...] = (
     (r"Lakshmana|Lakshman", "Lakshmana: young prince with fair golden skin, golden crown, saffron dhoti, bow,"
      " alert and devoted"),
     (r"\bSita\b|Seetha|Janaki|Vaidehi", "Sita: graceful dignified princess, red and gold silk saree covering her"
-     " fully, gold jewellery, long black braid; never smiling near Ravana"),
+     " fully, gold jewellery, long black braid"),
     (r"Hanuman|Hanuma\b|Maruti", "Hanuman: mighty vanara monkey god with a distinctly monkey face and muzzle, wise"
      " kind eyes, golden-orange fur on his body, red-gold crown, gold earrings, a golden mace (gada), long tail"),
     (r"Ravana|Dashanana", "Ravana: ten-headed rakshasa king, dark skin, ten golden crowns, ornate golden armour,"
@@ -82,6 +82,14 @@ CHARACTERS: tuple[tuple[str, str], ...] = (
 MAX_CHARACTERS = 3
 
 
+# When both characters are in a scene the model must be told the mood outright; on its own it paints them as a couple.
+TOGETHER: tuple[tuple[str, str, str], ...] = (
+    (r"\bSita\b|Seetha|Janaki|Vaidehi", r"Ravana|Dashanana",
+     "Sita is Ravana's captive: her face is full of terror and tears, she turns away and struggles to break free,"
+     " standing apart from him."),
+)
+
+
 def characters(scene: str) -> list[str]:
     """Fixed descriptions of the characters a scene names, in the order they appear in it."""
     found = []
@@ -99,6 +107,7 @@ def prompt(scene: str, *, hook: bool = False) -> str:
     looks = characters(scene)
     if looks:
         parts.append("Characters: " + "; ".join(looks) + ".")
+    parts += [mood for a, b, mood in TOGETHER if re.search(a, scene) and re.search(b, scene)]
     parts += [STYLE + ".", SAFE]
     return " ".join(parts)
 
