@@ -21,25 +21,45 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {name: zimage-8step-576x1024, model: zimage, steps: 8, width: 576, height: 1024}
-          - {name: zimage-4step-576x1024, model: zimage, steps: 4, width: 576, height: 1024}
-          - {name: zimage-6step-480x854, model: zimage, steps: 6, width: 480, height: 854}
-          - {name: klein-4step-576x1024, model: klein, steps: 4, width: 576, height: 1024}
+          - {name: release-zimage-8step-576x1024, build: release, model: zimage, steps: 8, width: 576, height: 1024}
+          - {name: native-zimage-8step-576x1024, build: native, model: zimage, steps: 8, width: 576, height: 1024}
+          - {name: native-zimage-5step-576x1024, build: native, model: zimage, steps: 5, width: 576, height: 1024}
+          - {name: native-zimage-8step-448x800, build: native, model: zimage, steps: 8, width: 448, height: 800}
     env:
+      BUILD: ${{ matrix.build }}
       MODEL: ${{ matrix.model }}
       STEPS: ${{ matrix.steps }}
       WIDTH: ${{ matrix.width }}
       HEIGHT: ${{ matrix.height }}
+      SD_TAG: master-959-d637cfb
+      SD_VERBOSE: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Runner
         run: nproc && free -g && lscpu | grep -E 'Model name|Flags' | cut -c1-400
+      - name: Build stable-diffusion.cpp for this CPU
+        if: env.BUILD == 'native'
+        run: |
+          set -euo pipefail
+          started=$SECONDS
+          git clone --quiet --depth 1 --branch "$SD_TAG" --recurse-submodules --shallow-submodules https://github.com/leejet/stable-diffusion.cpp "$RUNNER_TEMP/sdsrc"
+          cmake -S "$RUNNER_TEMP/sdsrc" -B "$RUNNER_TEMP/sdbuild" -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=ON > /dev/null
+          cmake --build "$RUNNER_TEMP/sdbuild" -j 4 --config Release > /dev/null
+          exe=$(find "$RUNNER_TEMP/sdbuild" -type f \( -name sd-cli -o -name sd \) -perm -u+x | head -1)
+          test -n "$exe"
+          echo "SD_BIN=$exe" >> "$GITHUB_ENV"
+          echo "built $exe in $((SECONDS - started)) s"
       - name: Fetch binary and weights
         run: python3 -m lite.imagegen fetch --model "$MODEL" --root "$RUNNER_TEMP/art"
       - name: Paint
         run: >-
-          python3 -m lite.imagegen beats --prompts .github/bench/art-prompts.json --out "$RUNNER_TEMP/out"
+          python3 -m lite.imagegen beats --prompts .github/bench/art-prompts.json --only 0 --out "$RUNNER_TEMP/out"
           --root "$RUNNER_TEMP/art" --model "$MODEL" --steps "$STEPS" --width "$WIDTH" --height "$HEIGHT"
+      - name: Timing
+        if: always()
+        run: |
+          find "$RUNNER_TEMP/art/sd" -maxdepth 3 -type f | head -30 || true
+          cat "$RUNNER_TEMP"/out/*.json || true
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

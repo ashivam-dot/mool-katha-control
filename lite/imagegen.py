@@ -74,7 +74,10 @@ def weights(model: str, root: Path) -> dict[str, Path]:
 
 
 def binary(root: Path) -> Path:
-    """The pinned stable-diffusion.cpp CPU build for Ubuntu 24.04 (AVX2), unpacked under root/sd."""
+    """The pinned stable-diffusion.cpp CPU build for Ubuntu 24.04, unpacked under root/sd, unless SD_BIN names a
+    binary built on the runner."""
+    if os.environ.get("SD_BIN"):
+        return Path(os.environ["SD_BIN"])
     folder = root / "sd" / SD_TAG
     found = [p for p in folder.rglob("*") if p.is_file() and p.name in ("sd-cli", "sd")] if folder.exists() else []
     if not found:
@@ -100,6 +103,9 @@ def generate(prompt: str, out: Path, *, model: str = "zimage", root: Path, seed:
            "--llm", str(paths["llm"]), "-p", prompt, "--cfg-scale", "1.0",
            "--steps", str(steps or MODELS[model]["steps"]), "-W", str(width), "-H", str(height),
            "-s", str(seed), "-t", str(threads or os.cpu_count() or 4), "--diffusion-fa", "-o", str(out)]
+    verbose = os.environ.get("SD_VERBOSE") == "1"
+    if verbose:
+        cmd.append("-v")
     env = dict(os.environ, LD_LIBRARY_PATH=f"{exe.parent}:{os.environ.get('LD_LIBRARY_PATH', '')}")
     started = time.monotonic()
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
@@ -108,7 +114,8 @@ def generate(prompt: str, out: Path, *, model: str = "zimage", root: Path, seed:
         tail = (proc.stderr or proc.stdout or "")[-1500:]
         raise RuntimeError(f"stable-diffusion.cpp failed ({proc.returncode}): {tail}")
     return {"seconds": round(seconds, 1), "model": model, "steps": steps or MODELS[model]["steps"],
-            "width": width, "height": height, "seed": seed, "log_tail": (proc.stdout or "")[-600:]}
+            "width": width, "height": height, "seed": seed, "log_tail": (proc.stdout or "")[-600:],
+            **({"log_head": (proc.stdout or "")[:3000]} if verbose else {})}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -150,7 +157,8 @@ def main(argv: list[str] | None = None) -> int:
             failed += 1
             print(json.dumps({"beat": i, "error": str(err)[-800:]}), flush=True)
             continue
-        (args.out / f"beat{i:02d}.json").write_text(json.dumps({"beat": i, "prompt": beat["prompt"], **timing},
+        (args.out / f"beat{i:02d}.json").write_text(json.dumps({"episode": plan.get("episode", ""), "beat": i,
+                                                                "prompt": beat["prompt"], **timing},
                                                                ensure_ascii=False, indent=1), encoding="utf-8")
         print(json.dumps({"beat": i, "seconds": timing["seconds"], "model": model}), flush=True)
     return 1 if failed and failed == len(wanted) else 0
