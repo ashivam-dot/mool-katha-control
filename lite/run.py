@@ -40,6 +40,8 @@ MAX_TOPIC_STRIKES = 2
 # 80 minutes; the lane gives up early and a later run (or the 07:00 UTC quota reset) picks the topic up again.
 TEXT_WAIT_PER_CALL = 480
 TEXT_WAIT_PER_RUN = 2400
+# The plan job waits less, so a busy model can't hold the run job (which waits again itself) for half an hour.
+TEXT_WAIT_PER_PLAN = 900
 # A picture the models won't answer about (an empty, safety-blocked reply) looks like an overload to llm.generate;
 # the check gives up after this long and nothing is published.
 VISION_WAIT = 300
@@ -509,6 +511,7 @@ def plan(mode: str, out: Path, now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
     ledger = load_ledger()
     calls = Calls()
+    calls._text_deadline = time.monotonic() + TEXT_WAIT_PER_PLAN
     result: dict = {"paint": False, "chunks": []}
     out.mkdir(parents=True, exist_ok=True)
 

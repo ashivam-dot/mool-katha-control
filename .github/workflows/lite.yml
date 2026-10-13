@@ -162,9 +162,9 @@ jobs:
   lite:
     needs: [plan, paint]
     if: >-
-      always() &&
       (github.ref == 'refs/heads/main' || inputs.mode == 'dry-run') &&
-      (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_LITE == '1')
+      (github.event_name == 'workflow_dispatch' || vars.YTC_ENABLE_LITE == '1') &&
+      !cancelled()
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
