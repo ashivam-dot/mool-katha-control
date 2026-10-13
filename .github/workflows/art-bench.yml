@@ -1,0 +1,60 @@
+# Measures AI painting time per image on a standard public-repo runner (4 vCPU, 16 GB) before the lite lane relies
+# on it. Manual only; never publishes.
+name: Art bench
+
+on:
+  workflow_dispatch:
+    inputs:
+      scopes:
+        description: 'also report the Google token scope names'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: zimage-8step-576x1024, model: zimage, steps: 8, width: 576, height: 1024}
+          - {name: zimage-4step-576x1024, model: zimage, steps: 4, width: 576, height: 1024}
+          - {name: zimage-6step-480x854, model: zimage, steps: 6, width: 480, height: 854}
+          - {name: klein-4step-576x1024, model: klein, steps: 4, width: 576, height: 1024}
+    env:
+      MODEL: ${{ matrix.model }}
+      STEPS: ${{ matrix.steps }}
+      WIDTH: ${{ matrix.width }}
+      HEIGHT: ${{ matrix.height }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Runner
+        run: nproc && free -g && lscpu | grep -E 'Model name|Flags' | cut -c1-400
+      - name: Fetch binary and weights
+        run: python3 -m lite.imagegen fetch --model "$MODEL" --root "$RUNNER_TEMP/art"
+      - name: Paint
+        run: >-
+          python3 -m lite.imagegen beats --prompts .github/bench/art-prompts.json --out "$RUNNER_TEMP/out"
+          --root "$RUNNER_TEMP/art" --model "$MODEL" --steps "$STEPS" --width "$WIDTH" --height "$HEIGHT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: bench-${{ matrix.name }}
+          path: ${{ runner.temp }}/out
+          retention-days: 7
+          if-no-files-found: ignore
+  scopes:
+    if: inputs.scopes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Scope names only
+        env:
+          YTC_GOOGLE_CLIENT: ${{ secrets.YTC_GOOGLE_CLIENT }}
+          YTC_GOOGLE_TOKEN: ${{ secrets.YTC_GOOGLE_TOKEN }}
+        run: python3 .github/scripts/google_scopes.py
