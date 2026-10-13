@@ -53,6 +53,9 @@ titles with the mystery first.
   her abductor. The writer now asks for every person's expression, and Sita's look forbids smiling near Ravana.
 - Replays (`.github/replay/*.json`, dispatch input `replay`) re-paint a reviewed script without Gemini text calls,
   for testing the picture path when Gemini is overloaded. They run as dry runs only and never touch the ledger.
+- A run takes about 40 minutes and the concurrency group keeps one waiting run: a cron firing while a test run
+  waits cancels the test (scheduled runs often start 10-15 minutes late). Dispatch tests at least an hour away
+  from 01:30, 07:40, 10:50 and 13:20 UTC.
 
 ## Test and pre-committed pivot (from 14 Oct 2026)
 
