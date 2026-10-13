@@ -12,6 +12,9 @@ credentials. Producer jobs have no write access here.
 
 ## Current state
 
+- The lite lane (`.github/workflows/lite.yml`, `lite/`) publishes the daily
+  Shorts. Its editorial direction, AI-painting path, fallback and switch are in
+  [`lite/DIRECTION.md`](lite/DIRECTION.md).
 - The production repository has one read-only deploy key for this repository's
   cloud checkout. The private half is stored only as this repository's
   `SOURCE_READONLY_DEPLOY_KEY` Actions secret.

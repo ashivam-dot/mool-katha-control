@@ -35,6 +35,25 @@ titles with the mystery first.
   Hanuman's ride, the Brahmastra binding, ...) were added ahead of the unused curated topics, each checked against
   the live valmikiramayan.net page.
 
+## Measured cost (2026-10-13)
+
+- One 576x1024 picture at 4 steps takes 11-20 minutes of a free 4-vCPU runner (median about 19; run 38378496851).
+  A native `GGML_NATIVE=ON` build was no faster (run 38369839962). FLUX.2-klein-4B was as slow and looked like a
+  cartoon, so Z-Image-Turbo stays.
+- One Short end to end: plan 2 min, 10 parallel paint jobs 22 min, narration + checks + depth render 12 min, so
+  about 37 minutes. The 6.7 GB of weights are cached under `lite-art-zimage-q4k-sd959-v1`.
+- Zero spend: public-repo Actions minutes, the free Gemini tier for text, voice and the picture check.
+
+## What the first AI render taught
+
+- The vision check works: it refused a Ravana whose extra heads merged together (beat 4 of the Jatayu replay).
+- Animal characters must be described as real animals ("a real giant old vulture bird, not a man"), or the model
+  paints a bird-headed man in clothes.
+- Expressions must be written into every scene: with only "calm radiant face" in her look, Sita smiled next to
+  her abductor. The writer now asks for every person's expression, and Sita's look forbids smiling near Ravana.
+- Replays (`.github/replay/*.json`, dispatch input `replay`) re-paint a reviewed script without Gemini text calls,
+  for testing the picture path when Gemini is overloaded. They run as dry runs only and never touch the ledger.
+
 ## Two-week test (14-27 Oct 2026)
 
 Keep the AI look if the median YouTube views per Short reach 150 or more at 48 hours, with Instagram not falling
