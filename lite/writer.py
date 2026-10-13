@@ -21,6 +21,10 @@ BANNED_HOOK = ("क्या आप जानते", "क्या आपको
 # The closing formula every Short used until 2026-10-13; the same sentence in every video reads as a template.
 BANNED_ANYWHERE = ("यही कारण है कि लोग पूछते", "यही कारण है कि पूछा जाता", "लाइक", "सब्सक्राइब", "फॉलो")
 TEXT_NAMES = ("रामायण", "महाभारत", "गीता", "पुराण")
+# Scene words that make the image model paint wounds (the first AI dry run asked for "severing Ravana's ten arms").
+GORY_SCENE = re.compile(r"\b(sever\w*|behead\w*|decapitat\w*|blood(?![- ]?red)\w*|bleed\w*|wounded|wounds|corpses?"
+                        r"|gore|gory|dismember\w*|mutilat\w*|cut(?:ting)? off|chop\w*|torn off|tear(?:ing)? off"
+                        r"|stab(?:s|bed|bing)?|slit|impal\w*)\b", re.IGNORECASE)
 # How a Short ends, rotated so consecutive Shorts don't close the same way.
 ENDINGS = {
     "loop": "The last beat brings back the hook's question in fresh words (not a formula), so the video replays"
@@ -189,6 +193,10 @@ def problems(script: dict, passage: Passage) -> list[str]:
         scene = beat.get("scene") or ""
         if not SCENE_WORDS[0] <= len(scene.split()) <= SCENE_WORDS[1] or _DEVANAGARI.search(scene):
             found.append(f"beat {i} needs an English scene of {SCENE_WORDS[0]}-{SCENE_WORDS[1]} words")
+        elif gory := GORY_SCENE.search(scene):
+            found.append(f"beat {i} scene shows violence directly ({gory.group(0).lower()!r}); paint the moment"
+                         " before or after, or"
+                         " a symbol such as an arrow in flight or the glow of fire, with no injury visible")
         if not (beat.get("visual_query") or "").strip():
             found.append(f"beat {i} has no visual_query")
     if beats:

@@ -133,6 +133,16 @@ class WriterRulesTest(unittest.TestCase):
         self.assertIn("beat 5 needs an English scene of 8-70 words", found)
         self.assertIn("beat 6 needs an English scene of 8-70 words", found)
 
+    def test_violent_scene_is_sent_back(self):
+        script = good_script()
+        script["beats"] = [dict(b) for b in script["beats"]]
+        script["beats"][6]["scene"] = "Medium shot of Jatayu severing Ravana's ten left arms with his beak, daylight"
+        found = " | ".join(writer.problems(writer.tidy(script), self.passage))
+        self.assertIn("beat 7 scene shows violence directly ('severing')", found)
+        script["beats"][6]["scene"] = ("Shiva in a stable meditation, a serpent wound around his neck, a blood-red"
+                                       " sunset behind Mount Kailash, wide shot")
+        self.assertEqual(writer.problems(writer.tidy(script), self.passage), [])
+
     def test_endings_rotate_and_reach_the_prompt(self):
         self.assertEqual([writer.ending_for(n) for n in range(4)], ["loop", "question", "lesson", "loop"])
         text = writer.prompt(self.passage, "angle", ending="question")
