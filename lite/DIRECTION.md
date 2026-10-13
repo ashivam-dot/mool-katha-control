@@ -54,8 +54,9 @@ titles with the mystery first.
 - Replays (`.github/replay/*.json`, dispatch input `replay`) re-paint a reviewed script without Gemini text calls,
   for testing the picture path when Gemini is overloaded. They run as dry runs only and never touch the ledger.
 
-## Two-week test (14-27 Oct 2026)
+## Test and pre-committed pivot (from 14 Oct 2026)
 
-Keep the AI look if the median YouTube views per Short reach 150 or more at 48 hours, with Instagram not falling
-below its Ramayana baseline of about 3,000. If after 10 AI-art Shorts the YouTube median is still under 30,
-rethink the angle before the visuals.
+Judge after 7 days or 10 new-format Shorts, whichever comes first, on the median YouTube views at 48 hours. At 30
+or more, keep going and optimise toward 150+ (with Instagram not falling below its Ramayana baseline of about
+3,000). Under 30, pivot without asking again to temple mysteries and "why" iconography stories from sourced
+Puranas; the voice, look and pipeline stay the same.
