@@ -2408,7 +2408,173 @@
   "mahabharata-3-311": "https://archive.sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
   "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261014-1340",
+  "topic_key": "ramayana-5-37",
+  "script": {
+   "usable": true,
+   "title": "सीता ने हनुमान की पीठ पर बैठने से क्यों मना किया? | रामायण",
+   "hook_text": "सीता का इनकार",
+   "beats": [
+    {
+     "text": "हनुमान की पीठ पर बैठकर सीता लंका से क्यों नहीं लौटीं?",
+     "evidence": "",
+     "scene": "Close-up of Sita sitting under the Ashoka tree in Lanka, pale and sorrowful yet firm in thought, gazing forward with resolute tear-filled eyes, evening light filtering through dense leaves.",
+     "visual_query": "Sita Ashoka Vatika",
+     "emphasis": "पीठ"
+    },
+    {
+     "text": "अशोक वाटिका में हनुमान ने सीता से कहा, मेरी पीठ पर बैठिए, मैं आपको अभी समुद्र पार ले चलता हूँ।",
+     "evidence": "अथवा मोचयिष्यामि ताम् अद्य एव हि राक्षसात् | अस्मात् दुह्खात् उपारोह मम पृष्ठम् अनिन्दिते",
+     "scene": "Medium shot of Hanuman kneeling humbly before Sita under the Ashoka tree, offering his back with folded hands, while Sita looks at him with surprise and hesitation in the dim garden.",
+     "visual_query": "Hanuman offers back Sita",
+     "emphasis": "समुद्र"
+    },
+    {
+     "text": "जब सीता ने उनके छोटे रूप पर संदेह किया, तो हनुमान मेरु पर्वत जितने विशाल बन गए।",
+     "evidence": "ततो वर्धितुम् आरेभे सीता प्रत्यय कारणात् || मेरु मन्दार सम्काशो बभौ दीप्त अनल प्रभः",
+     "scene": "Wide shot of Hanuman standing enormously tall like a glowing mountain against the darkening sky of Ashoka Vatika, his face red and radiant, as Sita gazes up in awe.",
+     "visual_query": "Hanuman Vishwaroop Lanka",
+     "emphasis": "विशाल"
+    },
+    {
+     "text": "सीता ने उनका बल माना, पर कहा, आकाश में तुम्हारे तीव्र वेग से मैं डरकर समुद्र के मगरमच्छों में गिर सकती हूँ।",
+     "evidence": "प्रपतेयम् हि ते पृष्ठात् भयात् वेगेन गच्छतः || पतिता सागरे च अहम् तिमि नक्र झष आकुले",
+     "scene": "Medium shot of Sita speaking gently to Hanuman, her hands held together, eyes reflecting concern as she envisions the turbulent, vast ocean churning below in the wind.",
+     "visual_query": "Sita speaking Hanuman",
+     "emphasis": "वेग"
+    },
+    {
+     "text": "हथियारों से लैस राक्षस तुम्हें घेर लेंगे, और मुझे बचाते हुए तुम अकेले कैसे लड़ोगे?",
+     "evidence": "सायुधा बहवो व्योम्नि राक्षसाः त्वम् निरायुधः | कथम् शक्ष्यसि सम्यातुम् माम् चैव परिरक्षितुम्",
+     "scene": "Close-up of Hanuman looking attentively at Sita, his expression serious and valiant, as Sita gestures towards the sky where dark clouds swirl like lurking demonic adversaries.",
+     "visual_query": "Hanuman listening Sita",
+     "emphasis": "राक्षस"
+    },
+    {
+     "text": "सीता ने यह भी कहा कि यदि सारे राक्षसों को तुम मारोगे, तो राम का यश कम होगा।",
+     "evidence": "राघवस्य यशो हीयेत् त्वया शस्तैः तु राक्षसैः",
+     "scene": "Medium shot of Sita standing upright under the tree, her expression filled with dignity and devotion, speaking firmly to Hanuman who listens with deep reverence.",
+     "visual_query": "Sita talking to Hanuman",
+     "emphasis": "यश"
+    },
+    {
+     "text": "सबसे बड़ी बात, सीता बोलीं, पतिव्रत धर्म के कारण मैं श्रीराम के सिवा किसी पर-पुरुष का स्पर्श नहीं कर सकती।",
+     "evidence": "भर्तुः भक्तिम् पुरः कृत्य रामात् अन्यस्य वानर | न अहम् स्प्रष्टुम् पदा गात्रम् इच्छेयम् वानर उत्तम",
+     "scene": "Close-up of Sita's noble, sorrowful face, eyes shining with unwavering devotion to Rama, hands clasped close to her chest in chaste resolve under the Ashoka tree.",
+     "visual_query": "Sita devotion Rama",
+     "emphasis": "स्पर्श"
+    },
+    {
+     "text": "रावण ने मुझे विवशता में छुआ था, पर अब श्रीराम ही रावण का वध करके मुझे ले जाएँ।",
+     "evidence": "यदि रामो दशग्रीवम् इह हत्वा सराक्षसम् | माम् इतो गृह्य गच्छेत तत् तस्य सदृशम् भवेत्",
+     "scene": "Wide shot of Sita pointing into the distance towards the sea, Hanuman standing before her respectfully with folded hands, the golden twilight glow highlighting their quiet determination.",
+     "visual_query": "Sita Hanuman Lanka garden",
+     "emphasis": "वध"
+    },
+    {
+     "text": "तो क्या श्रीराम का यश और पतिव्रत धर्म ही सीता के इनकार की असली वजह थी?",
+     "evidence": "",
+     "scene": "Close-up of Sita's calm and resolute face, illuminated by soft moonlight, eyes reflecting both patience and divine trust as the Ashoka leaves rustle around her.",
+     "visual_query": "Sita resolute Ashoka Vatika",
+     "emphasis": "इनकार"
+    }
+   ],
+   "description": "सुन्दरकाण्ड के सर्ग ३७ में जब हनुमान ने सीता को अपनी पीठ पर बैठाकर समुद्र पार ले जाने का प्रस्ताव रखा, तो सीता ने जाने से मना कर दिया। जानिए वाल्मीकि रामायण के अनुसार सीता के इस कठिन निर्णय के पीछे के वास्तविक कारण।",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#sundarkand",
+    "#hanuman",
+    "#sita"
+   ],
+   "keywords": [
+    "वाल्मीकि रामायण",
+    "सुन्दरकाण्ड",
+    "सीता",
+    "हनुमान",
+    "Valmiki Ramayana",
+    "Sundara Kanda",
+    "Sita Hanuman"
+   ],
+   "shloka_verse": "5-37-60",
+   "key_quote": "Honouring the devotion to my husband, I cannot touch the body of any man other that of Rama.",
+   "names": [
+    "सीता",
+    "हनुमान",
+    "अशोक वाटिका",
+    "श्रीराम",
+    "रावण",
+    "मेरु"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Opening question."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 19-20."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 29-35."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 40-45."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 48-49."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 55."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 60."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 61-62."
+     },
+     {
+      "beat": 9,
+      "factual": false,
+      "supported": true,
+      "note": "Closing question."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All beats faithfully reflect the events and dialogue of Sundarakanda Sarga 37."
+   }
+  },
+  "gate_attempts": 1
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -2538,6 +2704,19 @@
      "instagram_shares": 2,
      "instagram_saves": 3,
      "instagram_reach": 375
+    },
+    {
+     "age_h": 188.71,
+     "views": 486,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 29,
+     "instagram_comments": 1,
+     "instagram_views": 481,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 375
     }
    ],
    "views_at_48h": 334.6866497105137
@@ -2639,6 +2818,19 @@
     },
     {
      "age_h": 178.43,
+     "views": 1425,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 65,
+     "instagram_comments": 0,
+     "instagram_views": 1419,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1489
+    },
+    {
+     "age_h": 184.46,
      "views": 1425,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2760,6 +2952,19 @@
      "instagram_shares": 211,
      "instagram_saves": 260,
      "instagram_reach": 28167
+    },
+    {
+     "age_h": 164.71,
+     "views": 37120,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 33,
+     "instagram_reactions": 2337,
+     "instagram_comments": 6,
+     "instagram_views": 37087,
+     "instagram_shares": 211,
+     "instagram_saves": 260,
+     "instagram_reach": 28167
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -2819,6 +3024,13 @@
     },
     {
      "age_h": 154.43,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 160.46,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -2886,6 +3098,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 158.71,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -2945,6 +3164,13 @@
     },
     {
      "age_h": 139.68,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 145.71,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -3050,6 +3276,19 @@
     },
     {
      "age_h": 134.68,
+     "views": 10790,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 540,
+     "instagram_comments": 4,
+     "instagram_views": 10751,
+     "instagram_shares": 290,
+     "instagram_saves": 131,
+     "instagram_reach": 7338
+    },
+    {
+     "age_h": 140.71,
      "views": 10790,
      "youtube_reactions": 1,
      "youtube_comments": 0,
@@ -3171,6 +3410,19 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 3029
+    },
+    {
+     "age_h": 136.46,
+     "views": 3790,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 9,
+     "instagram_reactions": 84,
+     "instagram_comments": 1,
+     "instagram_views": 3781,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 3029
     }
    ],
    "views_at_48h": 3717.233875490746
@@ -3272,6 +3524,19 @@
     },
     {
      "age_h": 110.68,
+     "views": 3647,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 2,
+     "instagram_reactions": 119,
+     "instagram_comments": 2,
+     "instagram_views": 3645,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 3050
+    },
+    {
+     "age_h": 116.71,
      "views": 3647,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -3393,6 +3658,19 @@
      "instagram_shares": 5,
      "instagram_saves": 11,
      "instagram_reach": 2255
+    },
+    {
+     "age_h": 112.46,
+     "views": 2800,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 1,
+     "instagram_reactions": 113,
+     "instagram_comments": 1,
+     "instagram_views": 2799,
+     "instagram_shares": 5,
+     "instagram_saves": 11,
+     "instagram_reach": 2255
     }
    ],
    "views_at_48h": 2754.3676552881925
@@ -3481,6 +3759,19 @@
     },
     {
      "age_h": 86.68,
+     "views": 1695,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 31,
+     "instagram_reactions": 66,
+     "instagram_comments": 2,
+     "instagram_views": 1664,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1436
+    },
+    {
+     "age_h": 92.71,
      "views": 1695,
      "youtube_reactions": 2,
      "youtube_comments": 0,
@@ -3589,6 +3880,19 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 548
+    },
+    {
+     "age_h": 88.46,
+     "views": 727,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 45,
+     "instagram_reactions": 34,
+     "instagram_comments": 1,
+     "instagram_views": 682,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 548
     }
    ],
    "views_at_48h": 676.9258010118044
@@ -3651,6 +3955,19 @@
     },
     {
      "age_h": 62.68,
+     "views": 2674,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 21,
+     "instagram_reactions": 100,
+     "instagram_comments": 0,
+     "instagram_views": 2653,
+     "instagram_shares": 1,
+     "instagram_saves": 9,
+     "instagram_reach": 2219
+    },
+    {
+     "age_h": 68.71,
      "views": 2674,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -3733,6 +4050,19 @@
      "instagram_shares": 17,
      "instagram_saves": 23,
      "instagram_reach": 3232
+    },
+    {
+     "age_h": 64.46,
+     "views": 4065,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 56,
+     "instagram_reactions": 293,
+     "instagram_comments": 1,
+     "instagram_views": 4009,
+     "instagram_shares": 17,
+     "instagram_saves": 23,
+     "instagram_reach": 3232
     }
    ],
    "views_at_48h": 4026.55608974359
@@ -3769,6 +4099,19 @@
     },
     {
      "age_h": 38.68,
+     "views": 550,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 16,
+     "instagram_reactions": 26,
+     "instagram_comments": 1,
+     "instagram_views": 534,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 461
+    },
+    {
+     "age_h": 44.71,
      "views": 550,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -3825,6 +4168,19 @@
      "instagram_shares": 4,
      "instagram_saves": 14,
      "instagram_reach": 2967
+    },
+    {
+     "age_h": 40.46,
+     "views": 3765,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 42,
+     "instagram_reactions": 156,
+     "instagram_comments": 1,
+     "instagram_views": 3723,
+     "instagram_shares": 4,
+     "instagram_saves": 14,
+     "instagram_reach": 2967
     }
    ],
    "views_at_48h": null
@@ -3835,6 +4191,19 @@
    "snapshots": [
     {
      "age_h": 14.68,
+     "views": 2874,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 18,
+     "instagram_reactions": 100,
+     "instagram_comments": 0,
+     "instagram_views": 2856,
+     "instagram_shares": 3,
+     "instagram_saves": 10,
+     "instagram_reach": 2403
+    },
+    {
+     "age_h": 20.71,
      "views": 2874,
      "youtube_reactions": 1,
      "youtube_comments": 0,
@@ -3865,13 +4234,26 @@
      "instagram_shares": 3,
      "instagram_saves": 7,
      "instagram_reach": 2210
+    },
+    {
+     "age_h": 16.46,
+     "views": 2695,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 62,
+     "instagram_comments": 0,
+     "instagram_views": 2690,
+     "instagram_shares": 3,
+     "instagram_saves": 7,
+     "instagram_reach": 2210
     }
    ],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-14T02:40:31+00:00",
+  "at": "2026-10-14T08:42:49+00:00",
   "scored": 14,
   "min_samples": 4,
   "lifts": {
