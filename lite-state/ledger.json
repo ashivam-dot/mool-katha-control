@@ -2900,105 +2900,16 @@
      }
     }
    }
-  }
- ],
- "skipped": {
-  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-3-311": "https://archive.sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render",
-  "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage"
- },
- "pending": {
-  "id": "lite-20261016-1340",
-  "topic_key": "ramayana-6-31",
-  "script": {
-   "usable": true,
+  },
+  {
+   "id": "lite-20261016-1340",
+   "topic_key": "ramayana-6-31",
    "title": "सीता के सामने श्रीराम का कटा सिर क्यों आया? | रामायण",
-   "hook_text": "रावण का सबसे क्रूर छल",
-   "beats": [
-    {
-     "text": "रावण ने सीता के आगे श्रीराम का कटा सिर क्यों रखवाया?",
-     "evidence": "",
-     "scene": "Close-up of Ravana's face, his eyes narrowed with cruel cunning and triumph, the soft glow of golden torches illuminating his crowned head in the royal chamber of Lanka at night.",
-     "visual_query": "Ravana Lanka palace",
-     "emphasis": "सिर"
-    },
-    {
-     "text": "गुप्तचरों ने बताया कि श्रीराम अपनी सेना सहित लंका के सुवेल पर्वत पर आ पहुँचे हैं।",
-     "evidence": "The spies of king Ravana informed him that Rama with his imperturbable army was encamped at Mount Suvela in Lanka.",
-     "scene": "Wide shot of Mount Suvela at dusk, with Rama and Lakshmana encamped peacefully with their vast army across the rugged slopes while two hidden demon spies watch from distant crags.",
-     "visual_query": "Mount Suvela Rama",
-     "emphasis": "सुवेल"
-    },
-    {
-     "text": "खबर सुनकर रावण विचलित हुआ और उसने मायावी राक्षस विद्युज्जिह्वा को साथ लिया।",
-     "evidence": "Hearing through his spies that Rama with his mighty army had arrived to Lanka, Ravana was a little agitated",
-     "scene": "Medium shot inside the palace of Lanka, where the brooding king Ravana confers intently with the dark sorcerer Vidyujjihva, their faces lit by flickering palace lamps.",
-     "visual_query": "Ravana demon Lanka",
-     "emphasis": "विद्युज्जिह्वा"
-    },
-    {
-     "text": "उसने विद्युज्जिह्वा को आज्ञा दी कि वह माया से श्रीराम का सिर और धनुष-बाण रचे।",
-     "evidence": "Produce a head resembling Rama's along with a great bow and arrows created deceptively and present yourself before me.",
-     "scene": "Medium shot of the sorcerer Vidyujjihva conjuring a glowing mystical mist with outstretched hands in a shadowy chamber, weaving an illusion before the watchful Ravana.",
-     "visual_query": "sorcerer demon magic",
-     "emphasis": "माया"
-    },
-    {
-     "text": "उसकी अद्भुत माया देखकर प्रसन्न राजा रावण ने उस राक्षस को एक आभूषण भेंट किया।",
-     "evidence": "The king became satisfied of his work and gave him an ornament (as a gift).",
-     "scene": "Medium shot of Ravana smiling with cruel pleasure, offering a sparkling golden necklace to Vidyujjihva, who bows humbly to receive the royal gift in the palace chamber.",
-     "visual_query": "Ravana palace gift",
-     "emphasis": "आभूषण"
-    },
-    {
-     "text": "फिर रावण अशोक वाटिका पहुँचा, जहाँ सीता विलाप करते हुए अपने पति के ध्यान में मग्न थीं।",
-     "evidence": "seated on the ground with her head bent down in the Ashoka grove plunged in grief as she was and absorbed in the thought of her husband.",
-     "scene": "Wide shot of the moonlit Ashoka grove, where Sita sits weeping beneath a tree with her head downcast in sorrow, guarded at a distance by fearsome ogresses.",
-     "visual_query": "Sita Ashoka Vatika sorrow",
-     "emphasis": "अशोक"
-    },
-    {
-     "text": "रावण ने झूठ बोला कि प्रहस्त ने रात में सोते हुए श्रीराम का सिर तलवार से काट दिया है।",
-     "evidence": "The impetuous Prahasta, with his steady hand, severed the head of Rama sleeping there, with his mighty sword",
-     "scene": "Medium shot of Ravana standing tall and haughty before Sita in the grove, gesturing theatrically with raised hands as he speaks with arrogant deception.",
-     "visual_query": "Ravana confronting Sita",
-     "emphasis": "झूठ"
-    },
-    {
-     "text": "विद्युज्जिह्वा ने वह मायावी सिर सीता के आगे रखा और तुरंत वहाँ से गायब हो गया।",
-     "evidence": "Hearing Ravana's words, that demon deposited the cherished head in the vicinity of Seetha and soon disappeared from the site.",
-     "scene": "Medium shot of the demon Vidyujjihva placing the illusionary form gently on the grass before the weeping Sita, his body already fading like smoke into the night air.",
-     "visual_query": "demon illusion Sita",
-     "emphasis": "गायब"
-    },
-    {
-     "text": "रावण ने श्रीराम का चमकता हुआ विशाल धनुष भी सीता के आगे फेंक दिया।",
-     "evidence": "Here is Rama's bow famous in the three worlds!\" - saying thus, Ravana threw a great shining bow in front of Seetha.",
-     "scene": "Wide shot of the Ashoka grove, showing Ravana casting a great gleaming golden bow onto the lawn before the startled, grieving Sita, moonbeams reflecting off the bowstring.",
-     "visual_query": "Ravana bow Sita",
-     "emphasis": "धनुष"
-    },
-    {
-     "text": "यह छल रावण ने इसलिए रचा ताकि सीता श्रीराम को मरा मानकर रावण की रानी बन जाएँ।",
-     "evidence": "O, Seetha! Your root has been cut off in all ways by me and your pride has been slain. By your present evil predicament, you will become my wife.",
-     "scene": "Close-up of Sita sitting on the bare ground with tearful eyes looking down in profound grief, her hands clasped tightly, while the tall shadow of Ravana falls across the moonlit grass behind her.",
-     "visual_query": "Sita weeping Ashoka Vatika",
-     "emphasis": "छल"
-    },
-    {
-     "text": "सीता का संकल्प तोड़ने के लिए ही रावण ने उनके आगे श्रीराम का वह मायावी सिर रखवाया था।",
-     "evidence": "",
-     "scene": "Medium shot of Ravana towering arrogantly over the heartbroken Sita under the trees of the Ashoka grove, moonlight filtering through the branches onto the dark garden.",
-     "visual_query": "Ravana towering over Sita",
-     "emphasis": "संकल्प"
-    }
-   ],
    "description": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 31. लंका पहुँचने के बाद श्रीराम का मुकाबला करने से पहले रावण ने सीता को विवश करने के लिए एक भयानक प्रपंच रचा। उसने मायावी राक्षस विद्युज्जिह्वा से श्रीराम का नकली सिर और धनुष बनवाकर अशोक वाटिका में सीता के सामने रखवाया।",
+   "ai_art": true,
+   "citation": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 31",
+   "source_url": "https://www.valmikiramayan.net/utf8/yuddha/sarga31/yuddhasans31.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
    "hashtags": [
     "#ramayan",
     "#valmikirayan",
@@ -3014,97 +2925,181 @@
     "Yuddha Kanda",
     "रामायण"
    ],
-   "shloka_verse": "6-31-8",
    "key_quote": "Produce a head resembling Rama's along with a great bow and arrows created deceptively and present yourself before me.",
-   "names": [
-    "रावण",
-    "सीता",
-    "श्रीराम",
-    "सुवेल",
-    "विद्युज्जिह्वा",
-    "अशोक वाटिका",
-    "प्रहस्त"
-   ]
-  },
-  "review": {
-   "ok": true,
-   "issues": [],
-   "result": {
-    "items": [
-     {
-      "beat": 1,
-      "factual": false,
-      "supported": true,
-      "note": "Question, not a factual assertion."
-     },
-     {
-      "beat": 2,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 1 regarding spies and Mount Suvela."
-     },
-     {
-      "beat": 3,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 2 (agitated) and Verse 6 (took Vidyujjihva)."
-     },
-     {
-      "beat": 4,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 8 instruction to create illusionary head and bow."
-     },
-     {
-      "beat": 5,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 9 regarding gift of ornament."
-     },
-     {
-      "beat": 6,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verses 10-12 regarding Ashoka grove and Sita's state."
-     },
-     {
-      "beat": 7,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verses 20 and 24 regarding Ravana's lie about Prahasta."
-     },
-     {
-      "beat": 8,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 43 regarding placing head and disappearing."
-     },
-     {
-      "beat": 9,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 44 regarding throwing the bow."
-     },
-     {
-      "beat": 10,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verses 15-16 regarding motive to make her wife."
-     },
-     {
-      "beat": 11,
-      "factual": true,
-      "supported": true,
-      "note": "Matches Verse 16 regarding breaking her resolve."
+   "shloka": {
+    "number": "6-31-8",
+    "sanskrit": "शिरो मायामयम् गृह्य राघवस्य विशाचर | मां त्वं समुपतिष्ठस्व महच्च सशरम् धनुः || ६-३१-८"
+   },
+   "pictures": [
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
      }
-    ],
-    "respectful": true,
-    "title_reveals_answer": false,
-    "summary": "All beats are factually supported by the provided Valmiki Ramayana passage (Yuddha Kanda, Sarga 31). Beat 1 is a question. The content faithfully recounts the scriptural episode without disrespect."
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.918,
+    "duration": true,
+    "loudness": true,
+    "seconds": 66.96,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 0,
+    "gemini_tts": 2,
+    "gemini_total": 2,
+    "free_fallback": 0,
+    "picture_check": 3
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261016-1340-59303601f673966b",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1792151064/mool-katha/lite-20261016-1340-59303601f673966b.mp4",
+    "due_at": "2026-10-16T21:45:00+05:30",
+    "youtube": {
+     "id": "6ad20e1b047945ca309b157f",
+     "status": "scheduled",
+     "due_at": "2026-10-16T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6ad20e1cb948bf9e9d919afb",
+     "status": "scheduled",
+     "due_at": "2026-10-16T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-16T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-16T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
    }
-  },
-  "gate_attempts": 1
+  }
+ ],
+ "skipped": {
+  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-311": "https://archive.sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render",
+  "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage"
  },
+ "pending": null,
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
