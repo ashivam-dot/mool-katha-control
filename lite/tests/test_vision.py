@@ -50,6 +50,11 @@ class Rejected(unittest.TestCase):
         self.assertIsNone(vision.rejected({**OK, "malformed": True}))
         self.assertTrue(vision.rejected({**OK, "malformed": True}, generated=True).startswith("malformed"))
 
+    def test_a_stock_watermark_refuses_museum_and_ai_pictures_alike(self):
+        self.assertTrue(vision.rejected({**OK, "watermark": True}).startswith("watermark"))
+        self.assertTrue(vision.rejected({**OK, "watermark": True}, generated=True).startswith("watermark"))
+        self.assertIn("watermark", vision.SCHEMA["properties"]["pictures"]["items"]["required"])
+
     def test_a_missing_verdict_is_a_refusal(self):
         tmp = Path(tempfile.mkdtemp())
         p = picture(tmp, 1)

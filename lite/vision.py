@@ -35,10 +35,12 @@ SCHEMA = {
                     "gore": {"type": "boolean"},
                     "fits": {"type": "boolean"},
                     "malformed": {"type": "boolean"},
+                    "watermark": {"type": "boolean"},
                     "disrespectful": {"type": "boolean"},
                     "reason": {"type": "string"},
                 },
-                "required": ["n", "shows", "nudity", "sexual", "gore", "fits", "malformed", "disrespectful", "reason"],
+                "required": ["n", "shows", "nudity", "sexual", "gore", "fits", "malformed", "watermark",
+                             "disrespectful", "reason"],
             },
         },
     },
@@ -66,6 +68,8 @@ For each picture answer:
 - malformed: true if a face or body is visibly broken: extra or missing limbs or fingers on a main figure,
   melted or doubled faces, or legible garbled letters, text or a watermark. (Many-armed gods and ten-headed
   Ravana are traditional, not malformed.)
+- watermark: true if a stock-photo watermark, logo or repeated brand text lies over the picture (alamy,
+  Shutterstock, Getty Images, Dreamstime, a website address). A painting's own inscription is not a watermark.
 - disrespectful: true if a deity or sage looks comic, cartoonish, grotesque, mocking or undignified.
 - reason: why, in a few words.
 {extra}
@@ -89,8 +93,9 @@ def _small(path: Path) -> bytes:
 
 def rejected(verdict: dict, generated: bool = False) -> str | None:
     """Why a verdict keeps its picture out of a Short, or None when the picture may be used. Museum paintings
-    often carry inscriptions, so "malformed" only refuses AI paintings."""
-    for flag in ("nudity", "sexual", "gore", "disrespectful", *(("malformed",) if generated else ())):
+    often carry inscriptions, so "malformed" only refuses AI paintings; a stock watermark refuses any picture
+    (a Bali Short on 2026-10-15 showed alamy's)."""
+    for flag in ("nudity", "sexual", "gore", "watermark", "disrespectful", *(("malformed",) if generated else ())):
         if verdict.get(flag):
             return f"{flag}: {verdict.get('reason') or verdict.get('shows')}"
     if not verdict.get("fits"):

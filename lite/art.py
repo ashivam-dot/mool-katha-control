@@ -40,6 +40,9 @@ REJECT = re.compile(
     re.I)
 # Subjects whose paintings so often show nudity or erotica that the title alone keeps them out; the vision
 # check (lite/vision.py) still looks at every picture that passes.
+# Commons hosts copies scraped from stock libraries with the library's watermark still over the painting.
+STOCK = re.compile(r"\b(alamy|shutterstock|getty ?images|istock\w*|dreamstime|depositphotos|123rf|adobe ?stock|"
+                   r"bridgeman|agefotostock|superstock|granger|mary evans)\b", re.I)
 ADULT = re.compile(
     r"nymph|apsara|bath(e|es|ing|er)?\b|nude|naked|nudity|erotic|sensual|\bkama\b|kamadeva|kamasutra|\brati\b|"
     r"lovers?\b|"
@@ -177,6 +180,8 @@ def commons_candidates(query: str) -> list[dict]:
         text = " ".join([title, _meta(meta, "Categories"), _meta(meta, "ObjectName"),
                          _meta(meta, "ImageDescription")[:600]])
         if info.get("mime") not in ("image/jpeg", "image/png"):
+            continue
+        if STOCK.search(" ".join([text, _meta(meta, "Artist"), _meta(meta, "Credit"), info.get("url", "")])):
             continue
         if max(info.get("width", 0), info.get("height", 0)) < MIN_SIDE or not LICENSE_OK.match(license_name):
             continue

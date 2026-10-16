@@ -92,5 +92,20 @@ class Download(unittest.TestCase):
         self.assertEqual(spec["beats"][1]["visual"]["reuse"], 1)
 
 
+class StockCopies(unittest.TestCase):
+    def test_a_commons_copy_from_a_stock_library_is_never_a_candidate(self):
+        def page(n, title, credit):
+            meta = {"LicenseShortName": {"value": "Public domain"}, "Credit": {"value": credit},
+                    "Artist": {"value": "Unknown"}, "ImageDescription": {"value": "Ramayana painting of Vali"}}
+            return {"index": n, "title": f"File:{title}.jpg", "imageinfo": [{
+                "url": f"https://upload.wikimedia.org/wikipedia/commons/a/ab/{title}.jpg", "mime": "image/jpeg",
+                "width": 1200, "height": 1600, "extmetadata": meta, "descriptionurl": f"https://c/{title}"}]}
+        data = {"query": {"pages": {"1": page(1, "Vali_Ramayana_painting", "Own work"),
+                                    "2": page(2, "Vali_Rama_painting_alamy", "Alamy Stock Photo")}}}
+        with mock.patch.object(art, "_get", return_value=data):
+            found = art.commons_candidates("Vali Rama painting")
+        self.assertEqual([c["key"] for c in found], ["commons:Vali_Ramayana_painting.jpg"])
+
+
 if __name__ == "__main__":
     unittest.main()
