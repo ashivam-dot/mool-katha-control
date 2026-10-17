@@ -3264,6 +3264,185 @@
      }
     }
    }
+  },
+  {
+   "id": "lite-20261017-1331",
+   "topic_key": "ramayana-1-42",
+   "title": "गंगा को सीधे धरती पर लाने से ब्रह्मा ने क्यों रोका? | रामायण",
+   "description": "वाल्मीकि रामायण के बालकाण्ड से जानिए कि जब भगीरथ के घोर तप से प्रसन्न होकर ब्रह्मा प्रकट हुए, तो उन्होंने गंगा को सीधे धरती पर उतारने से क्यों रोका। ब्रह्मा ने भगीरथ को महादेव को प्रसन्न करने का परामर्श क्यों दिया।",
+   "ai_art": true,
+   "citation": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 42",
+   "source_url": "https://www.valmikiramayan.net/utf8/baala/sarga42/balasans42.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
+   "hashtags": [
+    "#ramayan",
+    "#bhagirath",
+    "#ganga",
+    "#mahadev",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Bhagiratha",
+    "Ganga Avataran",
+    "Valmiki Ramayana",
+    "Lord Shiva",
+    "Brahma",
+    "Balakanda",
+    "भगीरथ",
+    "गंगावतरण"
+   ],
+   "key_quote": "Oh, king Bhageeratha, the earth cannot endure the downfall of Ganga and to sustain Ganga, oh, king, indeed I do not behold none other than the Trident-wielder, god Shiva.",
+   "shloka": {
+    "number": "1-42-24",
+    "sanskrit": "गंगायाः पतनं राजन् पृथिवी न सहिष्यते | तां वै धारयितुं राजन् नान्यं पश्यामि शूलिनः || १-४२-२४"
+   },
+   "pictures": [
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.955,
+    "duration": true,
+    "loudness": true,
+    "seconds": 61.4,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 0,
+    "gemini_tts": 1,
+    "gemini_total": 1,
+    "free_fallback": 0,
+    "picture_check": 2
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261017-1331-4161481fd921f243",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1792226195/mool-katha/lite-20261017-1331-4161481fd921f243.mp4",
+    "due_at": "2026-10-17T21:45:00+05:30",
+    "youtube": {
+     "id": "6ad33395dd83363c4dc3577a",
+     "status": "scheduled",
+     "due_at": "2026-10-17T16:15:00.000Z"
+    },
+    "instagram": {
+     "id": "6ad33396ae173d6e00aabb3c",
+     "status": "scheduled",
+     "due_at": "2026-10-17T16:15:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-17T16:15:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-10-17T16:15:00.000Z",
+      "externalLink": null
+     }
+    }
+   }
   }
  ],
  "skipped": {
@@ -3488,6 +3667,19 @@
      "instagram_shares": 2,
      "instagram_saves": 3,
      "instagram_reach": 379
+    },
+    {
+     "age_h": 260.47,
+     "views": 492,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 30,
+     "instagram_comments": 1,
+     "instagram_views": 487,
+     "instagram_shares": 2,
+     "instagram_saves": 3,
+     "instagram_reach": 379
     }
    ],
    "views_at_48h": 334.6866497105137
@@ -3667,6 +3859,19 @@
     },
     {
      "age_h": 250.06,
+     "views": 1433,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 67,
+     "instagram_comments": 0,
+     "instagram_views": 1427,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1497
+    },
+    {
+     "age_h": 256.22,
      "views": 1433,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -3866,6 +4071,19 @@
      "instagram_shares": 215,
      "instagram_saves": 276,
      "instagram_reach": 29396
+    },
+    {
+     "age_h": 236.47,
+     "views": 38766,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 33,
+     "instagram_reactions": 2435,
+     "instagram_comments": 6,
+     "instagram_views": 38733,
+     "instagram_shares": 215,
+     "instagram_saves": 276,
+     "instagram_reach": 29396
     }
    ],
    "views_at_48h": 29360.50626314699
@@ -3967,6 +4185,13 @@
     },
     {
      "age_h": 226.06,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 232.22,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -4076,6 +4301,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 230.47,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -4177,6 +4409,13 @@
     },
     {
      "age_h": 211.31,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    },
+    {
+     "age_h": 217.47,
      "views": 0,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -4360,6 +4599,19 @@
     },
     {
      "age_h": 206.31,
+     "views": 11086,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 552,
+     "instagram_comments": 4,
+     "instagram_views": 11047,
+     "instagram_shares": 293,
+     "instagram_saves": 135,
+     "instagram_reach": 7610
+    },
+    {
+     "age_h": 212.47,
      "views": 11086,
      "youtube_reactions": 1,
      "youtube_comments": 0,
@@ -4559,6 +4811,19 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 3046
+    },
+    {
+     "age_h": 208.22,
+     "views": 3812,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 9,
+     "instagram_reactions": 87,
+     "instagram_comments": 1,
+     "instagram_views": 3803,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 3046
     }
    ],
    "views_at_48h": 3717.233875490746
@@ -4738,6 +5003,19 @@
     },
     {
      "age_h": 182.31,
+     "views": 3674,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 4,
+     "instagram_reactions": 120,
+     "instagram_comments": 2,
+     "instagram_views": 3670,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 3067
+    },
+    {
+     "age_h": 188.47,
      "views": 3674,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -4937,6 +5215,19 @@
      "instagram_shares": 5,
      "instagram_saves": 11,
      "instagram_reach": 2264
+    },
+    {
+     "age_h": 184.22,
+     "views": 2825,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 1,
+     "instagram_reactions": 114,
+     "instagram_comments": 1,
+     "instagram_views": 2824,
+     "instagram_shares": 5,
+     "instagram_saves": 11,
+     "instagram_reach": 2264
     }
    ],
    "views_at_48h": 2754.3676552881925
@@ -5103,6 +5394,19 @@
     },
     {
      "age_h": 158.31,
+     "views": 1714,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 31,
+     "instagram_reactions": 67,
+     "instagram_comments": 2,
+     "instagram_views": 1683,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1455
+    },
+    {
+     "age_h": 164.47,
      "views": 1714,
      "youtube_reactions": 2,
      "youtube_comments": 0,
@@ -5289,6 +5593,19 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 564
+    },
+    {
+     "age_h": 160.22,
+     "views": 744,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 45,
+     "instagram_reactions": 34,
+     "instagram_comments": 1,
+     "instagram_views": 699,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 564
     }
    ],
    "views_at_48h": 676.9258010118044
@@ -5429,6 +5746,19 @@
     },
     {
      "age_h": 134.31,
+     "views": 2706,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 23,
+     "instagram_reactions": 103,
+     "instagram_comments": 0,
+     "instagram_views": 2683,
+     "instagram_shares": 1,
+     "instagram_saves": 9,
+     "instagram_reach": 2258
+    },
+    {
+     "age_h": 140.47,
      "views": 2706,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -5589,6 +5919,19 @@
      "instagram_shares": 19,
      "instagram_saves": 23,
      "instagram_reach": 3277
+    },
+    {
+     "age_h": 136.22,
+     "views": 4131,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 60,
+     "instagram_reactions": 296,
+     "instagram_comments": 1,
+     "instagram_views": 4071,
+     "instagram_shares": 19,
+     "instagram_saves": 23,
+     "instagram_reach": 3277
     }
    ],
    "views_at_48h": 4026.55608974359
@@ -5703,6 +6046,19 @@
     },
     {
      "age_h": 110.31,
+     "views": 571,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 19,
+     "instagram_reactions": 27,
+     "instagram_comments": 1,
+     "instagram_views": 552,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 474
+    },
+    {
+     "age_h": 116.47,
      "views": 571,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -5837,6 +6193,19 @@
      "instagram_shares": 4,
      "instagram_saves": 13,
      "instagram_reach": 3058
+    },
+    {
+     "age_h": 112.22,
+     "views": 3924,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 53,
+     "instagram_reactions": 162,
+     "instagram_comments": 1,
+     "instagram_views": 3871,
+     "instagram_shares": 4,
+     "instagram_saves": 13,
+     "instagram_reach": 3058
     }
    ],
    "views_at_48h": 3811.5379388448473
@@ -5925,6 +6294,19 @@
     },
     {
      "age_h": 86.31,
+     "views": 3105,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 43,
+     "instagram_reactions": 103,
+     "instagram_comments": 0,
+     "instagram_views": 3062,
+     "instagram_shares": 3,
+     "instagram_saves": 10,
+     "instagram_reach": 2570
+    },
+    {
+     "age_h": 92.47,
      "views": 3105,
      "youtube_reactions": 1,
      "youtube_comments": 0,
@@ -6033,6 +6415,19 @@
      "instagram_shares": 6,
      "instagram_saves": 10,
      "instagram_reach": 2690
+    },
+    {
+     "age_h": 88.22,
+     "views": 3320,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 26,
+     "instagram_reactions": 82,
+     "instagram_comments": 1,
+     "instagram_views": 3294,
+     "instagram_shares": 6,
+     "instagram_saves": 10,
+     "instagram_reach": 2690
     }
    ],
    "views_at_48h": 3285.2246575342465
@@ -6105,6 +6500,19 @@
      "instagram_shares": 7,
      "instagram_saves": 9,
      "instagram_reach": 2431
+    },
+    {
+     "age_h": 64.22,
+     "views": 3032,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 31,
+     "instagram_reactions": 141,
+     "instagram_comments": 1,
+     "instagram_views": 3001,
+     "instagram_shares": 7,
+     "instagram_saves": 9,
+     "instagram_reach": 2431
     }
    ],
    "views_at_48h": 3013.4455331412105
@@ -6141,6 +6549,19 @@
     },
     {
      "age_h": 38.31,
+     "views": 3616,
+     "youtube_reactions": 7,
+     "youtube_comments": 0,
+     "youtube_views": 169,
+     "instagram_reactions": 265,
+     "instagram_comments": 2,
+     "instagram_views": 3447,
+     "instagram_shares": 22,
+     "instagram_saves": 18,
+     "instagram_reach": 2637
+    },
+    {
+     "age_h": 44.47,
      "views": 3616,
      "youtube_reactions": 7,
      "youtube_comments": 0,
@@ -6197,6 +6618,19 @@
      "instagram_shares": 3,
      "instagram_saves": 8,
      "instagram_reach": 2152
+    },
+    {
+     "age_h": 40.22,
+     "views": 2808,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 108,
+     "instagram_comments": 0,
+     "instagram_views": 2769,
+     "instagram_shares": 3,
+     "instagram_saves": 8,
+     "instagram_reach": 2152
     }
    ],
    "views_at_48h": null
@@ -6217,13 +6651,32 @@
      "instagram_shares": 2,
      "instagram_saves": 8,
      "instagram_reach": 1533
+    },
+    {
+     "age_h": 16.22,
+     "views": 1959,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 49,
+     "instagram_comments": 0,
+     "instagram_views": 1959,
+     "instagram_shares": 2,
+     "instagram_saves": 8,
+     "instagram_reach": 1533
     }
    ],
+   "views_at_48h": null
+  },
+  "lite-20261017-0725": {
+   "topic_key": "ramayana-2-96",
+   "due_at": "2026-10-17T17:30:00+05:30",
+   "snapshots": [],
    "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-10-17T02:18:37+00:00",
+  "at": "2026-10-17T08:28:12+00:00",
   "scored": 19,
   "min_samples": 4,
   "lifts": {
