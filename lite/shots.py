@@ -67,7 +67,8 @@ def rejoin(shots: list[dict], pictures: list) -> tuple[list[dict], list]:
 
     A refused painting repeats an earlier one (an int, the 1-based shot it repeats), and a cut to the picture
     already on screen reads as a freeze (Gemini's review of the first two-picture dry run, shots 2-3 and 11-12).
-    Repeat numbers are renumbered for the shorter list."""
+    Repeat numbers are renumbered for the shorter list, and a repeat of the painting just before it repeats an
+    older one instead."""
     kept: list[dict] = []
     shown: list = []
     where: list[int] = []
@@ -82,4 +83,17 @@ def rejoin(shots: list[dict], pictures: list) -> tuple[list[dict], list]:
             kept.append(shot)
             shown.append(pic)
         where.append(len(kept) - 1)
-    return kept, [where[p - 1] + 1 if isinstance(p, int) else p for p in shown]
+    shown = [where[p - 1] + 1 if isinstance(p, int) else p for p in shown]
+
+    def painting(k: int) -> int:
+        while isinstance(shown[k], int):
+            k = shown[k] - 1
+        return k
+
+    for i, pic in enumerate(shown):
+        if isinstance(pic, int) and i > 1 and painting(pic - 1) == painting(i - 1):
+            on_screen = painting(i - 1)
+            other = next((j for j in range(i - 2, -1, -1) if isinstance(shown[j], dict) and j != on_screen), None)
+            if other is not None:
+                shown[i] = other + 1
+    return kept, shown

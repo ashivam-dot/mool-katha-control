@@ -96,6 +96,12 @@ class RejoinTest(unittest.TestCase):
         self.assertEqual(shown[3], {"path": "pics/ai04.jpg"})
         self.assertEqual((kept[3]["beat"], kept[4]["beat"]), (2, 3))
 
+    def test_a_beat_that_lost_both_paintings_never_repeats_the_one_on_screen(self):
+        self.pics[3], self.pics[4] = 3, 3
+        kept, shown = shots.rejoin(self.shots, self.pics)
+        self.assertEqual(kept[3]["beat"], 2)
+        self.assertEqual(shown[3], 2)
+
     def test_repeat_numbers_follow_the_shorter_list(self):
         self.pics[2] = 2
         self.pics[-1] = 4
