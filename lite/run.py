@@ -332,6 +332,7 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
             try:
                 pictures = aiart.pictures(painted, shot_list, work / "pics", story(script, passage),
                                           calls.vision(strong=True), report=checked)
+                shot_list, pictures = shots.rejoin(shot_list, pictures)
                 ai_art = True
             except (WaitForQuota, Budget):
                 raise

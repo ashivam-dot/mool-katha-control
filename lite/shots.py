@@ -60,3 +60,26 @@ def plan(beats: list[dict], limit: int = MAX_SHOTS) -> list[dict]:
                           "emphasis": emphasis if emphasis in text.split() else "", "close": close,
                           "pause_after": pause})
     return shots
+
+
+def rejoin(shots: list[dict], pictures: list) -> tuple[list[dict], list]:
+    """Speak a split beat whole again when either half lost its painting, over the half that kept one.
+
+    A refused painting repeats an earlier one (an int, the 1-based shot it repeats), and a cut to the picture
+    already on screen reads as a freeze (Gemini's review of the first two-picture dry run, shots 2-3 and 11-12).
+    Repeat numbers are renumbered for the shorter list."""
+    kept: list[dict] = []
+    shown: list = []
+    where: list[int] = []
+    for i, (shot, pic) in enumerate(zip(shots, pictures)):
+        if i and shot["beat"] == shots[i - 1]["beat"] and (isinstance(pic, int) or isinstance(shown[-1], int)):
+            last = kept[-1]
+            kept[-1] = dict(last, text=f"{last['text']} {shot['text']}", emphasis=last["emphasis"] or shot["emphasis"],
+                            close=False, pause_after=shot["pause_after"])
+            if isinstance(shown[-1], int) and not isinstance(pic, int):
+                shown[-1] = pic
+        else:
+            kept.append(shot)
+            shown.append(pic)
+        where.append(len(kept) - 1)
+    return kept, [where[p - 1] + 1 if isinstance(p, int) else p for p in shown]

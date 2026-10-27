@@ -74,6 +74,36 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(len(run.chunks(prompts)), run.PAINT_JOBS)
 
 
+class RejoinTest(unittest.TestCase):
+    def setUp(self):
+        self.shots = shots.plan(with_close(writer.tidy(good_script()))["beats"])
+        self.pics = [{"path": f"pics/ai{i:02d}.jpg"} for i in range(len(self.shots))]
+
+    def test_all_paintings_kept_changes_nothing(self):
+        self.assertEqual(shots.rejoin(self.shots, self.pics), (self.shots, self.pics))
+
+    def test_refused_close_up_rejoins_its_beat_over_the_wide_painting(self):
+        self.pics[2] = 2
+        kept, shown = shots.rejoin(self.shots, self.pics)
+        self.assertEqual(len(kept), len(self.shots) - 1)
+        self.assertEqual(kept[1]["text"], good_script()["beats"][1]["text"])
+        self.assertEqual((kept[1]["pause_after"], kept[1]["close"]), (0.12, False))
+        self.assertEqual(shown[1], {"path": "pics/ai01.jpg"})
+
+    def test_refused_wide_painting_keeps_the_close_up(self):
+        self.pics[3] = 3
+        kept, shown = shots.rejoin(self.shots, self.pics)
+        self.assertEqual(shown[3], {"path": "pics/ai04.jpg"})
+        self.assertEqual((kept[3]["beat"], kept[4]["beat"]), (2, 3))
+
+    def test_repeat_numbers_follow_the_shorter_list(self):
+        self.pics[2] = 2
+        self.pics[-1] = 4
+        kept, shown = shots.rejoin(self.shots, self.pics)
+        self.assertEqual(shown[-1], 3)
+        self.assertEqual(shown[2], {"path": "pics/ai03.jpg"})
+
+
 class WriterCloseTest(unittest.TestCase):
     def setUp(self):
         self.passage = sources.parse_valmiki(VALMIKI_PAGE, "https://x")

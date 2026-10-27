@@ -19,10 +19,11 @@ SAFE = ("Fully clothed figures, no blood, no gore, no nudity. No text, no letter
 
 # English names the writer uses in scene descriptions, and how each one always looks.
 CHARACTERS: tuple[tuple[str, str], ...] = (
-    (r"\bRama\b|\bRam\b|Raghava", "Lord Rama: serene young prince with blue skin, gentle lotus eyes, golden crown,"
-     " long black hair, yellow silk dhoti and upper cloth, a tall bow and a quiver of arrows"),
-    (r"Lakshmana|Lakshman", "Lakshmana: young prince with fair golden skin, golden crown, saffron dhoti, bow,"
-     " alert and devoted"),
+    (r"\bRama\b|\bRam\b|Raghava", "Lord Rama: serene young man in his twenties (an adult, never a child) with blue"
+     " skin, gentle lotus eyes, golden crown, long black hair, yellow silk dhoti and upper cloth, a tall bow and a"
+     " quiver of arrows"),
+    (r"Lakshmana|Lakshman", "Lakshmana: young man in his twenties (an adult, never a child) with fair golden skin,"
+     " golden crown, saffron dhoti, bow, alert and devoted"),
     (r"\bSita\b|Seetha|Janaki|Vaidehi", "Sita: graceful dignified princess, red and gold silk saree covering her"
      " fully, gold jewellery, long black braid"),
     (r"Hanuman|Hanuma\b|Maruti", "Hanuman: mighty vanara monkey god with a distinctly monkey face and muzzle, wise"
