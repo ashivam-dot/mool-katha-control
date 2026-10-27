@@ -29,8 +29,9 @@ GORY_SCENE = re.compile(r"\b(sever\w*|behead\w*|decapitat\w*|blood(?![- ]?red)\w
 ENDINGS = {
     "loop": "The last beat brings back the hook's question in fresh words (not a formula), so the video replays"
             " naturally into beat 1.",
-    "question": "The last beat asks the viewer one short, sincere question about the story's choice or meaning,"
-                " to answer in the comments (never ask for likes, subscriptions or follows).",
+    "question": "The last beat asks the viewer one short, sincere question about the main character's choice at the"
+                " story's climax (not about a side character), to answer in the comments (never ask for likes,"
+                " subscriptions or follows, and never promise a next part).",
     "lesson": "The last beat says in one plain sentence what this moment shows, staying within what the passage"
               " itself shows (no sermon, no modern moral the passage doesn't carry).",
 }
@@ -103,7 +104,9 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         f"5. Length: {TARGET} Hindi words in total across {BEATS_MIN}-{BEATS_MAX} beats; one or two short spoken"
         " sentences per beat. Write the way a gripping kathavachak talks to a friend: everyday spoken Hindi, short"
         " sentences, active voice; present tense is fine for drama ('हनुमान छलाँग लगाते हैं'). Avoid textbook and"
-        " translation phrasing (तत्पश्चात, उपरोक्त, अत्यंत, chains of 'द्वारा'). Devanagari only, no English words, no"
+        " translation phrasing (तत्पश्चात, उपरोक्त, अत्यंत, chains of 'द्वारा') and news or word-for-word phrasing"
+        " ('समाचार सुना है', 'की ओर मुख किया'). Dialogue sounds like a person speaking aloud: 'सुना है तुमने शिव का"
+        " धनुष तोड़ा है!', not 'मैंने शिव धनुष टूटने का समाचार सुना है।'. Devanagari only, no English words, no"
         f" digits; write numbers as Hindi words. {length_hint}",
         "6. Respectful toward every deity and sage. No gore, no sectarian comparison, no politics, no caste or"
         " varna detail (not even when the passage names someone's varna), no diet or meat.",
