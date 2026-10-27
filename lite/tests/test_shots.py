@@ -68,7 +68,9 @@ class PlanTest(unittest.TestCase):
         self.assertEqual([p["beat"] for p in prompts], list(range(len(planned))))
         self.assertIn(look.CLOSE, prompts[0]["prompt"])
         self.assertNotIn(look.CLOSE, prompts[1]["prompt"])
-        self.assertIn(look.CLOSE, prompts[2]["prompt"])
+        self.assertNotIn(look.DETAIL, prompts[1]["prompt"])
+        self.assertIn(look.DETAIL, prompts[2]["prompt"])
+        self.assertNotIn(look.CLOSE, prompts[2]["prompt"])
         self.assertEqual(len(run.chunks(prompts)), run.PAINT_JOBS)
 
 

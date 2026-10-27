@@ -12,6 +12,8 @@ STYLE = ("Devotional Indian epic oil painting in the tradition of Raja Ravi Varm
          " painterly brushwork, dignified and reverent mood, vertical 9:16 composition with the subject in the"
          " upper two thirds")
 CLOSE = "Intimate close-up portrait, the face and its emotion fill the frame, eyes sharp and expressive."
+# A close-up may be of hands or an object, so it doesn't ask for a face.
+DETAIL = "Intimate close-up, the subject fills the frame in sharp detail, shallow depth of field."
 SAFE = ("Fully clothed figures, no blood, no gore, no nudity. No text, no letters, no words, no watermark,"
         " no signature, no frame, no border.")
 
@@ -100,10 +102,12 @@ def characters(scene: str) -> list[str]:
     return [look for _, look in sorted(found)][:MAX_CHARACTERS]
 
 
-def prompt(scene: str, *, hook: bool = False) -> str:
+def prompt(scene: str, *, hook: bool = False, close: bool = False) -> str:
     parts = [scene.strip().rstrip(".") + "."]
     if hook:
         parts.append(CLOSE)
+    elif close:
+        parts.append(DETAIL)
     looks = characters(scene)
     if looks:
         parts.append("Characters: " + "; ".join(looks) + ".")
@@ -122,6 +126,6 @@ def plan(episode: str, shots: list[dict]) -> list[dict]:
     out = []
     for i, shot in enumerate(shots):
         scene = (shot.get("scene") or "").strip()
-        close = i == 0 or bool(shot.get("close"))
-        out.append({"beat": i, "prompt": prompt(scene, hook=close) if scene else "", "seed": seed(episode, i)})
+        text = prompt(scene, hook=i == 0, close=bool(shot.get("close"))) if scene else ""
+        out.append({"beat": i, "prompt": text, "seed": seed(episode, i)})
     return out
