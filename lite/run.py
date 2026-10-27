@@ -472,6 +472,10 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
     elif (planned.get("pending") and not planned.get("replay") and not ledger.get("pending")
             and planned["pending"]["topic_key"] not in used_keys(ledger)):
         ledger["pending"] = planned["pending"]
+    if mode == "publish" and planned and not planned.get("paint"):
+        # The plan job ran but painted nothing. Museum paintings are the old one-picture-a-beat format the owner
+        # rejected on 2026-10-27, so the script is written and kept for the next run's paint jobs instead.
+        return wait_for_paintings(ledger, calls, summary, tried, save)
     while len(tried) < 2:
         topic = current_topic(ledger, exclude=tried)
         summary["topic"] = topic["key"]
@@ -520,6 +524,31 @@ def run(mode: str, out: Path, producer_root: Path, now: datetime | None = None) 
             slots.free_slot(datetime.now(timezone.utc), *rows, days_ahead=slots.BOOK_AHEAD_DAYS))
     ledger["pending"] = None
     return _schedule(record, Path(record["video"]), slot, ledger, youtube_id, instagram_id, now, summary, calls)
+
+
+def wait_for_paintings(ledger: dict, calls: Calls, summary: dict, tried: set[str], save) -> dict:
+    """Publish runs without AI paintings make no Short: write the next script now so the next plan paints it."""
+    if not ledger.get("pending"):
+        topic = current_topic(ledger, exclude=tried)
+        summary["topic"] = topic["key"]
+        try:
+            script, _, review_record = prepare(topic, calls, ending=writer.ending_for(len(ledger["episodes"])))
+        except (WaitForQuota, Budget) as err:
+            summary.update(status="waiting_for_quota", reason=str(err)[:300], calls=calls.to_json())
+            save(ledger)
+            return summary
+        except (ValueError, LookupError, sources.SourceError) as err:
+            strike(ledger, topic["key"], str(err))
+            summary.setdefault("failed_topics", []).append({"topic": topic["key"], "reason": str(err)[:400]})
+            summary.update(status="failed", calls=calls.to_json())
+            save(ledger)
+            return summary
+        ep_id = f"lite-{datetime.now(timezone.utc).astimezone(slots.IST):%Y%m%d-%H%M}"
+        ledger["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": review_record,
+                             "gate_attempts": 0}
+    save(ledger)
+    summary.update(status="waiting_for_paintings", pending=ledger["pending"]["topic_key"], calls=calls.to_json())
+    return summary
 
 
 def load_plan(path: Path | None = None) -> dict:

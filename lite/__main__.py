@@ -96,7 +96,7 @@ def main() -> int:
         with open(step, "a", encoding="utf-8") as fh:
             fh.write(f"## Mool Katha lite: {summary.get('status')}\n\n```json\n{text}\n```\n")
     return 0 if summary.get("status") in ("rendered", "scheduled", "no_free_slot", "waiting_for_quota",
-                                          "ready_waiting_for_slot") else 1
+                                          "ready_waiting_for_slot", "waiting_for_paintings") else 1
 
 
 if __name__ == "__main__":

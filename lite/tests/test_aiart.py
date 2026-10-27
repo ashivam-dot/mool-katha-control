@@ -186,6 +186,44 @@ class RunWithPlanTest(unittest.TestCase):
         self.assertEqual(summary["status"], "waiting_for_quota")
 
 
+class PublishWithoutPaintingsTest(unittest.TestCase):
+    def publish(self, ledger: dict, planned: dict):
+        from lite import publisher
+
+        topic = {"key": "ramayana-1-75"}
+        slot = run.datetime(2026, 10, 27, 12, 0, tzinfo=run.timezone.utc)
+        with mock.patch.object(run, "load_ledger", return_value=ledger), \
+                mock.patch.object(run, "load_plan", return_value=planned), \
+                mock.patch.object(run, "current_topic", return_value=topic), \
+                mock.patch.object(run, "prepare", return_value=(good_script(), None, {"ok": True})) as prepare, \
+                mock.patch.object(run, "produce") as produce, \
+                mock.patch.object(run, "save_ledger") as save, \
+                mock.patch.object(run.learn, "refresh", return_value=None), \
+                mock.patch.object(run.slots, "free_slot", return_value=slot), \
+                mock.patch.object(publisher, "destinations", return_value=("yt", "ig")), \
+                mock.patch.object(publisher, "recent_posts", return_value=[]):
+            summary = run.run("publish", Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
+        produce.assert_not_called()
+        save.assert_called()
+        return summary, prepare
+
+    def test_a_plan_that_painted_nothing_keeps_a_new_script_for_the_next_run(self):
+        ledger = {"episodes": [], "skipped": {}, "pending": None, "ready": None}
+        summary, prepare = self.publish(ledger, {"paint": False, "failed": {"topic": "ramayana-6-60",
+                                                                            "reason": "script: beat 3: x"}})
+        self.assertEqual(summary["status"], "waiting_for_paintings")
+        self.assertEqual(ledger["pending"]["topic_key"], "ramayana-1-75")
+        self.assertEqual(ledger["strikes"], {"ramayana-6-60": 1})
+        prepare.assert_called_once()
+
+    def test_an_already_pending_script_is_not_rewritten(self):
+        pending = {"id": "lite-1", "topic_key": "ramayana-5-1", "script": good_script(), "review": {}}
+        ledger = {"episodes": [], "skipped": {}, "pending": pending, "ready": None}
+        summary, prepare = self.publish(ledger, {"paint": False, "reason": "paint jobs failed"})
+        self.assertEqual(summary["pending"], "ramayana-5-1")
+        prepare.assert_not_called()
+
+
 class ProduceFallbackTest(unittest.TestCase):
     def test_any_ai_painting_error_falls_back_to_museum_paintings(self):
         tmp = Path(tempfile.mkdtemp())

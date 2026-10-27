@@ -74,6 +74,11 @@ the main reason a beat felt static, so:
   fills the queue for days. Replacements after the evening slot go to 10:30 the next morning.
 - **Topics:** the queue now leads with the highest-curiosity sourced stories (Savitri and Yama, Yudhishthira's dog,
   Parashurama challenging Rama, Kumbhakarna waking, Lanka burning, Brahma's arrow, Hanuman's herbs, ...).
+- **No museum fallback when publishing:** the first publish run after the remake had a plan that failed (an
+  evidence quote joined with "...") and fell back to museum paintings: 6-9 second holds and one Ravana painting
+  over three beats. It was moved to Buffer drafts. Now a publish run whose plan painted nothing writes the next
+  script and keeps it pending for the next run's paint jobs (`waiting_for_paintings`). Museum paintings are used
+  only when AI art is switched off. Evidence quotes may join pieces with an ellipsis if every piece is on the page.
 - **Cost:** about 18 pictures a Short means two per paint job, so painting takes about 40 minutes and a run about
   55. That still fits between the crons.
 

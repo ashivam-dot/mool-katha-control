@@ -56,6 +56,12 @@ class SourcesTest(unittest.TestCase):
         self.assertEqual(seen[2], "https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m17/m17003.htm")
         self.assertEqual(p.url, url)
 
+    def test_a_quote_with_an_ellipsis_needs_every_piece_on_the_page(self):
+        p = sources.parse_valmiki(VALMIKI_PAGE, "https://x")
+        self.assertTrue(sources.quote_on_page("Hanuma who desired to perform... shone like a bull", p))
+        self.assertTrue(sources.quote_on_page("After that, Hanuma… to search for Seetha", p))
+        self.assertFalse(sources.quote_on_page("Hanuma who desired to perform... fought a giant serpent", p))
+
     def test_page_without_numbers_is_refused(self):
         with self.assertRaises(sources.SourceError):
             sources.parse_sacred("<title>Something</title><p>" + "text " * 30 + "</p>", "https://x", "mahabharata")

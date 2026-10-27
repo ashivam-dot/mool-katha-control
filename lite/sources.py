@@ -235,6 +235,10 @@ def normalize(text: str) -> str:
 
 
 def quote_on_page(quote: str, passage: Passage) -> bool:
+    # A quote with an ellipsis joins pieces of one verse; each piece must be on the page.
+    parts = [p for p in re.split(r"\.{3,}|…", quote) if p.strip()]
+    if len(parts) > 1:
+        return all(quote_on_page(p, passage) for p in parts)
     q = normalize(quote)
     if len(q) < 12:
         return False
