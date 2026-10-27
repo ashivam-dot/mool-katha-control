@@ -4148,7 +4148,209 @@
   "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261027-1150",
+  "topic_key": "ramayana-6-60",
+  "script": {
+   "beats": [
+    {
+     "text": "क्यों एक हज़ार हाथी चढे थे कुम्भकर्ण के सीने पर तब?",
+     "evidence": "",
+     "scene": "Close-up of Kumbhakarna's massive face sleeping peacefully, eyes closed, mouth slightly open, dim cave lighting, shadows emphasizing his giant features, serene expression, early morning light filtering in.",
+     "close": "",
+     "visual_query": "Kumbhakarna Sleeping Painting",
+     "emphasis": ""
+    },
+    {
+     "text": "राम के बाणों से घबराया रावण का अभिमान चूर हो गया था।",
+     "evidence": "Returning to the City of Lanka, Ravana the King of Demons was afflicted with the fear of Rama's arrows, his pride was humbled and his senses troubled.",
+     "scene": "Wide shot of Ravana sitting on a golden throne in Lanka palace, demons standing around, dark atmosphere, Ravana looking downcast, evening light, dignified but worried posture.",
+     "close": "Close-up of Ravana's face showing fear and humility, eyes wide with anxiety, golden crown slightly tilted, dim palace lighting, expression of troubled senses.",
+     "visual_query": "Ravana Throne Worried",
+     "emphasis": ""
+    },
+    {
+     "text": "उसने तुरंत आदेश दिया, गहरी नींद में सोए कुम्भकर्ण को जल्दी जगाओ अब।",
+     "evidence": "Rouse Kumbhakarna who is slumbering soundly.",
+     "scene": "Medium shot of Ravana speaking to demons, demons listening attentively, palace pillars in background, serious mood, torchlight illumination, Ravana authoritative.",
+     "close": "Close-up of Ravana's hand gesturing command, fingers pointed firmly, golden armlets visible, determined motion, palace background blurred.",
+     "visual_query": "Ravana Commanding Demons",
+     "emphasis": ""
+    },
+    {
+     "text": "राक्षसों ने नगाड़े पीटे, शंख बजाए, पर वो पल भर भी न जागा।",
+     "evidence": "Those demons made sounds by clapping their hands, in order to awaken Kumbhakarna and shook him too, creating a great clamour.",
+     "scene": "Wide shot of demons playing drums and conches around a cave entrance, chaotic energy, instruments raised, night time, torches burning, loud atmosphere implied.",
+     "close": "Close-up of a conch shell being blown by demon hands, lips pressed tight, sound waves visible metaphorically, ornate shell design, focused effort.",
+     "visual_query": "Demons Playing Instruments",
+     "emphasis": ""
+    },
+    {
+     "text": "फिर भारी हथौड़ों और पर्वत जैसे पत्थरों से छाती जोर से पीटने लगे सब।",
+     "evidence": "Then, the cruel demons struck that sleeping Kumbhakarna on his chest with mountain-tops, pestles, maces, hammers and their fists.",
+     "scene": "Medium shot of demons hitting sleeping Kumbhakarna with weapons, Kumbhakarna unmoving, cave interior, rocky walls, aggressive postures, dramatic shadows.",
+     "close": "Close-up of a heavy hammer raised high, demon arm muscles tense, ready to strike, shadow falling on giant skin, no contact shown.",
+     "visual_query": "Demons Hitting Kumbhakarna",
+     "emphasis": ""
+    },
+    {
+     "text": "कानों में सैकड़ों घड़े पानी डाला, बाल नोचे, पर नींद नहीं टूटी फिर।",
+     "evidence": "Some poured hundreds of pitchers of water into his ears but Kumbhakarna, plunged in deep sleep, did not stir.",
+     "scene": "Wide shot of demons pouring water and pulling hair, Kumbhakarna lying still, cave floor wet, chaotic scene, multiple demons acting, frustration visible.",
+     "close": "Close-up of water pouring from a pitcher into a giant ear, water splashing, ear detailed, demon hand holding pitcher, futile effort shown.",
+     "visual_query": "Demons Pouring Water",
+     "emphasis": ""
+    },
+    {
+     "text": "अंत में एक हज़ार हाथी उसके विशाल शरीर पर दौड़ाए गए थे वहां।",
+     "evidence": "A thousand elephants ran up and down on his body till Kumbhakarna lightly woke up and became aware of the pressure.",
+     "scene": "Wide shot of elephants walking on Kumbhakarna's body, demons watching, cave entrance visible, chaotic movement, dust clouds, massive scale shown.",
+     "close": "Close-up of an elephant foot pressing on giant skin, skin compressing, elephant leg detailed, pressure evident, dust rising around.",
+     "visual_query": "Elephants On Kumbhakarna",
+     "emphasis": ""
+    },
+    {
+     "text": "तब भूख से व्याकुल हो वह विशालकाय राक्षस अचानक कूद कर जाग उठा था।",
+     "evidence": "Being insensible to those violent blows of crags and trees hurled upon him, but under the prompting of extreme hunger, Kumbhakarna suddenly sprang up from sleep.",
+     "scene": "Medium shot of Kumbhakarna sitting up yawning, arms stretching, demons stepping back, cave interior, morning light entering, massive figure dominating frame.",
+     "close": "Close-up of Kumbhakarna's eyes opening suddenly, pupils dilating, sleepiness fading, determination emerging, light reflecting in eyes, waking moment.",
+     "visual_query": "Kumbhakarna Waking Yawning",
+     "emphasis": ""
+    },
+    {
+     "text": "वह जंभाई लेकर खड़ा हुआ, आँखें अंगारे जैसी लाल दिख रही थीं सबको।",
+     "evidence": "His huge eyes, resembling flames of fire, with a glitter equal to that of lightning, appeared like great blazing planets.",
+     "scene": "Medium shot of Kumbhakarna standing tall, yawning widely, demons surrounding him, cave mouth visible, light streaming in, awe-inspiring posture, giant form.",
+     "close": "Close-up of Kumbhakarna's eyes glowing like fire, intense gaze, pupils sharp, eyelids heavy but open, dramatic lighting highlighting iris.",
+     "visual_query": "Kumbhakarna Standing Yawning",
+     "emphasis": ""
+    },
+    {
+     "text": "उसने रावण से मिलने ठानी, बोला राम और लक्ष्मण को मैं मारूंगा अब।",
+     "evidence": "I shall satiate the demons with the flesh and blood of monkeys and, as for Rama and Lakshmana, I shall drink their blood myself.",
+     "scene": "Medium shot of Kumbhakarna marching towards palace, earth trembling, demons following, road visible, confident stride, sun rising behind, heroic framing.",
+     "close": "Close-up of Kumbhakarna's face looking determined, eyes focused forward, brow furrowed, ready for battle, dignified warrior expression, lighting dramatic.",
+     "visual_query": "Kumbhakarna Marching Battle",
+     "emphasis": ""
+    },
+    {
+     "text": "क्या रावण के लिए मरना उसका धर्म था या बड़ी भूल थी ये?",
+     "evidence": "",
+     "scene": "Medium shot of Kumbhakarna standing at crossroads, path leading to battle, shadows lengthening, symbolic choice, dignified stance, sunset background, heavy atmosphere.",
+     "close": "Close-up of Kumbhakarna's face in profile, thoughtful expression, looking towards horizon, light half on face, half in shadow, contemplative mood.",
+     "visual_query": "Kumbhakarna Choice Path",
+     "emphasis": ""
+    }
+   ],
+   "description": "वाल्मिकि रामायण के अनुसार रावण ने कुम्भकर्ण को जगाने के लिए कठोर उपाय किए। हाथियों के पैरों तले कुचलने के बाद ही वह युद्ध के लिए जागा।",
+   "hashtags": [
+    "#ramayan",
+    "#kumbhakarna",
+    "#valmikiramayana",
+    "#mythology",
+    "#hinduism"
+   ],
+   "hook_text": "नींद कैसे टूटी?",
+   "key_quote": "A thousand elephants ran up and down on his body till Kumbhakarna lightly woke up and became aware of the pressure.",
+   "keywords": [
+    "Kumbhakarna",
+    "Ramayana",
+    "Ravana",
+    "Valmiki",
+    "Hindu Mythology",
+    "Ramayan Story",
+    "Yuddha Kanda",
+    "Sleeping Giant"
+   ],
+   "names": [
+    "कुम्भकर्ण",
+    "रावण",
+    "राम",
+    "लक्ष्मण"
+   ],
+   "shloka_verse": "6-60-55",
+   "title": "क्यों एक हज़ार हाथी चढे कुम्भकर्ण पर? | वाल्मिकि रामायण 🙏",
+   "usable": true
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "This is a question."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verse 6-60-1 regarding Ravana's fear and humbled pride."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verse 6-60-15 where Ravana orders to rouse Kumbhakarna."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verses 6-60-35 to 38 describing the use of conches and drums."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verse 6-60-39 regarding striking his chest with mountain-tops and hammers."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verses 6-60-50 and 51 regarding pulling hair and pouring water in ears."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verse 6-60-54 regarding a thousand elephants running on his body."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verse 6-60-55 regarding hunger prompting him to spring up."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verses 6-60-55 and 60 regarding yawning and eyes like flames."
+     },
+     {
+      "beat": 10,
+      "factual": true,
+      "supported": true,
+      "note": "Matches verses 6-60-79 and 89 regarding his intent to kill Rama and meeting Ravana."
+     },
+     {
+      "beat": 11,
+      "factual": false,
+      "supported": true,
+      "note": "This is a question."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "The script accurately depicts the awakening of Kumbhakarna as described in Sarga 60 of the Yuddha Kanda in the Valmiki Ramayana, detailing the various extreme measures taken by the demons, including the use of a thousand elephants, and his subsequent reaction of hunger and fury."
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -4166,7 +4368,8 @@
   "ramayana-6-31": 1,
   "ramayana-2-96": 1,
   "ramayana-5-58": 2,
-  "ramayana-1-60": 1
+  "ramayana-1-60": 1,
+  "ramayana-1-75": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
