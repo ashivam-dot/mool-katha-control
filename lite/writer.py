@@ -52,6 +52,7 @@ SCHEMA = {
             "text": {"type": "string"},
             "evidence": {"type": "string"},
             "scene": {"type": "string"},
+            "close": {"type": "string"},
             "visual_query": {"type": "string"},
             "emphasis": {"type": "string"},
         }, "required": ["text", "evidence", "scene", "visual_query"]}},
@@ -118,6 +119,10 @@ def prompt(passage: Passage, angle: str, problems: list[str] | None = None, prev
         " beats. Show only what the line and passage say. For violence show the moment before or after, or a"
         " symbol (an arrow in flight, the glow of fire), never wounds. Deities and sages always dignified, never"
         " comic. No text or letters in the picture.",
+        "8b. close: for every beat after the hook, in English, 15-40 words describing a SECOND painting shown while"
+        " the second half of the line is spoken: a close-up of the one face, pair of hands or object that half"
+        " turns on (Sita's tear-filled eyes, Hanuman's hand opening on the ring, the bow snapping), with the exact"
+        " expression. Same characters as the scene, the same rules, and never the same framing as the scene.",
         "9. visual_query: 2-5 English words to find a public-domain Indian painting for the beat on Wikimedia"
         " Commons, naming the characters and scene (e.g. 'Hanuman Surasa', 'Rama breaking bow', 'Bhishma vow').",
         "10. emphasis: one word copied from that beat's text to highlight, or \"\".",
@@ -198,6 +203,12 @@ def problems(script: dict, passage: Passage) -> list[str]:
             found.append(f"beat {i} scene shows violence directly ({gory.group(0).lower()!r}); paint the moment"
                          " before or after, or"
                          " a symbol such as an arrow in flight or the glow of fire, with no injury visible")
+        close = beat.get("close") or ""
+        if close and (not SCENE_WORDS[0] <= len(close.split()) <= SCENE_WORDS[1] or _DEVANAGARI.search(close)):
+            found.append(f"beat {i} close needs an English close-up of {SCENE_WORDS[0]}-{SCENE_WORDS[1]} words")
+        elif close and (gory := GORY_SCENE.search(close)):
+            found.append(f"beat {i} close shows violence directly ({gory.group(0).lower()!r}); show a face or a"
+                         " symbol instead, with no injury visible")
         if not (beat.get("visual_query") or "").strip():
             found.append(f"beat {i} has no visual_query")
     if beats:
@@ -245,6 +256,7 @@ def tidy(script: dict) -> dict:
         emphasis = str(beat.get("emphasis") or "").strip()
         beats.append({"text": text, "evidence": str(beat.get("evidence") or "").strip(),
                       "scene": " ".join(str(beat.get("scene") or "").split()),
+                      "close": " ".join(str(beat.get("close") or "").split()),
                       "visual_query": " ".join(str(beat.get("visual_query") or "").split()),
                       "emphasis": emphasis if emphasis and emphasis in text.split() else ""})
     script["beats"] = beats

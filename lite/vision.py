@@ -58,13 +58,18 @@ For each picture answer:
 - nudity: true if any person or figure shows a bare female breast or nipple, bare buttocks or genitals, or is
   nude or nearly nude, including in classical paintings, sculpture-like figures, nymphs, apsaras or bathers.
   A bare-chested man in a dhoti, as warriors and sages are traditionally painted, is not nudity.
-- sexual: true for embrace, kissing, lovemaking, seductive poses or a sexualised focus on the body.
+- sexual: true for embrace, kissing, lovemaking, seductive poses or a sexualised focus on the body. Also true
+  when a man and a woman hold, clasp, carry or press against each other and they are not husband and wife in
+  this story: Sita held in the arms of Hanuman, Ravana or Indrajit is sexual (and disrespectful), even when the
+  line is about a rescue or a threat. A captor gripping a captive's wrist from arm's length is not.
 - gore: true for severed heads or limbs, flowing wounds, mutilation or corpses shown in detail. Warriors,
   weapons, arrows in flight and armies fighting, as Mahabharata and Ramayana battles are traditionally painted,
   are not gore by themselves.
 - fits: true only if the picture plausibly shows this line's scene or characters from THIS story. False if it
   shows a different story, a different person who shares a name, an unrelated scene, a page of text or a
   sheet of several unrelated pictures, or a modern object. A generic painting of the right characters is fine.
+  When the line names people or creatures, the main figure must be one of them (a line only about Hanuman
+  over Indrajit's face does not fit).
 - malformed: true if a face or body is visibly broken: extra or missing limbs or fingers on a main figure,
   melted or doubled faces, or legible garbled letters, text or a watermark. (Many-armed gods and ten-headed
   Ravana are traditional, not malformed.)

@@ -57,6 +57,26 @@ titles with the mystery first.
   waits cancels the test (scheduled runs often start 10-15 minutes late). Dispatch tests at least an hour away
   from 01:30, 07:40, 10:50 and 13:20 UTC.
 
+## Two pictures a beat, three Shorts a day (since 2026-10-27)
+
+The channel was paused, and another agent filled the schedule with ten flat slideshow Shorts. The owner reviewed
+them and asked for a remake to the channel's standard. The Shorts were deleted. One picture held for 6-8 seconds was
+the main reason a beat felt static, so:
+
+- **Shots** (`shots.py`): the writer gives every beat after the hook a second English `close` scene (a
+  close-up of the face, hands or object that carries the line). Beats of 12 or more words are cut at the spoken
+  seam nearest the middle (a comma, danda or joiner such as और, लेकिन, तभी). The first half shows the wide `scene`,
+  the second half shows the close-up, and the voice runs straight across the cut with no pause. The longest beats
+  split first, up to 20 shots. Old scripts without `close` keep one picture a beat.
+- The picture check runs on the stronger Flash models first, and refuses non-spouses holding each other (Hanuman
+  carrying Sita, Ravana clasping her) and pictures whose main figure isn't one of the people named in the line.
+- **Cadence:** three Shorts a day at 12:30, 17:30 and 21:45 IST, booked for the same day only, so a bad batch never
+  fills the queue for days. Replacements after the evening slot go to 10:30 the next morning.
+- **Topics:** the queue now leads with the highest-curiosity sourced stories (Savitri and Yama, Yudhishthira's dog,
+  Parashurama challenging Rama, Kumbhakarna waking, Lanka burning, Brahma's arrow, Hanuman's herbs, ...).
+- **Cost:** about 18 pictures a Short means two per paint job, so painting takes about 40 minutes and a run about
+  55. That still fits between the crons.
+
 ## Test and pre-committed pivot (from 14 Oct 2026)
 
 Judge after 7 days or 10 new-format Shorts, whichever comes first, on the median YouTube views at 48 hours. At 30

@@ -1,5 +1,144 @@
 [
  {
+  "work": "mahabharata",
+  "book": 3,
+  "chapter": 296,
+  "angle": "how Savitri followed Yama and what she asked for",
+  "url": "https://archive.sacred-texts.com/hin/m03/m03296.htm",
+  "citation_hi": "महाभारत · वन पर्व · खंड 296 (गांगुली अनुवाद)",
+  "page": 296,
+  "key": "mahabharata-3-296"
+ },
+ {
+  "work": "mahabharata",
+  "book": 17,
+  "chapter": 3,
+  "page": 3,
+  "angle": "the dog Yudhishthira refused to abandon at heaven's gate",
+  "url": "https://archive.sacred-texts.com/hin/m17/m17003.htm",
+  "citation_hi": "महाभारत · महाप्रस्थानिक पर्व · खंड 3 (गांगुली अनुवाद)",
+  "key": "mahabharata-17-3"
+ },
+ {
+  "work": "ramayana",
+  "book": 1,
+  "chapter": 75,
+  "angle": "the day Parashurama challenged Rama with Vishnu's bow",
+  "url": "https://www.valmikiramayan.net/utf8/baala/sarga75/bala_75_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 75",
+  "key": "ramayana-1-75"
+ },
+ {
+  "work": "ramayana",
+  "book": 6,
+  "chapter": 60,
+  "angle": "how Ravana's giants woke the sleeping Kumbhakarna",
+  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga60/yuddha_60_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 60",
+  "key": "ramayana-6-60"
+ },
+ {
+  "work": "ramayana",
+  "book": 5,
+  "chapter": 54,
+  "angle": "the burning tail that set Lanka ablaze",
+  "url": "https://www.valmikiramayan.net/utf8/sundara/sarga54/sundara_54_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 54",
+  "key": "ramayana-5-54"
+ },
+ {
+  "work": "ramayana",
+  "book": 6,
+  "chapter": 108,
+  "angle": "the arrow of Brahma that ended Ravana",
+  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga108/yuddha_108_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 108",
+  "key": "ramayana-6-108"
+ },
+ {
+  "work": "ramayana",
+  "book": 6,
+  "chapter": 74,
+  "angle": "the herbs Hanuman was sent to fetch from the Himalaya",
+  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga74/yuddhasans74.htm",
+  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 74",
+  "key": "ramayana-6-74"
+ },
+ {
+  "work": "ramayana",
+  "book": 6,
+  "chapter": 50,
+  "angle": "how Garuda freed Rama and Lakshmana from the serpent arrows",
+  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga50/yuddha_50_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 50",
+  "key": "ramayana-6-50"
+ },
+ {
+  "work": "ramayana",
+  "book": 1,
+  "chapter": 43,
+  "angle": "why Ganga stayed trapped in Shiva's matted locks, and the sage Jahnu who drank the whole river",
+  "url": "https://www.valmikiramayan.net/utf8/baala/sarga43/bala_43_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 43",
+  "key": "ramayana-1-43"
+ },
+ {
+  "work": "mahabharata",
+  "book": 14,
+  "chapter": 90,
+  "angle": "the half-golden mongoose at Yudhishthira's horse sacrifice",
+  "url": "https://archive.sacred-texts.com/hin/m14/m14090.htm",
+  "citation_hi": "महाभारत · आश्वमेधिक पर्व · खंड 90 (गांगुली अनुवाद)",
+  "page": 90,
+  "key": "mahabharata-14-90"
+ },
+ {
+  "work": "ramayana",
+  "book": 6,
+  "chapter": 105,
+  "angle": "the hymn to the sun that the sage Agastya taught Rama on the battlefield",
+  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga105/yuddha_105_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 105",
+  "key": "ramayana-6-105"
+ },
+ {
+  "work": "ramayana",
+  "book": 5,
+  "chapter": 38,
+  "angle": "the crow story Sita told Hanuman as a secret sign for Rama",
+  "url": "https://www.valmikiramayan.net/utf8/sundara/sarga38/sundarasans38.htm",
+  "citation_hi": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 38",
+  "key": "ramayana-5-38"
+ },
+ {
+  "work": "mahabharata",
+  "book": 2,
+  "chapter": 44,
+  "angle": "Shishupala's birth and the promise Krishna made to his mother",
+  "url": "https://archive.sacred-texts.com/hin/m02/m02044.htm",
+  "citation_hi": "महाभारत · सभा पर्व · खंड 44 (गांगुली अनुवाद)",
+  "page": 44,
+  "key": "mahabharata-2-44"
+ },
+ {
+  "work": "ramayana",
+  "book": 1,
+  "chapter": 53,
+  "angle": "the wish-fulfilling cow Shabala that a king could not take from Vasishtha",
+  "url": "https://www.valmikiramayan.net/utf8/baala/sarga53/bala_53_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 53",
+  "key": "ramayana-1-53"
+ },
+ {
+  "work": "ramayana",
+  "book": 3,
+  "chapter": 45,
+  "angle": "the dying cry of the golden deer that imitated Rama's voice",
+  "url": "https://www.valmikiramayan.net/utf8/aranya/sarga45/aranya_45_frame.htm",
+  "citation_hi": "वाल्मीकि रामायण · अरण्यकाण्ड · सर्ग 45",
+  "key": "ramayana-3-45"
+ },
+ {
   "work": "ramayana",
   "book": 5,
   "chapter": 1,
@@ -309,15 +448,6 @@
  },
  {
   "work": "ramayana",
-  "book": 1,
-  "chapter": 43,
-  "angle": "why Ganga stayed trapped in Shiva's matted locks, and the sage Jahnu who drank the whole river",
-  "url": "https://www.valmikiramayan.net/utf8/baala/sarga43/bala_43_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 43",
-  "key": "ramayana-1-43"
- },
- {
-  "work": "ramayana",
   "book": 4,
   "chapter": 63,
   "angle": "the moment Sampati's burnt wings grew back",
@@ -381,66 +511,12 @@
  },
  {
   "work": "ramayana",
-  "book": 6,
-  "chapter": 60,
-  "angle": "how Ravana's giants woke the sleeping Kumbhakarna",
-  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga60/yuddha_60_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 60",
-  "key": "ramayana-6-60"
- },
- {
-  "work": "ramayana",
   "book": 3,
   "chapter": 71,
   "angle": "the headless giant Kabandha and the curse that made him",
   "url": "https://www.valmikiramayan.net/utf8/aranya/sarga71/aranya_71_frame.htm",
   "citation_hi": "वाल्मीकि रामायण · अरण्यकाण्ड · सर्ग 71",
   "key": "ramayana-3-71"
- },
- {
-  "work": "ramayana",
-  "book": 5,
-  "chapter": 54,
-  "angle": "the burning tail that set Lanka ablaze",
-  "url": "https://www.valmikiramayan.net/utf8/sundara/sarga54/sundara_54_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 54",
-  "key": "ramayana-5-54"
- },
- {
-  "work": "ramayana",
-  "book": 1,
-  "chapter": 53,
-  "angle": "the wish-fulfilling cow Shabala that a king could not take from Vasishtha",
-  "url": "https://www.valmikiramayan.net/utf8/baala/sarga53/bala_53_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 53",
-  "key": "ramayana-1-53"
- },
- {
-  "work": "ramayana",
-  "book": 6,
-  "chapter": 50,
-  "angle": "how Garuda freed Rama and Lakshmana from the serpent arrows",
-  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga50/yuddha_50_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 50",
-  "key": "ramayana-6-50"
- },
- {
-  "work": "ramayana",
-  "book": 1,
-  "chapter": 75,
-  "angle": "the day Parashurama challenged Rama with Vishnu's bow",
-  "url": "https://www.valmikiramayan.net/utf8/baala/sarga75/bala_75_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · बालकाण्ड · सर्ग 75",
-  "key": "ramayana-1-75"
- },
- {
-  "work": "ramayana",
-  "book": 3,
-  "chapter": 45,
-  "angle": "the dying cry of the golden deer that imitated Rama's voice",
-  "url": "https://www.valmikiramayan.net/utf8/aranya/sarga45/aranya_45_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · अरण्यकाण्ड · सर्ग 45",
-  "key": "ramayana-3-45"
  },
  {
   "work": "ramayana",
@@ -459,24 +535,6 @@
   "url": "https://www.valmikiramayan.net/utf8/sundara/sarga3/sundara_3_frame.htm",
   "citation_hi": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 3",
   "key": "ramayana-5-3"
- },
- {
-  "work": "ramayana",
-  "book": 6,
-  "chapter": 105,
-  "angle": "the hymn to the sun that the sage Agastya taught Rama on the battlefield",
-  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga105/yuddha_105_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 105",
-  "key": "ramayana-6-105"
- },
- {
-  "work": "ramayana",
-  "book": 6,
-  "chapter": 108,
-  "angle": "the arrow of Brahma that ended Ravana",
-  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga108/yuddha_108_frame.htm",
-  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 108",
-  "key": "ramayana-6-108"
  },
  {
   "work": "ramayana",
@@ -506,35 +564,6 @@
   "key": "ramayana-6-119"
  },
  {
-  "work": "mahabharata",
-  "book": 14,
-  "chapter": 90,
-  "angle": "the half-golden mongoose at Yudhishthira's horse sacrifice",
-  "url": "https://archive.sacred-texts.com/hin/m14/m14090.htm",
-  "citation_hi": "महाभारत · आश्वमेधिक पर्व · खंड 90 (गांगुली अनुवाद)",
-  "page": 90,
-  "key": "mahabharata-14-90"
- },
- {
-  "work": "ramayana",
-  "book": 5,
-  "chapter": 38,
-  "angle": "the crow story Sita told Hanuman as a secret sign for Rama",
-  "url": "https://www.valmikiramayan.net/utf8/sundara/sarga38/sundarasans38.htm",
-  "citation_hi": "वाल्मीकि रामायण · सुन्दरकाण्ड · सर्ग 38",
-  "key": "ramayana-5-38"
- },
- {
-  "work": "mahabharata",
-  "book": 2,
-  "chapter": 44,
-  "angle": "Shishupala's birth and the promise Krishna made to his mother",
-  "url": "https://archive.sacred-texts.com/hin/m02/m02044.htm",
-  "citation_hi": "महाभारत · सभा पर्व · खंड 44 (गांगुली अनुवाद)",
-  "page": 44,
-  "key": "mahabharata-2-44"
- },
- {
   "work": "ramayana",
   "book": 6,
   "chapter": 18,
@@ -542,16 +571,6 @@
   "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga18/yuddhasans18.htm",
   "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 18",
   "key": "ramayana-6-18"
- },
- {
-  "work": "mahabharata",
-  "book": 3,
-  "chapter": 296,
-  "angle": "how Savitri followed Yama and what she asked for",
-  "url": "https://archive.sacred-texts.com/hin/m03/m03296.htm",
-  "citation_hi": "महाभारत · वन पर्व · खंड 296 (गांगुली अनुवाद)",
-  "page": 296,
-  "key": "mahabharata-3-296"
  },
  {
   "work": "ramayana",
@@ -582,16 +601,6 @@
   "key": "ramayana-1-2"
  },
  {
-  "work": "mahabharata",
-  "book": 17,
-  "chapter": 3,
-  "page": 3,
-  "angle": "the dog Yudhishthira refused to abandon at heaven's gate",
-  "url": "https://archive.sacred-texts.com/hin/m17/m17003.htm",
-  "citation_hi": "महाभारत · महाप्रस्थानिक पर्व · खंड 3 (गांगुली अनुवाद)",
-  "key": "mahabharata-17-3"
- },
- {
   "work": "ramayana",
   "book": 1,
   "chapter": 1,
@@ -608,15 +617,6 @@
   "url": "https://www.valmikiramayan.net/utf8/kish/sarga66/kishkindhasans66.htm",
   "citation_hi": "वाल्मीकि रामायण · किष्किन्धाकाण्ड · सर्ग 66",
   "key": "ramayana-4-66"
- },
- {
-  "work": "ramayana",
-  "book": 6,
-  "chapter": 74,
-  "angle": "the herbs Hanuman was sent to fetch from the Himalaya",
-  "url": "https://www.valmikiramayan.net/utf8/yuddha/sarga74/yuddhasans74.htm",
-  "citation_hi": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 74",
-  "key": "ramayana-6-74"
  },
  {
   "work": "ramayana",

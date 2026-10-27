@@ -164,7 +164,7 @@ class ReplacementSlot(unittest.TestCase):
     def test_tomorrow_midday_when_the_evening_is_over(self):
         now = datetime(2026, 10, 7, 18, 10, tzinfo=timezone.utc)
         got = slots.replacement_slot(now, [], []).astimezone(slots.IST)
-        self.assertEqual(got.strftime("%m-%d %H:%M"), "10-08 12:30")
+        self.assertEqual(got.strftime("%m-%d %H:%M"), "10-08 10:30")
 
 
 if __name__ == "__main__":

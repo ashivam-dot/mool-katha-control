@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-from . import aiart, art, gate, learn, look, review, slots, sources, writer
+from . import aiart, art, gate, learn, look, review, shots, slots, sources, writer
 
 log = logging.getLogger("lite")
 
@@ -145,12 +145,16 @@ class Calls:
                         self.gemini_text += 1
         return call
 
-    def vision(self):
+    def vision(self, strong: bool = False):
         """The picture check's model call: Flash Lite and Gemma first, on quota the script and narration don't
-        use, then the free vision backups. Not counted against MAX_GEMINI_CALLS."""
+        use, then the free vision backups. Not counted against MAX_GEMINI_CALLS.
+
+        `strong` puts Flash first, for the AI paintings: Flash Lite passed Sita held in Indrajit's and Hanuman's
+        arms in the 2026-10-19 Short. Five pictures a prompt keeps that to four Flash calls a Short."""
         from ytc import llm
 
-        models = (*llm.FLASH_LITE, *llm.GEMMA, *(m for m, spec in llm.BACKUPS.items() if spec.get("vision")))
+        models = (*(llm.FLASH if strong else ()), *llm.FLASH_LITE, *llm.GEMMA,
+                  *(m for m, spec in llm.BACKUPS.items() if spec.get("vision")))
 
         def call(prompt: list, schema: dict):
             wait, llm.OVERLOAD_WAIT = llm.OVERLOAD_WAIT, min(llm.OVERLOAD_WAIT, VISION_WAIT)
@@ -194,17 +198,22 @@ def direction(names: list[str]) -> str:
             + " Speak only the exact Devanagari transcript; add no introduction or explanation.")
 
 
-def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: list, ai_art: bool = False) -> dict:
+def build_spec(ep_id: str, script: dict, passage: sources.Passage, pictures: list, ai_art: bool = False,
+               shot_list: list[dict] | None = None) -> dict:
+    """The producer's Short spec. With `shot_list` (AI paintings) each shot is a rendered beat with its own
+    picture; museum paintings illustrate whole beats."""
+    units = shot_list or [{"text": b["text"], "emphasis": b.get("emphasis") or "", "pause_after": 0.12}
+                          for b in script["beats"]]
     beats = []
-    for i, (beat, pic) in enumerate(zip(script["beats"], pictures)):
-        motion = "zoom_out" if i == len(script["beats"]) - 1 else MOTIONS[i % len(MOTIONS)]
+    for i, (beat, pic) in enumerate(zip(units, pictures)):
+        motion = "zoom_out" if i == len(units) - 1 else MOTIONS[i % len(MOTIONS)]
         if isinstance(pic, int):
             visual = {"reuse": pic, "motion": motion}
         else:
             visual = ({"source": "file", "path": pic["path"]} if pic.get("path") else {"source": "url", "url": pic["url"]})
             visual.update({"credit": pic["credit"], "motion": motion})
         beats.append({"text": beat["text"], "emphasis": [beat["emphasis"]] if beat.get("emphasis") else [],
-                      "visual": visual, "pause_after": 0.12})
+                      "visual": visual, "pause_after": beat["pause_after"]})
     return {
         "id": ep_id, "title": script["title"], "series": "मूल कथा लाइट", "description": script["description"],
         "hook_text": script["hook_text"], "citation": passage.citation_hi, "sources": [passage.url],
@@ -314,14 +323,15 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
             shutil.rmtree(work)
         work.mkdir(parents=True)
         out.mkdir(parents=True, exist_ok=True)
-        painted = aiart.collect(ART_DIR, ep_id, len(script["beats"])) if attempt == 0 else {}
+        shot_list = shots.plan(script["beats"])
+        painted = aiart.collect(ART_DIR, ep_id, len(shot_list)) if attempt == 0 else {}
         ai_art = False
         if painted:
             aiart.copy_report(painted, out)
             checked: list[dict] = []
             try:
-                pictures = aiart.pictures(painted, script["beats"], work / "pics", story(script, passage),
-                                          calls.vision(), report=checked)
+                pictures = aiart.pictures(painted, shot_list, work / "pics", story(script, passage),
+                                          calls.vision(strong=True), report=checked)
                 ai_art = True
             except (WaitForQuota, Budget):
                 raise
@@ -344,7 +354,7 @@ def produce(ep_id: str, topic: dict, ledger: dict, calls: Calls, producer_root: 
                 if unsafe := {r["key"] for r in checked if r["unsafe"] and r["key"]}:
                     blocked |= unsafe
                     ledger["blocked_pictures"] = sorted(blocked)
-        spec = build_spec(ep_id, script, passage, pictures, ai_art=ai_art)
+        spec = build_spec(ep_id, script, passage, pictures, ai_art=ai_art, shot_list=shot_list if ai_art else None)
         (work / "short.yaml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8")
         calls.wrap_tts()
         calls.check(1)
@@ -588,7 +598,7 @@ def plan(mode: str, out: Path, now: datetime | None = None, replay: Path | None 
             return done(reason=str(err)[:300], failed={"topic": topic["key"], "reason": str(err)[:400]})
         result["pending"] = {"id": ep_id, "topic_key": topic["key"], "script": script, "review": review_record,
                              "gate_attempts": 0}
-    beats = look.plan(ep_id, script["beats"])
+    beats = look.plan(ep_id, shots.plan(script["beats"]))
     (out / "art-plan.json").write_text(json.dumps({"episode": ep_id, "model": "zimage", "steps": PAINT_STEPS,
                                                    "width": 576, "height": 1024, "beats": beats},
                                                   ensure_ascii=False, indent=1), encoding="utf-8")

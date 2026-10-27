@@ -1,4 +1,4 @@
-"""When the lite lane may post: its own two daily slots, never more than two Shorts a day across both lanes."""
+"""When the lite lane may post: its own three daily slots, never more than three Shorts a day."""
 
 from __future__ import annotations
 
@@ -6,16 +6,16 @@ from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 IST = ZoneInfo("Asia/Kolkata")
-# The signed lane posts at 19:00 and 20:30 IST (ytc.publish.SLOTS[:2]); Instagram Stories go at 08:30 IST.
-LITE_SLOTS = (time(17, 30), time(21, 45))
-MAX_PER_DAY = 2
+# Owner, 2026-10-27: three Shorts a day. The signed lane (19:00 and 20:30 IST) is retired; Instagram Stories go at
+# 08:30 IST. The 07:00, 13:10 and 16:20 IST runs each fill the next slot, 18:50 IST catches up on 21:45.
+LITE_SLOTS = (time(12, 30), time(17, 30), time(21, 45))
+MAX_PER_DAY = 3
 # No two posts on one destination closer than this.
 MIN_GAP = timedelta(minutes=60)
 # Time to host the file and let Buffer take the post before it is due.
 LEAD = timedelta(minutes=40)
 INACTIVE = ("error", "draft")
-# The lite lane books today only: the signed lane books its own posts on the day, so a lite post booked for
-# tomorrow could not see them and the day could pass two Shorts.
+# Each run makes one Short for today's next free slot; four runs a day cover the three slots.
 BOOK_AHEAD_DAYS = 0
 
 
@@ -63,7 +63,7 @@ def free_slot(now: datetime, youtube_rows: list[dict], instagram_rows: list[dict
 
 
 def replacement_slot(now: datetime, youtube_rows: list[dict], instagram_rows: list[dict],
-                     last: time = time(23, 30), next_day: time = time(12, 30)) -> datetime | None:
+                     last: time = time(23, 30), next_day: time = time(10, 30)) -> datetime | None:
     """For a Short that replaces one the owner deleted: the first quarter hour at least LEAD away and MIN_GAP
     from every other post, today until `last` IST, else tomorrow from `next_day` IST (clear of the lite slots).
     The daily cap is not applied because the deleted post still shows in Buffer's history."""

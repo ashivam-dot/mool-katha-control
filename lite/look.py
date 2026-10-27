@@ -116,10 +116,12 @@ def seed(episode: str, beat: int) -> int:
     return zlib.crc32(f"{episode}:{beat}".encode()) % 2_000_000_000
 
 
-def plan(episode: str, beats: list[dict]) -> list[dict]:
-    """One image prompt and seed per beat; a beat without a scene gets no picture of its own."""
+def plan(episode: str, shots: list[dict]) -> list[dict]:
+    """One image prompt and seed per shot (shots.plan); a shot without a scene gets no picture of its own. The
+    paint jobs and their files still call a picture's number "beat"."""
     out = []
-    for i, beat in enumerate(beats):
-        scene = (beat.get("scene") or "").strip()
-        out.append({"beat": i, "prompt": prompt(scene, hook=i == 0) if scene else "", "seed": seed(episode, i)})
+    for i, shot in enumerate(shots):
+        scene = (shot.get("scene") or "").strip()
+        close = i == 0 or bool(shot.get("close"))
+        out.append({"beat": i, "prompt": prompt(scene, hook=close) if scene else "", "seed": seed(episode, i)})
     return out
