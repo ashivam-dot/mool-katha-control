@@ -4674,7 +4674,199 @@
   "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261102-1352",
+  "topic_key": "ramayana-6-108",
+  "script": {
+   "usable": true,
+   "title": "धनुष पर बाण चढ़ते ही पूरी धरती क्यों काँप उठी? | रामायण",
+   "hook_text": "बाण चढ़ते ही काँपी धरती!",
+   "beats": [
+    {
+     "text": "राम के केवल बाण चढ़ाते ही पूरी धरती क्यों काँप उठी?",
+     "evidence": "",
+     "scene": "Close-up of Rama on the chariot, brow furrowed with fierce divine focus, golden crown shining under a smoky sky, eyes fixed on his formidable adversary.",
+     "close": "",
+     "visual_query": "Rama battle Lanka",
+     "emphasis": "काँप"
+    },
+    {
+     "text": "रणभूमि में सारथि मातली ने श्रीराम को याद दिलाया कि रावण के विनाश का समय आ गया है।",
+     "evidence": "The time for his destruction has come now, as expressed by the celestials.",
+     "scene": "Medium shot of the celestial chariot, where charioteer Matali leans toward Rama, pointing forward urgently, his expression tense and respectful amid swirling dust.",
+     "close": "Close-up of Matali's earnest face and raised hand pointing toward the demon king, urgent yet devout in battle light.",
+     "visual_query": "Matali Rama chariot",
+     "emphasis": "मातली"
+    },
+    {
+     "text": "श्रीराम ने तुरंत वह प्रज्वलित बाण निकाला, जो महर्षि अगस्त्य ने उन्हें सौंपा था।",
+     "evidence": "took hold of a blazing arrow, which was given by Brahma and which in turn was given to him by the glorious sage, Agastya",
+     "scene": "Wide shot of Rama standing tall on his chariot, drawing a long, brilliant golden arrow that blazes like fire, casting a warm glow across his blue countenance.",
+     "close": "Close-up of Rama's fingers gripping the glowing shaft of the divine arrow, radiant light illuminating his calm and focused expression.",
+     "visual_query": "Rama golden arrow",
+     "emphasis": "अगस्त्य"
+    },
+    {
+     "text": "यह अमोघ अस्त्र स्वयं ब्रह्मा ने इंद्र के लिए बनाया था।",
+     "evidence": "Having been made formerly for Indra, the lord of celestials by Brahma, the lord of creation of infinite strength",
+     "scene": "Medium shot of Brahma in a celestial realm handing the majestic arrow to Indra, surrounded by divine golden clouds and a sacred aura.",
+     "close": "Close-up of Indra's hands respectfully receiving the glowing, ornate celestial missile from the creator, reverence on Indra's face.",
+     "visual_query": "Brahma gives arrow Indra",
+     "emphasis": "ब्रह्मा"
+    },
+    {
+     "text": "इसके पंखों में पवन, नोक पर अग्नि और सूर्य, तथा इसके भार में मेरु और मंदराचल पर्वत समाए थे!",
+     "evidence": "In its feathers, wind was established. In its end-point were the fire and the sun. In its heaviness were Mounts Meru and Mandara.",
+     "scene": "Wide mystical vision of the cosmic arrow floating in space, fire and sun flaring at its tip, winds swirling around its feathers, and mountain peaks reflected in its shaft.",
+     "close": "Extreme close-up of the blazing tip of the arrow, radiating blinding solar brilliance and crackling tongues of fire.",
+     "visual_query": "cosmic divine arrow",
+     "emphasis": "मेरु"
+    },
+    {
+     "text": "श्रीराम ने मंत्र पढ़कर जैसे ही इसे धनुष पर चढ़ाया, सारे प्राणी डर गए और धरती डोल उठी।",
+     "evidence": "While that excellent arrow was being fixed by Rama, all the beings were frightened and the earth trembled.",
+     "scene": "Wide shot of the battlefield where the earth cracks and trees sway violently as Rama places the glowing arrow upon his grand bow, monkeys and warriors looking around in fear.",
+     "close": "Close-up of the massive bow string being drawn against the notched arrow by Rama's muscular hand, trembling with immense tension.",
+     "visual_query": "Rama bending bow",
+     "emphasis": "धनुष"
+    },
+    {
+     "text": "श्रीराम ने क्रोध में पूरी प्रत्यंचा खींचकर रावण की ओर वह बाण छोड़ दिया।",
+     "evidence": "That enraged Rama, stretching his bow well and with an attentive mind, hurled that arrow which can tear off the vitals, towards Ravana.",
+     "scene": "Wide shot of Rama in full warrior stance, pulling the bowstring back to his ear, releasing the blazing golden missile into the dark, smoke-filled Lankan sky.",
+     "close": "Close-up of Rama's resolute, wrathful eyes as the arrow leaves the bow with a burst of blinding light.",
+     "visual_query": "Rama shooting arrow",
+     "emphasis": "प्रत्यंचा"
+    },
+    {
+     "text": "बाण ने रावण का हृदय चीर डाला और वह रथ से निष्प्राण होकर ज़मीन पर गिर पड़ा।",
+     "evidence": "tore off the heart of that evil-minded Ravana... fell down from the chariot to the ground",
+     "scene": "Wide shot of Ravana toppling backward from his chariot onto the dust of the battlefield, his dark, majestic form collapsing as victorious light breaks through the clouds.",
+     "close": "Close-up of Ravana's bow slipping from his lifeless fingers as it hits the ground beside him.",
+     "visual_query": "fall of Ravana",
+     "emphasis": "हृदय"
+    },
+    {
+     "text": "रावण के प्राण हरकर वह बाण धरती में समाया, और अपना कार्य सिद्ध कर चुपचाप राम के तरकश में लौट आया।",
+     "evidence": "Smeared with blood on having killed Ravana and thereby accomplishing its mission, that arrow re-entered its own quiver (of Rama) silently.",
+     "scene": "Medium shot of the battlefield as the gleaming arrow, stained after striking down the enemy, rises from the earth and glides smoothly back into Rama's golden quiver.",
+     "close": "Close-up of Rama's quiver strapped to his back, with the bright celestial arrow sliding serenely into place among the other arrows.",
+     "visual_query": "arrow returns quiver",
+     "emphasis": "तरकश"
+    },
+    {
+     "text": "जिस दिव्य बाण में मेरु-मंदराचल का भार और सूर्य-अग्नि का तेज था, उसके चढ़ते ही पृथ्वी क्यों न काँपती?",
+     "evidence": "",
+     "scene": "Wide shot of Rama standing victorious upon his chariot, surrounded by Lakshmana, Sugriva, and Vibhishana offering folded hands, while flowers shower from a bright, peaceful sky.",
+     "close": "Close-up of Rama's serene, smiling face bathed in golden sunlight and divine flower petals, exuding supreme grace and peace.",
+     "visual_query": "Rama victory Lanka",
+     "emphasis": "पृथ्वी"
+    }
+   ],
+   "description": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 108\n\nरावण के वध के लिए जब श्रीराम ने ब्रह्मास्त्र का संधान किया, तो उस अमोघ बाण का भार और तेज देखकर पूरी सृष्टि काँप उठी थी। जानिए मूल वाल्मीकि रामायण से उस अस्त्र का अद्भुत रहस्य।",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#shriram",
+    "#moolkatha"
+   ],
+   "keywords": [
+    "Rama",
+    "Ravana",
+    "Brahmastra",
+    "Agastya",
+    "Yuddha Kanda",
+    "Valmiki Ramayana",
+    "Matali",
+    "Mool Katha"
+   ],
+   "shloka_verse": "6-108-6",
+   "key_quote": "In its feathers, wind was established. In its end-point were the fire and the sun. In its heaviness were Mounts Meru and Mandara.",
+   "names": [
+    "श्रीराम",
+    "मातली",
+    "रावण",
+    "अगस्त्य",
+    "ब्रह्मा",
+    "इंद्र",
+    "मेरु",
+    "मंदराचल",
+    "लंका"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Rhetorical question introducing the topic."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 6-108-1 and 6-108-2."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 6-108-3 and 6-108-4."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 6-108-5."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 6-108-6."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 6-108-13 through 6-108-15."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 6-108-16."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 6-108-18 and 6-108-22."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 6-108-19 and 6-108-20."
+     },
+     {
+      "beat": 10,
+      "factual": false,
+      "supported": true,
+      "note": "Concluding rhetorical question summarizing the explanation."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All beats faithfully reflect the events and descriptions of the Brahmastra from Valmiki Ramayana, Yuddha Kanda, Sarga 108 without introducing unverified details."
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -4693,7 +4885,8 @@
   "ramayana-2-96": 1,
   "ramayana-5-58": 2,
   "ramayana-1-60": 1,
-  "ramayana-1-75": 1
+  "ramayana-1-75": 1,
+  "ramayana-5-54": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
@@ -4711,19 +4904,6 @@
    "topic_key": "ramayana-5-1",
    "due_at": "2026-10-06T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 157.76,
-     "views": 484,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 5,
-     "instagram_reactions": 27,
-     "instagram_comments": 1,
-     "instagram_views": 479,
-     "instagram_shares": 2,
-     "instagram_saves": 3,
-     "instagram_reach": 373
-    },
     {
      "age_h": 163.96,
      "views": 484,
@@ -4918,27 +5098,27 @@
      "instagram_shares": 2,
      "instagram_saves": 4,
      "instagram_reach": 383
+    },
+    {
+     "age_h": 644.2,
+     "views": 496,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 30,
+     "instagram_comments": 1,
+     "instagram_views": 491,
+     "instagram_shares": 2,
+     "instagram_saves": 4,
+     "instagram_reach": 383
     }
    ],
-   "views_at_48h": 266.9731166811107
+   "views_at_48h": 261.87680005011686
   },
   "lite-20261006-1323": {
    "topic_key": "mahabharata-1-1",
    "due_at": "2026-10-06T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 153.51,
-     "views": 1417,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 6,
-     "instagram_reactions": 64,
-     "instagram_comments": 0,
-     "instagram_views": 1411,
-     "instagram_shares": 2,
-     "instagram_saves": 11,
-     "instagram_reach": 1485
-    },
     {
      "age_h": 159.71,
      "views": 1417,
@@ -5133,27 +5313,27 @@
      "instagram_shares": 2,
      "instagram_saves": 11,
      "instagram_reach": 1507
+    },
+    {
+     "age_h": 639.95,
+     "views": 1968,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 67,
+     "instagram_comments": 0,
+     "instagram_views": 1962,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1510
     }
    ],
-   "views_at_48h": 792.359251543112
+   "views_at_48h": 776.827182908587
   },
   "lite-20261007-1324": {
    "topic_key": "ramayana-1-67",
    "due_at": "2026-10-07T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 133.76,
-     "views": 36554,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 31,
-     "instagram_reactions": 2299,
-     "instagram_comments": 6,
-     "instagram_views": 36523,
-     "instagram_shares": 208,
-     "instagram_saves": 250,
-     "instagram_reach": 27869
-    },
     {
      "age_h": 139.96,
      "views": 36554,
@@ -5348,21 +5528,27 @@
      "instagram_shares": 229,
      "instagram_saves": 296,
      "instagram_reach": 30984
+    },
+    {
+     "age_h": 620.2,
+     "views": 42455,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 35,
+     "instagram_reactions": 2605,
+     "instagram_comments": 6,
+     "instagram_views": 42420,
+     "instagram_shares": 230,
+     "instagram_saves": 301,
+     "instagram_reach": 31224
     }
    ],
-   "views_at_48h": 21897.392156455266
+   "views_at_48h": 21406.889105420323
   },
   "lite-20261007-1629": {
    "topic_key": "gita-6-25",
    "due_at": "2026-10-07T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 129.51,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 135.71,
      "views": 0,
@@ -5467,6 +5653,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 615.95,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -5475,13 +5668,6 @@
    "topic_key": "gita-6-25",
    "due_at": "2026-10-07T23:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 127.76,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 133.96,
      "views": 0,
@@ -5586,6 +5772,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 614.2,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -5594,13 +5787,6 @@
    "topic_key": "gita-6-25",
    "due_at": "2026-10-08T12:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 114.76,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 120.96,
      "views": 0,
@@ -5705,6 +5891,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 601.2,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -5713,19 +5906,6 @@
    "topic_key": "ramayana-1-45",
    "due_at": "2026-10-08T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 109.76,
-     "views": 10627,
-     "youtube_reactions": 1,
-     "youtube_comments": 0,
-     "youtube_views": 39,
-     "instagram_reactions": 527,
-     "instagram_comments": 4,
-     "instagram_views": 10588,
-     "instagram_shares": 290,
-     "instagram_saves": 130,
-     "instagram_reach": 7264
-    },
     {
      "age_h": 115.96,
      "views": 10627,
@@ -5920,27 +6100,27 @@
      "instagram_shares": 320,
      "instagram_saves": 143,
      "instagram_reach": 7982
+    },
+    {
+     "age_h": 596.2,
+     "views": 11835,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 590,
+     "instagram_comments": 4,
+     "instagram_views": 11796,
+     "instagram_shares": 322,
+     "instagram_saves": 144,
+     "instagram_reach": 8028
     }
    ],
-   "views_at_48h": 7027.635857344932
+   "views_at_48h": 6837.182870906001
   },
   "lite-20261008-1324": {
    "topic_key": "mahabharata-1-19",
    "due_at": "2026-10-08T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 105.51,
-     "views": 3777,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 9,
-     "instagram_reactions": 83,
-     "instagram_comments": 1,
-     "instagram_views": 3768,
-     "instagram_shares": 8,
-     "instagram_saves": 17,
-     "instagram_reach": 3016
-    },
     {
      "age_h": 111.71,
      "views": 3777,
@@ -6135,27 +6315,27 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 3060
+    },
+    {
+     "age_h": 591.95,
+     "views": 3834,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 11,
+     "instagram_reactions": 88,
+     "instagram_comments": 1,
+     "instagram_views": 3823,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 3063
     }
    ],
-   "views_at_48h": 2547.538710811314
+   "views_at_48h": 2475.83431303655
   },
   "lite-20261009-1324": {
    "topic_key": "ramayana-2-63",
    "due_at": "2026-10-09T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 85.76,
-     "views": 3628,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 2,
-     "instagram_reactions": 118,
-     "instagram_comments": 2,
-     "instagram_views": 3626,
-     "instagram_shares": 14,
-     "instagram_saves": 16,
-     "instagram_reach": 3045
-    },
     {
      "age_h": 91.96,
      "views": 3628,
@@ -6350,27 +6530,27 @@
      "instagram_shares": 14,
      "instagram_saves": 16,
      "instagram_reach": 3081
+    },
+    {
+     "age_h": 572.2,
+     "views": 3696,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 121,
+     "instagram_comments": 2,
+     "instagram_views": 3690,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 3081
     }
    ],
-   "views_at_48h": 2714.222903548869
+   "views_at_48h": 2621.1291225992613
   },
   "lite-20261009-1629": {
    "topic_key": "vishnu_purana-1-17",
    "due_at": "2026-10-09T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 81.51,
-     "views": 2780,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 1,
-     "instagram_reactions": 111,
-     "instagram_comments": 1,
-     "instagram_views": 2779,
-     "instagram_shares": 5,
-     "instagram_saves": 11,
-     "instagram_reach": 2249
-    },
     {
      "age_h": 87.71,
      "views": 2780,
@@ -6565,27 +6745,27 @@
      "instagram_shares": 5,
      "instagram_saves": 11,
      "instagram_reach": 2276
+    },
+    {
+     "age_h": 567.95,
+     "views": 2844,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 115,
+     "instagram_comments": 1,
+     "instagram_views": 2838,
+     "instagram_shares": 5,
+     "instagram_saves": 11,
+     "instagram_reach": 2279
     }
    ],
-   "views_at_48h": 2133.3394675411746
+   "views_at_48h": 2056.5575118271654
   },
   "lite-20261010-0712": {
    "topic_key": "gita-6-35",
    "due_at": "2026-10-10T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 61.76,
-     "views": 1686,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 31,
-     "instagram_reactions": 65,
-     "instagram_comments": 2,
-     "instagram_views": 1655,
-     "instagram_shares": 3,
-     "instagram_saves": 11,
-     "instagram_reach": 1427
-    },
     {
      "age_h": 67.96,
      "views": 1686,
@@ -6780,27 +6960,27 @@
      "instagram_shares": 3,
      "instagram_saves": 11,
      "instagram_reach": 1464
+    },
+    {
+     "age_h": 548.2,
+     "views": 1724,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 31,
+     "instagram_reactions": 67,
+     "instagram_comments": 2,
+     "instagram_views": 1693,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1466
     }
    ],
-   "views_at_48h": 1486.361834342726
+   "views_at_48h": 1416.940141407519
   },
   "lite-20261010-1321": {
    "topic_key": "ramayana-3-74",
    "due_at": "2026-10-10T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 57.51,
-     "views": 709,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 42,
-     "instagram_reactions": 32,
-     "instagram_comments": 1,
-     "instagram_views": 667,
-     "instagram_shares": 1,
-     "instagram_saves": 2,
-     "instagram_reach": 535
-    },
     {
      "age_h": 63.71,
      "views": 709,
@@ -6995,27 +7175,27 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 575
+    },
+    {
+     "age_h": 543.95,
+     "views": 762,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 47,
+     "instagram_reactions": 35,
+     "instagram_comments": 1,
+     "instagram_views": 715,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 576
     }
    ],
-   "views_at_48h": 647.7317270236266
+   "views_at_48h": 615.4078778067044
   },
   "lite-20261011-0711": {
    "topic_key": "ramayana-4-6",
    "due_at": "2026-10-11T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 37.76,
-     "views": 2641,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 20,
-     "instagram_reactions": 97,
-     "instagram_comments": 0,
-     "instagram_views": 2621,
-     "instagram_shares": 0,
-     "instagram_saves": 9,
-     "instagram_reach": 2196
-    },
     {
      "age_h": 43.96,
      "views": 2641,
@@ -7210,6 +7390,19 @@
      "instagram_shares": 1,
      "instagram_saves": 10,
      "instagram_reach": 2267
+    },
+    {
+     "age_h": 524.2,
+     "views": 2738,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 29,
+     "instagram_reactions": 105,
+     "instagram_comments": 0,
+     "instagram_views": 2709,
+     "instagram_shares": 1,
+     "instagram_saves": 10,
+     "instagram_reach": 2270
     }
    ],
    "views_at_48h": 2648.121794871795
@@ -7218,19 +7411,6 @@
    "topic_key": "ramayana-4-12",
    "due_at": "2026-10-11T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 33.51,
-     "views": 3996,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 46,
-     "instagram_reactions": 284,
-     "instagram_comments": 0,
-     "instagram_views": 3950,
-     "instagram_shares": 17,
-     "instagram_saves": 23,
-     "instagram_reach": 3185
-    },
     {
      "age_h": 39.71,
      "views": 3996,
@@ -7425,6 +7605,19 @@
      "instagram_shares": 21,
      "instagram_saves": 23,
      "instagram_reach": 3319
+    },
+    {
+     "age_h": 519.95,
+     "views": 4178,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 63,
+     "instagram_reactions": 301,
+     "instagram_comments": 1,
+     "instagram_views": 4115,
+     "instagram_shares": 21,
+     "instagram_saves": 23,
+     "instagram_reach": 3321
     }
    ],
    "views_at_48h": 4026.55608974359
@@ -7433,19 +7626,6 @@
    "topic_key": "ramayana-5-36",
    "due_at": "2026-10-12T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 13.76,
-     "views": 373,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 5,
-     "instagram_reactions": 18,
-     "instagram_comments": 0,
-     "instagram_views": 368,
-     "instagram_shares": 0,
-     "instagram_saves": 2,
-     "instagram_reach": 313
-    },
     {
      "age_h": 19.96,
      "views": 373,
@@ -7640,6 +7820,19 @@
      "instagram_shares": 0,
      "instagram_saves": 2,
      "instagram_reach": 484
+    },
+    {
+     "age_h": 500.2,
+     "views": 588,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 23,
+     "instagram_reactions": 27,
+     "instagram_comments": 1,
+     "instagram_views": 565,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 486
     }
    ],
    "views_at_48h": 551.6766704416762
@@ -7648,19 +7841,6 @@
    "topic_key": "ramayana-5-38",
    "due_at": "2026-10-12T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 9.51,
-     "views": 2440,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 6,
-     "instagram_reactions": 89,
-     "instagram_comments": 0,
-     "instagram_views": 2434,
-     "instagram_shares": 2,
-     "instagram_saves": 10,
-     "instagram_reach": 1946
-    },
     {
      "age_h": 15.71,
      "views": 2440,
@@ -7855,6 +8035,19 @@
      "instagram_shares": 4,
      "instagram_saves": 13,
      "instagram_reach": 3117
+    },
+    {
+     "age_h": 495.95,
+     "views": 4016,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 53,
+     "instagram_reactions": 167,
+     "instagram_comments": 1,
+     "instagram_views": 3963,
+     "instagram_shares": 4,
+     "instagram_saves": 13,
+     "instagram_reach": 3122
     }
    ],
    "views_at_48h": 3811.5379388448473
@@ -8044,6 +8237,19 @@
      "instagram_shares": 3,
      "instagram_saves": 10,
      "instagram_reach": 2580
+    },
+    {
+     "age_h": 476.2,
+     "views": 3131,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 50,
+     "instagram_reactions": 103,
+     "instagram_comments": 0,
+     "instagram_views": 3081,
+     "instagram_shares": 3,
+     "instagram_saves": 10,
+     "instagram_reach": 2584
     }
    ],
    "views_at_48h": 3076.5856164383563
@@ -8233,6 +8439,19 @@
      "instagram_shares": 6,
      "instagram_saves": 10,
      "instagram_reach": 2728
+    },
+    {
+     "age_h": 471.95,
+     "views": 3375,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 35,
+     "instagram_reactions": 85,
+     "instagram_comments": 1,
+     "instagram_views": 3340,
+     "instagram_shares": 6,
+     "instagram_saves": 10,
+     "instagram_reach": 2732
     }
    ],
    "views_at_48h": 3285.2246575342465
@@ -8396,6 +8615,19 @@
      "instagram_shares": 7,
      "instagram_saves": 9,
      "instagram_reach": 2450
+    },
+    {
+     "age_h": 447.95,
+     "views": 3069,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 32,
+     "instagram_reactions": 140,
+     "instagram_comments": 1,
+     "instagram_views": 3037,
+     "instagram_shares": 7,
+     "instagram_saves": 9,
+     "instagram_reach": 2454
     }
    ],
    "views_at_48h": 3013.4455331412105
@@ -8532,6 +8764,19 @@
      "instagram_views": 3485,
      "instagram_shares": 22,
      "instagram_saves": 18,
+     "instagram_reach": 2667
+    },
+    {
+     "age_h": 428.2,
+     "views": 3662,
+     "youtube_reactions": 7,
+     "youtube_comments": 0,
+     "youtube_views": 175,
+     "instagram_reactions": 268,
+     "instagram_comments": 2,
+     "instagram_views": 3487,
+     "instagram_shares": 22,
+     "instagram_saves": 17,
      "instagram_reach": 2667
     }
    ],
@@ -8670,6 +8915,19 @@
      "instagram_shares": 3,
      "instagram_saves": 8,
      "instagram_reach": 2196
+    },
+    {
+     "age_h": 423.95,
+     "views": 2861,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 53,
+     "instagram_reactions": 108,
+     "instagram_comments": 0,
+     "instagram_views": 2808,
+     "instagram_shares": 3,
+     "instagram_saves": 8,
+     "instagram_reach": 2196
     }
    ],
    "views_at_48h": 2817.572706935123
@@ -8781,6 +9039,19 @@
      "instagram_shares": 3,
      "instagram_saves": 13,
      "instagram_reach": 2025
+    },
+    {
+     "age_h": 399.95,
+     "views": 2732,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 122,
+     "instagram_reactions": 83,
+     "instagram_comments": 0,
+     "instagram_views": 2610,
+     "instagram_shares": 3,
+     "instagram_saves": 13,
+     "instagram_reach": 2027
     }
    ],
    "views_at_48h": 2678.4538198403648
@@ -8866,6 +9137,19 @@
      "instagram_shares": 0,
      "instagram_saves": 4,
      "instagram_reach": 1693
+    },
+    {
+     "age_h": 380.2,
+     "views": 2054,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 10,
+     "instagram_reactions": 63,
+     "instagram_comments": 0,
+     "instagram_views": 2044,
+     "instagram_shares": 0,
+     "instagram_saves": 4,
+     "instagram_reach": 1695
     }
    ],
    "views_at_48h": 2029.2893759286776
@@ -8951,6 +9235,19 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 638
+    },
+    {
+     "age_h": 375.95,
+     "views": 795,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 20,
+     "instagram_reactions": 23,
+     "instagram_comments": 0,
+     "instagram_views": 775,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 640
     }
    ],
    "views_at_48h": 754.4357885799193
@@ -9010,6 +9307,19 @@
      "instagram_shares": 4,
      "instagram_saves": 12,
      "instagram_reach": 3418
+    },
+    {
+     "age_h": 356.2,
+     "views": 4341,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 3,
+     "instagram_reactions": 167,
+     "instagram_comments": 0,
+     "instagram_views": 4338,
+     "instagram_shares": 4,
+     "instagram_saves": 14,
+     "instagram_reach": 3465
     }
    ],
    "views_at_48h": 3673.954998938654
@@ -9069,6 +9379,19 @@
      "instagram_shares": 1,
      "instagram_saves": 3,
      "instagram_reach": 398
+    },
+    {
+     "age_h": 351.95,
+     "views": 501,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 12,
+     "instagram_reactions": 29,
+     "instagram_comments": 0,
+     "instagram_views": 489,
+     "instagram_shares": 1,
+     "instagram_saves": 3,
+     "instagram_reach": 403
     }
    ],
    "views_at_48h": 303.488006792613
@@ -9102,6 +9425,19 @@
      "instagram_shares": 7,
      "instagram_saves": 16,
      "instagram_reach": 1974
+    },
+    {
+     "age_h": 332.2,
+     "views": 2418,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 91,
+     "instagram_reactions": 166,
+     "instagram_comments": 1,
+     "instagram_views": 2327,
+     "instagram_shares": 7,
+     "instagram_saves": 16,
+     "instagram_reach": 1977
     }
    ],
    "views_at_48h": 1225.190257777709
@@ -9135,6 +9471,19 @@
      "instagram_shares": 0,
      "instagram_saves": 4,
      "instagram_reach": 943
+    },
+    {
+     "age_h": 327.95,
+     "views": 1229,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 19,
+     "instagram_reactions": 26,
+     "instagram_comments": 0,
+     "instagram_views": 1210,
+     "instagram_shares": 0,
+     "instagram_saves": 4,
+     "instagram_reach": 948
     }
    ],
    "views_at_48h": 627.1933848703675
@@ -9149,26 +9498,53 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 140.2,
+     "views": 1966,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 78,
+     "instagram_comments": 0,
+     "instagram_views": 1966,
+     "instagram_shares": 1,
+     "instagram_saves": 3,
+     "instagram_reach": 1634
     }
    ],
-   "views_at_48h": null
+   "views_at_48h": 654.0052113491604
   },
   "lite-20261027-1350": {
    "topic_key": "ramayana-1-75",
    "due_at": "2026-10-27T21:45:00+05:30",
-   "snapshots": [],
-   "views_at_48h": null
+   "snapshots": [
+    {
+     "age_h": 135.95,
+     "views": 2645,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 66,
+     "instagram_comments": 0,
+     "instagram_views": 2645,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 1969
+    }
+   ],
+   "views_at_48h": 1571.6530840797263
   }
  },
  "learned": {
-  "at": "2026-10-27T14:02:32+00:00",
-  "scored": 28,
+  "at": "2026-11-02T08:11:55+00:00",
+  "scored": 30,
   "min_samples": 4,
   "lifts": {
    "ramayana": {
-    "n": 20,
+    "n": 22,
     "lift": 1.35,
-    "typical_views": 1935
+    "typical_views": 1812
    },
    "gita": {
     "n": 4,
@@ -9176,6 +9552,6 @@
     "typical_views": 5
    }
   },
-  "baseline_views": 852
+  "baseline_views": 853
  }
 }
