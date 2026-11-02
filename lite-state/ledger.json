@@ -4660,110 +4660,16 @@
      }
     }
    }
-  }
- ],
- "skipped": {
-  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
-  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "mahabharata-3-311": "https://archive.sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
-  "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render",
-  "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage",
-  "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
-  "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
- },
- "pending": {
-  "id": "lite-20261102-1352",
-  "topic_key": "ramayana-6-108",
-  "script": {
-   "usable": true,
+  },
+  {
+   "id": "lite-20261102-1352",
+   "topic_key": "ramayana-6-108",
    "title": "धनुष पर बाण चढ़ते ही पूरी धरती क्यों काँप उठी? | रामायण",
-   "hook_text": "बाण चढ़ते ही काँपी धरती!",
-   "beats": [
-    {
-     "text": "राम के केवल बाण चढ़ाते ही पूरी धरती क्यों काँप उठी?",
-     "evidence": "",
-     "scene": "Close-up of Rama on the chariot, brow furrowed with fierce divine focus, golden crown shining under a smoky sky, eyes fixed on his formidable adversary.",
-     "close": "",
-     "visual_query": "Rama battle Lanka",
-     "emphasis": "काँप"
-    },
-    {
-     "text": "रणभूमि में सारथि मातली ने श्रीराम को याद दिलाया कि रावण के विनाश का समय आ गया है।",
-     "evidence": "The time for his destruction has come now, as expressed by the celestials.",
-     "scene": "Medium shot of the celestial chariot, where charioteer Matali leans toward Rama, pointing forward urgently, his expression tense and respectful amid swirling dust.",
-     "close": "Close-up of Matali's earnest face and raised hand pointing toward the demon king, urgent yet devout in battle light.",
-     "visual_query": "Matali Rama chariot",
-     "emphasis": "मातली"
-    },
-    {
-     "text": "श्रीराम ने तुरंत वह प्रज्वलित बाण निकाला, जो महर्षि अगस्त्य ने उन्हें सौंपा था।",
-     "evidence": "took hold of a blazing arrow, which was given by Brahma and which in turn was given to him by the glorious sage, Agastya",
-     "scene": "Wide shot of Rama standing tall on his chariot, drawing a long, brilliant golden arrow that blazes like fire, casting a warm glow across his blue countenance.",
-     "close": "Close-up of Rama's fingers gripping the glowing shaft of the divine arrow, radiant light illuminating his calm and focused expression.",
-     "visual_query": "Rama golden arrow",
-     "emphasis": "अगस्त्य"
-    },
-    {
-     "text": "यह अमोघ अस्त्र स्वयं ब्रह्मा ने इंद्र के लिए बनाया था।",
-     "evidence": "Having been made formerly for Indra, the lord of celestials by Brahma, the lord of creation of infinite strength",
-     "scene": "Medium shot of Brahma in a celestial realm handing the majestic arrow to Indra, surrounded by divine golden clouds and a sacred aura.",
-     "close": "Close-up of Indra's hands respectfully receiving the glowing, ornate celestial missile from the creator, reverence on Indra's face.",
-     "visual_query": "Brahma gives arrow Indra",
-     "emphasis": "ब्रह्मा"
-    },
-    {
-     "text": "इसके पंखों में पवन, नोक पर अग्नि और सूर्य, तथा इसके भार में मेरु और मंदराचल पर्वत समाए थे!",
-     "evidence": "In its feathers, wind was established. In its end-point were the fire and the sun. In its heaviness were Mounts Meru and Mandara.",
-     "scene": "Wide mystical vision of the cosmic arrow floating in space, fire and sun flaring at its tip, winds swirling around its feathers, and mountain peaks reflected in its shaft.",
-     "close": "Extreme close-up of the blazing tip of the arrow, radiating blinding solar brilliance and crackling tongues of fire.",
-     "visual_query": "cosmic divine arrow",
-     "emphasis": "मेरु"
-    },
-    {
-     "text": "श्रीराम ने मंत्र पढ़कर जैसे ही इसे धनुष पर चढ़ाया, सारे प्राणी डर गए और धरती डोल उठी।",
-     "evidence": "While that excellent arrow was being fixed by Rama, all the beings were frightened and the earth trembled.",
-     "scene": "Wide shot of the battlefield where the earth cracks and trees sway violently as Rama places the glowing arrow upon his grand bow, monkeys and warriors looking around in fear.",
-     "close": "Close-up of the massive bow string being drawn against the notched arrow by Rama's muscular hand, trembling with immense tension.",
-     "visual_query": "Rama bending bow",
-     "emphasis": "धनुष"
-    },
-    {
-     "text": "श्रीराम ने क्रोध में पूरी प्रत्यंचा खींचकर रावण की ओर वह बाण छोड़ दिया।",
-     "evidence": "That enraged Rama, stretching his bow well and with an attentive mind, hurled that arrow which can tear off the vitals, towards Ravana.",
-     "scene": "Wide shot of Rama in full warrior stance, pulling the bowstring back to his ear, releasing the blazing golden missile into the dark, smoke-filled Lankan sky.",
-     "close": "Close-up of Rama's resolute, wrathful eyes as the arrow leaves the bow with a burst of blinding light.",
-     "visual_query": "Rama shooting arrow",
-     "emphasis": "प्रत्यंचा"
-    },
-    {
-     "text": "बाण ने रावण का हृदय चीर डाला और वह रथ से निष्प्राण होकर ज़मीन पर गिर पड़ा।",
-     "evidence": "tore off the heart of that evil-minded Ravana... fell down from the chariot to the ground",
-     "scene": "Wide shot of Ravana toppling backward from his chariot onto the dust of the battlefield, his dark, majestic form collapsing as victorious light breaks through the clouds.",
-     "close": "Close-up of Ravana's bow slipping from his lifeless fingers as it hits the ground beside him.",
-     "visual_query": "fall of Ravana",
-     "emphasis": "हृदय"
-    },
-    {
-     "text": "रावण के प्राण हरकर वह बाण धरती में समाया, और अपना कार्य सिद्ध कर चुपचाप राम के तरकश में लौट आया।",
-     "evidence": "Smeared with blood on having killed Ravana and thereby accomplishing its mission, that arrow re-entered its own quiver (of Rama) silently.",
-     "scene": "Medium shot of the battlefield as the gleaming arrow, stained after striking down the enemy, rises from the earth and glides smoothly back into Rama's golden quiver.",
-     "close": "Close-up of Rama's quiver strapped to his back, with the bright celestial arrow sliding serenely into place among the other arrows.",
-     "visual_query": "arrow returns quiver",
-     "emphasis": "तरकश"
-    },
-    {
-     "text": "जिस दिव्य बाण में मेरु-मंदराचल का भार और सूर्य-अग्नि का तेज था, उसके चढ़ते ही पृथ्वी क्यों न काँपती?",
-     "evidence": "",
-     "scene": "Wide shot of Rama standing victorious upon his chariot, surrounded by Lakshmana, Sugriva, and Vibhishana offering folded hands, while flowers shower from a bright, peaceful sky.",
-     "close": "Close-up of Rama's serene, smiling face bathed in golden sunlight and divine flower petals, exuding supreme grace and peace.",
-     "visual_query": "Rama victory Lanka",
-     "emphasis": "पृथ्वी"
-    }
-   ],
    "description": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 108\n\nरावण के वध के लिए जब श्रीराम ने ब्रह्मास्त्र का संधान किया, तो उस अमोघ बाण का भार और तेज देखकर पूरी सृष्टि काँप उठी थी। जानिए मूल वाल्मीकि रामायण से उस अस्त्र का अद्भुत रहस्य।",
+   "ai_art": true,
+   "citation": "वाल्मीकि रामायण · युद्धकाण्ड · सर्ग 108",
+   "source_url": "https://www.valmikiramayan.net/utf8/yuddha/sarga108/yuddhasans108.htm",
+   "translator": "K. M. K. Murthy, valmikiramayan.net (Sanskrit with English)",
    "hashtags": [
     "#ramayan",
     "#valmikiramayan",
@@ -4780,93 +4686,233 @@
     "Matali",
     "Mool Katha"
    ],
-   "shloka_verse": "6-108-6",
    "key_quote": "In its feathers, wind was established. In its end-point were the fire and the sun. In its heaviness were Mounts Meru and Mandara.",
-   "names": [
-    "श्रीराम",
-    "मातली",
-    "रावण",
-    "अगस्त्य",
-    "ब्रह्मा",
-    "इंद्र",
-    "मेरु",
-    "मंदराचल",
-    "लंका"
-   ]
-  },
-  "review": {
-   "ok": true,
-   "issues": [],
-   "result": {
-    "items": [
-     {
-      "beat": 1,
-      "factual": false,
-      "supported": true,
-      "note": "Rhetorical question introducing the topic."
-     },
-     {
-      "beat": 2,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 6-108-1 and 6-108-2."
-     },
-     {
-      "beat": 3,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 6-108-3 and 6-108-4."
-     },
-     {
-      "beat": 4,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 6-108-5."
-     },
-     {
-      "beat": 5,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 6-108-6."
-     },
-     {
-      "beat": 6,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 6-108-13 through 6-108-15."
-     },
-     {
-      "beat": 7,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 6-108-16."
-     },
-     {
-      "beat": 8,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 6-108-18 and 6-108-22."
-     },
-     {
-      "beat": 9,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 6-108-19 and 6-108-20."
-     },
-     {
-      "beat": 10,
-      "factual": false,
-      "supported": true,
-      "note": "Concluding rhetorical question summarizing the explanation."
+   "shloka": {
+    "number": "6-108-6",
+    "sanskrit": "यस्य वाजेषु पवनः फले पावकबास्करौ | शरीरमाकाशमयं गौरवे मेरुमन्दरौ || ६-१०८-६"
+   },
+   "pictures": [
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
      }
-    ],
-    "respectful": true,
-    "title_reveals_answer": false,
-    "summary": "All beats faithfully reflect the events and descriptions of the Brahmastra from Valmiki Ramayana, Yuddha Kanda, Sarga 108 without introducing unverified details."
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    },
+    {
+     "url": "",
+     "credit": {
+      "source": "AI (Z-Image-Turbo, Apache-2.0)",
+      "title": "AI painting made for this Short",
+      "credit": "Mool Katha",
+      "license": "AI-generated",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+     }
+    }
+   ],
+   "gate": {
+    "passed": true,
+    "source_support": true,
+    "speech_coverage": 0.883,
+    "duration": true,
+    "loudness": true,
+    "seconds": 67.63,
+    "lufs": -14.0
+   },
+   "calls": {
+    "gemini_text": 0,
+    "gemini_tts": 2,
+    "gemini_total": 2,
+    "free_fallback": 0,
+    "picture_check": 4
+   },
+   "publish": {
+    "media_public_id": "mool-katha/lite-20261102-1352-1298175cb459fa7c",
+    "media_url": "https://res.cloudinary.com/mw0oh0v8/video/upload/v1793654819/mool-katha/lite-20261102-1352-1298175cb459fa7c.mp4",
+    "due_at": "2026-11-03T12:30:00+05:30",
+    "youtube": {
+     "id": "6ae900283b6f22c15ecf6896",
+     "status": "scheduled",
+     "due_at": "2026-11-03T07:00:00.000Z"
+    },
+    "instagram": {
+     "id": "6ae900298d258062778c5f82",
+     "status": "scheduled",
+     "due_at": "2026-11-03T07:00:00.000Z"
+    },
+    "readback": {
+     "youtube": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-11-03T07:00:00.000Z",
+      "externalLink": null
+     },
+     "instagram": {
+      "ok": true,
+      "status": "scheduled",
+      "dueAt": "2026-11-03T07:00:00.000Z",
+      "externalLink": null
+     }
+    }
    }
-  },
-  "gate_attempts": 0
+  }
+ ],
+ "skipped": {
+  "vishnu_purana-1-11": "https://archive.sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://sacred-texts.com/hin/vp/vp046.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/vp/vp",
+  "mahabharata-5-7": "https://archive.sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://sacred-texts.com/hin/m05/m05007.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-134": "https://archive.sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01135.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-1-100": "https://archive.sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://sacred-texts.com/hin/m01/m01101.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-146": "https://archive.sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03146.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "mahabharata-3-311": "https://archive.sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://sacred-texts.com/hin/m03/m03311.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render",
+  "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage",
+  "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
+  "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
  },
+ "pending": null,
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
