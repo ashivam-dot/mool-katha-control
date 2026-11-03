@@ -5190,7 +5190,9 @@
   "ramayana-5-58": 2,
   "ramayana-1-60": 1,
   "ramayana-1-75": 1,
-  "ramayana-5-54": 1
+  "ramayana-5-54": 1,
+  "ramayana-6-74": 1,
+  "ramayana-6-50": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
@@ -5208,19 +5210,6 @@
    "topic_key": "ramayana-5-1",
    "due_at": "2026-10-06T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 182.68,
-     "views": 486,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 5,
-     "instagram_reactions": 29,
-     "instagram_comments": 1,
-     "instagram_views": 481,
-     "instagram_shares": 2,
-     "instagram_saves": 3,
-     "instagram_reach": 375
-    },
     {
      "age_h": 188.71,
      "views": 486,
@@ -5415,27 +5404,27 @@
      "instagram_shares": 2,
      "instagram_saves": 4,
      "instagram_reach": 383
+    },
+    {
+     "age_h": 668.73,
+     "views": 496,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 5,
+     "instagram_reactions": 30,
+     "instagram_comments": 1,
+     "instagram_views": 491,
+     "instagram_shares": 2,
+     "instagram_saves": 4,
+     "instagram_reach": 383
     }
    ],
-   "views_at_48h": 249.12160112687613
+   "views_at_48h": 245.10909736167213
   },
   "lite-20261006-1323": {
    "topic_key": "mahabharata-1-1",
    "due_at": "2026-10-06T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 178.43,
-     "views": 1425,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 6,
-     "instagram_reactions": 65,
-     "instagram_comments": 0,
-     "instagram_views": 1419,
-     "instagram_shares": 2,
-     "instagram_saves": 11,
-     "instagram_reach": 1489
-    },
     {
      "age_h": 184.46,
      "views": 1425,
@@ -5630,27 +5619,27 @@
      "instagram_shares": 2,
      "instagram_saves": 11,
      "instagram_reach": 1510
+    },
+    {
+     "age_h": 664.48,
+     "views": 1968,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 67,
+     "instagram_comments": 0,
+     "instagram_views": 1962,
+     "instagram_shares": 2,
+     "instagram_saves": 11,
+     "instagram_reach": 1510
     }
    ],
-   "views_at_48h": 739.0971800758979
+   "views_at_48h": 726.9162556736907
   },
   "lite-20261007-1324": {
    "topic_key": "ramayana-1-67",
    "due_at": "2026-10-07T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 158.68,
-     "views": 37120,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 33,
-     "instagram_reactions": 2337,
-     "instagram_comments": 6,
-     "instagram_views": 37087,
-     "instagram_shares": 211,
-     "instagram_saves": 260,
-     "instagram_reach": 28167
-    },
     {
      "age_h": 164.71,
      "views": 37120,
@@ -5845,21 +5834,27 @@
      "instagram_shares": 230,
      "instagram_saves": 301,
      "instagram_reach": 31224
+    },
+    {
+     "age_h": 644.73,
+     "views": 42490,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 35,
+     "instagram_reactions": 2609,
+     "instagram_comments": 6,
+     "instagram_views": 42455,
+     "instagram_shares": 234,
+     "instagram_saves": 301,
+     "instagram_reach": 31224
     }
    ],
-   "views_at_48h": 20415.851134961544
+   "views_at_48h": 20038.656588640908
   },
   "lite-20261007-1629": {
    "topic_key": "gita-6-25",
    "due_at": "2026-10-07T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 154.43,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 160.46,
      "views": 0,
@@ -5964,6 +5959,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 640.48,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -5972,13 +5974,6 @@
    "topic_key": "gita-6-25",
    "due_at": "2026-10-07T23:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 152.68,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 158.71,
      "views": 0,
@@ -6083,6 +6078,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 638.73,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -6091,13 +6093,6 @@
    "topic_key": "gita-6-25",
    "due_at": "2026-10-08T12:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 139.68,
-     "views": 0,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 0
-    },
     {
      "age_h": 145.71,
      "views": 0,
@@ -6202,6 +6197,13 @@
      "youtube_reactions": 0,
      "youtube_comments": 0,
      "youtube_views": 0
+    },
+    {
+     "age_h": 625.73,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
     }
    ],
    "views_at_48h": 0.0
@@ -6210,19 +6212,6 @@
    "topic_key": "ramayana-1-45",
    "due_at": "2026-10-08T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 134.68,
-     "views": 10790,
-     "youtube_reactions": 1,
-     "youtube_comments": 0,
-     "youtube_views": 39,
-     "instagram_reactions": 540,
-     "instagram_comments": 4,
-     "instagram_views": 10751,
-     "instagram_shares": 290,
-     "instagram_saves": 131,
-     "instagram_reach": 7338
-    },
     {
      "age_h": 140.71,
      "views": 10790,
@@ -6417,27 +6406,27 @@
      "instagram_shares": 322,
      "instagram_saves": 144,
      "instagram_reach": 8028
+    },
+    {
+     "age_h": 620.73,
+     "views": 11852,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 39,
+     "instagram_reactions": 590,
+     "instagram_comments": 4,
+     "instagram_views": 11813,
+     "instagram_shares": 322,
+     "instagram_saves": 144,
+     "instagram_reach": 8033
     }
    ],
-   "views_at_48h": 6441.551888605007
+   "views_at_48h": 6302.017166600948
   },
   "lite-20261008-1324": {
    "topic_key": "mahabharata-1-19",
    "due_at": "2026-10-08T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 130.43,
-     "views": 3790,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 9,
-     "instagram_reactions": 84,
-     "instagram_comments": 1,
-     "instagram_views": 3781,
-     "instagram_shares": 8,
-     "instagram_saves": 17,
-     "instagram_reach": 3029
-    },
     {
      "age_h": 136.46,
      "views": 3790,
@@ -6632,27 +6621,27 @@
      "instagram_shares": 8,
      "instagram_saves": 17,
      "instagram_reach": 3063
+    },
+    {
+     "age_h": 616.48,
+     "views": 3834,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 11,
+     "instagram_reactions": 88,
+     "instagram_comments": 1,
+     "instagram_views": 3823,
+     "instagram_shares": 8,
+     "instagram_saves": 17,
+     "instagram_reach": 3063
     }
    ],
-   "views_at_48h": 2299.1699864725774
+   "views_at_48h": 2247.797299837743
   },
   "lite-20261009-1324": {
    "topic_key": "ramayana-2-63",
    "due_at": "2026-10-09T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 110.68,
-     "views": 3647,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 2,
-     "instagram_reactions": 119,
-     "instagram_comments": 2,
-     "instagram_views": 3645,
-     "instagram_shares": 14,
-     "instagram_saves": 16,
-     "instagram_reach": 3050
-    },
     {
      "age_h": 116.71,
      "views": 3647,
@@ -6847,27 +6836,27 @@
      "instagram_shares": 14,
      "instagram_saves": 16,
      "instagram_reach": 3081
+    },
+    {
+     "age_h": 596.73,
+     "views": 3696,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 121,
+     "instagram_comments": 2,
+     "instagram_views": 3690,
+     "instagram_shares": 14,
+     "instagram_saves": 16,
+     "instagram_reach": 3081
     }
    ],
-   "views_at_48h": 2401.7168597134882
+   "views_at_48h": 2338.8498807018195
   },
   "lite-20261009-1629": {
    "topic_key": "vishnu_purana-1-17",
    "due_at": "2026-10-09T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 106.43,
-     "views": 2800,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 1,
-     "instagram_reactions": 113,
-     "instagram_comments": 1,
-     "instagram_views": 2799,
-     "instagram_shares": 5,
-     "instagram_saves": 11,
-     "instagram_reach": 2255
-    },
     {
      "age_h": 112.46,
      "views": 2800,
@@ -7062,27 +7051,27 @@
      "instagram_shares": 5,
      "instagram_saves": 11,
      "instagram_reach": 2279
+    },
+    {
+     "age_h": 592.48,
+     "views": 2844,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 6,
+     "instagram_reactions": 115,
+     "instagram_comments": 1,
+     "instagram_views": 2838,
+     "instagram_shares": 5,
+     "instagram_saves": 11,
+     "instagram_reach": 2279
     }
    ],
-   "views_at_48h": 1880.384310836711
+   "views_at_48h": 1829.2775750925875
   },
   "lite-20261010-0712": {
    "topic_key": "gita-6-35",
    "due_at": "2026-10-10T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 86.68,
-     "views": 1695,
-     "youtube_reactions": 2,
-     "youtube_comments": 0,
-     "youtube_views": 31,
-     "instagram_reactions": 66,
-     "instagram_comments": 2,
-     "instagram_views": 1664,
-     "instagram_shares": 3,
-     "instagram_saves": 11,
-     "instagram_reach": 1436
-    },
     {
      "age_h": 92.71,
      "views": 1695,
@@ -7277,27 +7266,27 @@
      "instagram_shares": 3,
      "instagram_saves": 11,
      "instagram_reach": 1466
+    },
+    {
+     "age_h": 572.73,
+     "views": 1724,
+     "youtube_reactions": 2,
+     "youtube_comments": 0,
+     "youtube_views": 31,
+     "instagram_reactions": 67,
+     "instagram_comments": 2,
+     "instagram_views": 1693,
+     "instagram_shares": 3,
+     "instagram_saves": 11,
+     "instagram_reach": 1466
     }
    ],
-   "views_at_48h": 1261.3362286399854
+   "views_at_48h": 1219.6270014439983
   },
   "lite-20261010-1321": {
    "topic_key": "ramayana-3-74",
    "due_at": "2026-10-10T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 82.43,
-     "views": 727,
-     "youtube_reactions": 1,
-     "youtube_comments": 0,
-     "youtube_views": 45,
-     "instagram_reactions": 34,
-     "instagram_comments": 1,
-     "instagram_views": 682,
-     "instagram_shares": 1,
-     "instagram_saves": 2,
-     "instagram_reach": 548
-    },
     {
      "age_h": 88.46,
      "views": 727,
@@ -7492,27 +7481,27 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 576
+    },
+    {
+     "age_h": 568.48,
+     "views": 764,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 49,
+     "instagram_reactions": 35,
+     "instagram_comments": 1,
+     "instagram_views": 715,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 576
     }
    ],
-   "views_at_48h": 554.7692485014452
+   "views_at_48h": 535.5272345515366
   },
   "lite-20261011-0711": {
    "topic_key": "ramayana-4-6",
    "due_at": "2026-10-11T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 62.68,
-     "views": 2674,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 21,
-     "instagram_reactions": 100,
-     "instagram_comments": 0,
-     "instagram_views": 2653,
-     "instagram_shares": 1,
-     "instagram_saves": 9,
-     "instagram_reach": 2219
-    },
     {
      "age_h": 68.71,
      "views": 2674,
@@ -7707,27 +7696,27 @@
      "instagram_shares": 1,
      "instagram_saves": 10,
      "instagram_reach": 2270
+    },
+    {
+     "age_h": 548.73,
+     "views": 2739,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 30,
+     "instagram_reactions": 105,
+     "instagram_comments": 0,
+     "instagram_views": 2709,
+     "instagram_shares": 1,
+     "instagram_saves": 10,
+     "instagram_reach": 2270
     }
    ],
-   "views_at_48h": 2340.00899970452
+   "views_at_48h": 2234.9717979347465
   },
   "lite-20261011-1322": {
    "topic_key": "ramayana-4-12",
    "due_at": "2026-10-11T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 58.43,
-     "views": 4065,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 56,
-     "instagram_reactions": 293,
-     "instagram_comments": 1,
-     "instagram_views": 4009,
-     "instagram_shares": 17,
-     "instagram_saves": 23,
-     "instagram_reach": 3232
-    },
     {
      "age_h": 64.46,
      "views": 4065,
@@ -7922,27 +7911,27 @@
      "instagram_shares": 21,
      "instagram_saves": 23,
      "instagram_reach": 3321
+    },
+    {
+     "age_h": 544.48,
+     "views": 4178,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 63,
+     "instagram_reactions": 301,
+     "instagram_comments": 1,
+     "instagram_views": 4115,
+     "instagram_shares": 21,
+     "instagram_saves": 23,
+     "instagram_reach": 3321
     }
    ],
-   "views_at_48h": 3684.3698987171924
+   "views_at_48h": 3507.8096461762307
   },
   "lite-20261012-0714": {
    "topic_key": "ramayana-5-36",
    "due_at": "2026-10-12T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 38.68,
-     "views": 550,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 16,
-     "instagram_reactions": 26,
-     "instagram_comments": 1,
-     "instagram_views": 534,
-     "instagram_shares": 0,
-     "instagram_saves": 2,
-     "instagram_reach": 461
-    },
     {
      "age_h": 44.71,
      "views": 550,
@@ -8137,6 +8126,19 @@
      "instagram_shares": 0,
      "instagram_saves": 2,
      "instagram_reach": 486
+    },
+    {
+     "age_h": 524.73,
+     "views": 588,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 23,
+     "instagram_reactions": 27,
+     "instagram_comments": 1,
+     "instagram_views": 565,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 486
     }
    ],
    "views_at_48h": 551.6766704416762
@@ -8145,19 +8147,6 @@
    "topic_key": "ramayana-5-38",
    "due_at": "2026-10-12T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 34.43,
-     "views": 3765,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 42,
-     "instagram_reactions": 156,
-     "instagram_comments": 1,
-     "instagram_views": 3723,
-     "instagram_shares": 4,
-     "instagram_saves": 14,
-     "instagram_reach": 2967
-    },
     {
      "age_h": 40.46,
      "views": 3765,
@@ -8352,6 +8341,19 @@
      "instagram_shares": 4,
      "instagram_saves": 13,
      "instagram_reach": 3122
+    },
+    {
+     "age_h": 520.48,
+     "views": 4016,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 53,
+     "instagram_reactions": 167,
+     "instagram_comments": 1,
+     "instagram_views": 3963,
+     "instagram_shares": 4,
+     "instagram_saves": 13,
+     "instagram_reach": 3122
     }
    ],
    "views_at_48h": 3811.5379388448473
@@ -8360,19 +8362,6 @@
    "topic_key": "ramayana-6-18",
    "due_at": "2026-10-13T17:30:00+05:30",
    "snapshots": [
-    {
-     "age_h": 14.68,
-     "views": 2874,
-     "youtube_reactions": 1,
-     "youtube_comments": 0,
-     "youtube_views": 18,
-     "instagram_reactions": 100,
-     "instagram_comments": 0,
-     "instagram_views": 2856,
-     "instagram_shares": 3,
-     "instagram_saves": 10,
-     "instagram_reach": 2403
-    },
     {
      "age_h": 20.71,
      "views": 2874,
@@ -8567,6 +8556,19 @@
      "instagram_shares": 3,
      "instagram_saves": 10,
      "instagram_reach": 2584
+    },
+    {
+     "age_h": 500.73,
+     "views": 3131,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 50,
+     "instagram_reactions": 103,
+     "instagram_comments": 0,
+     "instagram_views": 3081,
+     "instagram_shares": 3,
+     "instagram_saves": 10,
+     "instagram_reach": 2584
     }
    ],
    "views_at_48h": 3076.5856164383563
@@ -8575,19 +8577,6 @@
    "topic_key": "mahabharata-14-90",
    "due_at": "2026-10-13T21:45:00+05:30",
    "snapshots": [
-    {
-     "age_h": 10.43,
-     "views": 2695,
-     "youtube_reactions": 0,
-     "youtube_comments": 0,
-     "youtube_views": 5,
-     "instagram_reactions": 62,
-     "instagram_comments": 0,
-     "instagram_views": 2690,
-     "instagram_shares": 3,
-     "instagram_saves": 7,
-     "instagram_reach": 2210
-    },
     {
      "age_h": 16.46,
      "views": 2695,
@@ -8772,6 +8761,19 @@
     },
     {
      "age_h": 481.24,
+     "views": 3375,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 35,
+     "instagram_reactions": 85,
+     "instagram_comments": 1,
+     "instagram_views": 3340,
+     "instagram_shares": 6,
+     "instagram_saves": 10,
+     "instagram_reach": 2732
+    },
+    {
+     "age_h": 496.48,
      "views": 3375,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -8971,6 +8973,19 @@
      "instagram_shares": 7,
      "instagram_saves": 9,
      "instagram_reach": 2454
+    },
+    {
+     "age_h": 472.48,
+     "views": 3069,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 32,
+     "instagram_reactions": 140,
+     "instagram_comments": 1,
+     "instagram_views": 3037,
+     "instagram_shares": 7,
+     "instagram_saves": 9,
+     "instagram_reach": 2454
     }
    ],
    "views_at_48h": 3013.4455331412105
@@ -9124,6 +9139,19 @@
     },
     {
      "age_h": 437.49,
+     "views": 3662,
+     "youtube_reactions": 7,
+     "youtube_comments": 0,
+     "youtube_views": 175,
+     "instagram_reactions": 268,
+     "instagram_comments": 2,
+     "instagram_views": 3487,
+     "instagram_shares": 22,
+     "instagram_saves": 17,
+     "instagram_reach": 2667
+    },
+    {
+     "age_h": 452.73,
      "views": 3662,
      "youtube_reactions": 7,
      "youtube_comments": 0,
@@ -9297,6 +9325,19 @@
      "instagram_shares": 3,
      "instagram_saves": 8,
      "instagram_reach": 2196
+    },
+    {
+     "age_h": 448.48,
+     "views": 2861,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 53,
+     "instagram_reactions": 108,
+     "instagram_comments": 0,
+     "instagram_views": 2808,
+     "instagram_shares": 3,
+     "instagram_saves": 8,
+     "instagram_reach": 2196
     }
    ],
    "views_at_48h": 2817.572706935123
@@ -9434,6 +9475,19 @@
      "instagram_shares": 3,
      "instagram_saves": 13,
      "instagram_reach": 2027
+    },
+    {
+     "age_h": 424.48,
+     "views": 2732,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 122,
+     "instagram_reactions": 83,
+     "instagram_comments": 0,
+     "instagram_views": 2610,
+     "instagram_shares": 3,
+     "instagram_saves": 13,
+     "instagram_reach": 2027
     }
    ],
    "views_at_48h": 2678.4538198403648
@@ -9535,6 +9589,19 @@
     },
     {
      "age_h": 389.49,
+     "views": 2054,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 10,
+     "instagram_reactions": 63,
+     "instagram_comments": 0,
+     "instagram_views": 2044,
+     "instagram_shares": 0,
+     "instagram_saves": 4,
+     "instagram_reach": 1695
+    },
+    {
+     "age_h": 404.73,
      "views": 2054,
      "youtube_reactions": 0,
      "youtube_comments": 0,
@@ -9656,6 +9723,19 @@
      "instagram_shares": 1,
      "instagram_saves": 2,
      "instagram_reach": 640
+    },
+    {
+     "age_h": 400.48,
+     "views": 795,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 20,
+     "instagram_reactions": 23,
+     "instagram_comments": 0,
+     "instagram_views": 775,
+     "instagram_shares": 1,
+     "instagram_saves": 2,
+     "instagram_reach": 640
     }
    ],
    "views_at_48h": 754.4357885799193
@@ -9741,6 +9821,19 @@
      "instagram_shares": 4,
      "instagram_saves": 14,
      "instagram_reach": 3465
+    },
+    {
+     "age_h": 380.73,
+     "views": 4343,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 3,
+     "instagram_reactions": 168,
+     "instagram_comments": 0,
+     "instagram_views": 4340,
+     "instagram_shares": 4,
+     "instagram_saves": 14,
+     "instagram_reach": 3466
     }
    ],
    "views_at_48h": 3673.954998938654
@@ -9826,6 +9919,19 @@
      "instagram_shares": 1,
      "instagram_saves": 3,
      "instagram_reach": 403
+    },
+    {
+     "age_h": 376.48,
+     "views": 501,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 12,
+     "instagram_reactions": 29,
+     "instagram_comments": 0,
+     "instagram_views": 489,
+     "instagram_shares": 1,
+     "instagram_saves": 3,
+     "instagram_reach": 403
     }
    ],
    "views_at_48h": 303.488006792613
@@ -9885,6 +9991,19 @@
      "instagram_shares": 7,
      "instagram_saves": 16,
      "instagram_reach": 1977
+    },
+    {
+     "age_h": 356.73,
+     "views": 2419,
+     "youtube_reactions": 1,
+     "youtube_comments": 0,
+     "youtube_views": 91,
+     "instagram_reactions": 167,
+     "instagram_comments": 1,
+     "instagram_views": 2328,
+     "instagram_shares": 7,
+     "instagram_saves": 16,
+     "instagram_reach": 1980
     }
    ],
    "views_at_48h": 1225.190257777709
@@ -9944,6 +10063,19 @@
      "instagram_shares": 0,
      "instagram_saves": 4,
      "instagram_reach": 948
+    },
+    {
+     "age_h": 352.48,
+     "views": 1229,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 19,
+     "instagram_reactions": 26,
+     "instagram_comments": 0,
+     "instagram_views": 1210,
+     "instagram_shares": 0,
+     "instagram_saves": 4,
+     "instagram_reach": 948
     }
    ],
    "views_at_48h": 627.1933848703675
@@ -9984,6 +10116,19 @@
      "instagram_shares": 1,
      "instagram_saves": 3,
      "instagram_reach": 1634
+    },
+    {
+     "age_h": 164.73,
+     "views": 1967,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 78,
+     "instagram_comments": 0,
+     "instagram_views": 1967,
+     "instagram_shares": 1,
+     "instagram_saves": 3,
+     "instagram_reach": 1634
     }
    ],
    "views_at_48h": 654.0052113491604
@@ -10017,20 +10162,53 @@
      "instagram_shares": 0,
      "instagram_saves": 2,
      "instagram_reach": 1969
+    },
+    {
+     "age_h": 160.48,
+     "views": 2645,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0,
+     "instagram_reactions": 66,
+     "instagram_comments": 0,
+     "instagram_views": 2645,
+     "instagram_shares": 0,
+     "instagram_saves": 2,
+     "instagram_reach": 1969
     }
    ],
    "views_at_48h": 1571.6530840797263
+  },
+  "lite-20261102-1352": {
+   "topic_key": "ramayana-6-108",
+   "due_at": "2026-11-03T12:30:00+05:30",
+   "snapshots": [
+    {
+     "age_h": 1.73,
+     "views": 0,
+     "youtube_reactions": 0,
+     "youtube_comments": 0,
+     "youtube_views": 0
+    }
+   ],
+   "views_at_48h": null
+  },
+  "lite-20261103-0349": {
+   "topic_key": "ramayana-5-54",
+   "due_at": "2026-11-03T17:30:00+05:30",
+   "snapshots": [],
+   "views_at_48h": null
   }
  },
  "learned": {
-  "at": "2026-11-02T17:29:17+00:00",
+  "at": "2026-11-03T08:43:56+00:00",
   "scored": 30,
   "min_samples": 4,
   "lifts": {
    "ramayana": {
     "n": 22,
     "lift": 1.35,
-    "typical_views": 1766
+    "typical_views": 1749
    },
    "gita": {
     "n": 4,
@@ -10038,6 +10216,6 @@
     "typical_views": 5
    }
   },
-  "baseline_views": 828
+  "baseline_views": 820
  }
 }
