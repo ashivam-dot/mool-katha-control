@@ -113,6 +113,10 @@ class WriterRulesTest(unittest.TestCase):
         self.assertTrue(writer.WORDS_MIN <= writer.word_count(script) <= writer.WORDS_MAX, writer.word_count(script))
         self.assertEqual(writer.problems(script, self.passage), [])
 
+    def test_misspelt_hashtags_take_the_searched_spelling(self):
+        script = dict(good_script(), hashtags=["#valmikirayan", "#valmikirayayan", "#ramayan", "#bhagirath", "#रामायण"])
+        self.assertEqual(writer.tidy(script)["hashtags"], ["#valmikiramayan", "#ramayan", "#bhagirath", "#रामायण"])
+
     def test_banned_hook_and_invented_quote_and_bad_title(self):
         script = good_script()
         script["beats"] = [dict(b) for b in script["beats"]]

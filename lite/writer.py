@@ -245,11 +245,30 @@ def problems(script: dict, passage: Passage) -> list[str]:
     return found
 
 
+# The spellings viewers search. The writer misspelt them in live uploads (#valmikirayan, #valmikirayayan, 2026-11).
+HASHTAGS = ("ramayan", "valmikiramayan", "mahabharat", "bhagavadgita", "purana", "sundarkand", "hanuman", "shriram",
+            "sita", "lakshman", "ravana", "bharat", "krishna", "arjun", "karna", "bhishma", "draupadi", "yudhishthir",
+            "shiva", "vishnu", "ganga", "jatayu", "bali", "sugriv", "vibhishan", "kumbhakarna", "indrajit", "parashuram",
+            "savitri", "dharma", "sanatandharma")
+
+
+def hashtag(tag: str) -> str:
+    """A Latin hashtag one or two letters off a known spelling takes that spelling; other tags are kept."""
+    import difflib
+
+    word = tag.lstrip("#").lower()
+    if not re.fullmatch(r"[a-z0-9]+", word) or word in HASHTAGS:
+        return tag
+    near = difflib.get_close_matches(word, HASHTAGS, n=1, cutoff=0.88)
+    return "#" + near[0] if near and abs(len(near[0]) - len(word)) <= 2 else tag
+
+
 def tidy(script: dict) -> dict:
     """Normalise small formatting differences the checks above allow."""
     script = dict(script)
-    script["hashtags"] = [t.strip() for t in script.get("hashtags") or []
-                          if isinstance(t, str) and t.strip().startswith("#") and " " not in t.strip()][:5]
+    script["hashtags"] = list(dict.fromkeys(
+        hashtag(t.strip()) for t in script.get("hashtags") or []
+        if isinstance(t, str) and t.strip().startswith("#") and " " not in t.strip()))[:5]
     script["keywords"] = [k.strip() for k in script.get("keywords") or [] if isinstance(k, str) and k.strip()][:8]
     script["title"] = " ".join(script.get("title", "").split())
     script["hook_text"] = " ".join(script.get("hook_text", "").split())
