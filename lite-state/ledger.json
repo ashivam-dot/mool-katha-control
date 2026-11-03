@@ -5168,9 +5168,228 @@
   "ramayana-3-51": "narration rejected: lite-20261014-0724: best completed Gemini take has insufficient script coverage (73% below 75%); narration rejected before render",
   "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage",
   "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
-  "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
+  "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render",
+  "ramayana-6-74": "script: beat 3: its evidence is not an exact quote from the passage: 'Hanuma and Vibhishana... roamed about in the battle-front, with torches in their'; beat 8: its evidence is not an exact quote from"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261104-0200",
+  "topic_key": "ramayana-6-50",
+  "script": {
+   "beats": [
+    {
+     "text": "इंद्रजीत के सर्प बाण श्रीराम को छोड़कर अचानक क्यों भाग गए?",
+     "evidence": "On beholding Garuda the eagle which came there, the serpants who bound those two warriors Rama and Lakshmana in the form of mighty arrows, fled away.",
+     "scene": "Close-up of Rama lying bound in serpent arrows, his face showing quiet endurance under dark grey skies on the battlefield at dusk, surrounded by worried monkey warriors.",
+     "close": "",
+     "visual_query": "Rama bound serpent arrows closeup",
+     "emphasis": ""
+    },
+    {
+     "text": "युद्धभूमि में श्रीराम और लक्ष्मण बाणों की शैय्या पर लेटे हैं।",
+     "evidence": "Do you not see the high-souled Rama and Lakshmana of the great chariot, those two valiant sons of Dasaratha covered with darts lying all bloody in a bed of arrows?",
+     "scene": "Medium shot of Rama and Lakshmana lying on a bed of arrows on the dark battlefield, surrounded by anxious monkey soldiers under overcast sky.",
+     "close": "Close-up of Lakshmana lying motionless on the ground, his face pale and eyes closed in distress.",
+     "visual_query": "Rama Lakshmana bed of arrows",
+     "emphasis": ""
+    },
+    {
+     "text": "विभीषण बाणों से बिंधे दोनों भाइयों को देखकर रो पड़ते हैं।",
+     "evidence": "Washing their eyes with his hands dipped in water, Vibhishana began to weap, with anguish seizing his heart and lamented",
+     "scene": "Wide shot of Vibhishana kneeling beside Rama and Lakshmana on the battlefield, washing his tearful eyes with water, looking grief-stricken.",
+     "close": "Close-up of Vibhishana crying bitterly, tear droplets glistening on his dark face as he gazes at Rama.",
+     "visual_query": "Vibhishana crying Rama",
+     "emphasis": ""
+    },
+    {
+     "text": "सुग्रीव कहते हैं श्रीराम जल्द सचेत होकर रावण का वध करेंगे।",
+     "evidence": "Emerging from their swoon, they will destroy Ravana with his hordes in battles.",
+     "scene": "Medium shot of Sugriva embracing Vibhishana on the battlefield, placing a comforting hand on his shoulder, expression determined under dim evening light.",
+     "close": "Close-up of Sugriva with a calm, confident expression, reassuring Vibhishana with strong hands on his arms.",
+     "visual_query": "Sugriva comforting Vibhishana",
+     "emphasis": ""
+    },
+    {
+     "text": "तभी भयंकर आँधी चलती है और समुद्र की तरंगें काँपने लगती हैं।",
+     "evidence": "In the meantime, a great wind arose, accompanied by massed clouds and lightning, whipping up the salty waves in the ocean",
+     "scene": "Wide shot of a sudden storm sweeping across the sea near Lanka, dark clouds flashing with lightning, massive waves surging.",
+     "close": "Close-up of turbulent ocean waves crashing against rocks, illuminated by flashes of golden lightning.",
+     "visual_query": "Storm over sea ocean",
+     "emphasis": ""
+    },
+    {
+     "text": "पक्षीराज गरुड़ आकाश से जलती अग्नि की तरह प्रकट होते हैं।",
+     "evidence": "Thereupon, all the monkeys saw within a moment, a mighty eagle, Garuda, the son of Vinata, like unto a blazing torch.",
+     "scene": "Wide shot of Garuda descending from the stormy sky, radiant like a blazing torch, his massive golden wings spreading glowing light.",
+     "close": "Close-up of Garuda in mid-flight, his divine golden eyes shining brilliantly against dark storm clouds.",
+     "visual_query": "Garuda golden bird sky",
+     "emphasis": ""
+    },
+    {
+     "text": "गरुड़ को देखते ही बाण बने जहरीले नाग डरकर तुरंत भाग निकलते हैं।",
+     "evidence": "On beholding Garuda the eagle which came there, the serpants who bound those two warriors Rama and Lakshmana in the form of mighty arrows, fled away.",
+     "scene": "Wide shot of the serpent arrows untying themselves from Rama and Lakshmana and slithering rapidly away into the dark ocean upon seeing Garuda above.",
+     "close": "Close-up of poisonous snake heads uncoiling in terror from around Rama's shoulders and fleeing quickly.",
+     "visual_query": "Garuda freeing Rama serpents",
+     "emphasis": ""
+    },
+    {
+     "text": "गरुड़ अपने हाथों से श्रीराम और लक्ष्मण के सुंदर मुख स्पर्श करते हैं।",
+     "evidence": "with his hands caressly touched their faces that were radiant like the moon.",
+     "scene": "Medium shot of majestic Garuda kneeling gently beside Rama and Lakshmana, tenderly touching their moon-like radiant faces with his divine golden hands.",
+     "close": "Close-up of Garuda's golden palm tenderly resting against Rama's serene cheek on the dimly lit battlefield.",
+     "visual_query": "Garuda touching Rama face",
+     "emphasis": ""
+    },
+    {
+     "text": "स्पर्श पाते ही दोनों भाइयों के घाव भर जाते हैं और बल दोगुना हो जाता है।",
+     "evidence": "Their wounds, touched by Garuda the eagle, were healed... Their lustre, valour, strength, endurance and resolution... were re-doubled.",
+     "scene": "Medium shot of Rama and Lakshmana rising effortlessly from the ground, their bodies glowing with redoubled golden aura, looking healthy.",
+     "close": "Close-up of Rama opening his bright, victorious eyes, his expression full of divine vigor and peace.",
+     "visual_query": "Rama Lakshmana healed battlefield",
+     "emphasis": ""
+    },
+    {
+     "text": "गरुड़ श्रीराम को मित्र बताकर आशीर्वाद देकर आकाश में उड़ जाते हैं।",
+     "evidence": "I am your dearest friend Garuda... entered the sky with the speed of the wind.",
+     "scene": "Medium shot of Garuda embracing Rama warmly on the battlefield before bowing respectfully and leaping up into the clear blue sky.",
+     "close": "Close-up of Garuda soaring upward into the sky, his great wings casting a heroic silhouette against bright clouds.",
+     "visual_query": "Garuda flying sky Rama",
+     "emphasis": ""
+    },
+    {
+     "text": "वानर सेना सिंहनान करती है और उत्साह से लंका के द्वारों पर पहुँच जाती है।",
+     "evidence": "the cheifs of monkeys haowled like roars of lions... desirous to fight, the monkeys reached the gates of Lanka.",
+     "scene": "Wide shot of the monkey army jumping in joy, beating drums, blowing conches, and uprooting trees as they march toward the gates of Lanka.",
+     "close": "Close-up of a monkey warrior raising his arms in triumph and roaring with joyful excitement.",
+     "visual_query": "Monkey army roaring Lanka",
+     "emphasis": ""
+    },
+    {
+     "text": "गरुड़ का आना बताता है कि मित्र की सहायता संकट में पहुँचती है।",
+     "evidence": "I came here for the purpose of helping you, both.",
+     "scene": "Wide shot of Rama and Lakshmana standing tall and victorious amidst the joyous monkey army under a clear sky, holding their grand bows ready.",
+     "close": "Close-up of Rama's serene yet firm face, looking toward Lanka with majestic calm and determination.",
+     "visual_query": "Rama Lakshmana bow victory",
+     "emphasis": ""
+    }
+   ],
+   "description": "वाल्मीकि रामायण के युद्धकाण्ड में जब इंद्रजीत के सर्प बाणों से श्रीराम और लक्ष्मण मूर्छित हो गए, तब पक्षीराज गरुड़ के आते ही वे नाग भयभीत होकर भाग निकले। गरुड़ के स्पर्श मात्र से दोनों भाइयों के घाव भर गए और उनका बल दोगुना हो गया।\n\nवाल्मिकि रामायण · युद्धकाण्ड · सर्ग 50",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#moolkatha",
+    "#shriram",
+    "#garuda"
+   ],
+   "hook_text": "नागपाश का रहस्य",
+   "key_quote": "On beholding Garuda the eagle which came there, the serpants who bound those two warriors Rama and Lakshmana in the form of mighty arrows, fled away.",
+   "keywords": [
+    "Ramayan",
+    "Valmiki Ramayan",
+    "Garuda",
+    "Rama Lakshmana",
+    "Nagapasha",
+    "Yuddha Kanda",
+    "Mool Katha"
+   ],
+   "names": [
+    "इंद्रजीत",
+    "श्रीराम",
+    "लक्ष्मण",
+    "विभीषण",
+    "सुग्रीव",
+    "गरुड़",
+    "रावण"
+   ],
+   "shloka_verse": "6-50-37",
+   "title": "नागपाश से कैसे मुक्त हुए श्रीराम? | रामायण 🚩",
+   "usable": true
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "note": "Pure question.",
+      "supported": true
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "note": "Supported by verses 2-3.",
+      "supported": true
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "note": "Supported by verses 13-14.",
+      "supported": true
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "note": "Supported by verse 22.",
+      "supported": true
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "note": "Supported by verse 33.",
+      "supported": true
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "note": "Supported by verse 36.",
+      "supported": true
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "note": "Supported by verses 37, 49.",
+      "supported": true
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "note": "Supported by verse 38.",
+      "supported": true
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "note": "Supported by verses 39-40.",
+      "supported": true
+     },
+     {
+      "beat": 10,
+      "factual": true,
+      "note": "Supported by verses 46, 52, 60.",
+      "supported": true
+     },
+     {
+      "beat": 11,
+      "factual": true,
+      "note": "Supported by verses 61, 64.",
+      "supported": true
+     },
+     {
+      "beat": 12,
+      "factual": false,
+      "note": "Moral interpretation, not story fact.",
+      "supported": true
+     }
+    ],
+    "respectful": true,
+    "summary": "All factual beats are supported by Valmiki Ramayana Yuddha Kanda Sarga 50. Beat 1 is a question and Beat 12 is a moral conclusion, both marked non-factual.",
+    "title_reveals_answer": false
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -5191,7 +5410,7 @@
   "ramayana-1-60": 1,
   "ramayana-1-75": 1,
   "ramayana-5-54": 1,
-  "ramayana-6-74": 1,
+  "ramayana-6-74": 2,
   "ramayana-6-50": 1
  },
  "blocked_pictures": [
