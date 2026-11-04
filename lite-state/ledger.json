@@ -5387,7 +5387,8 @@
   "ramayana-4-61": "script: shloka_verse '[4-61-15]' is not a verse number printed in the passage",
   "ramayana-5-58": "https://www.valmikiramayan.net/utf8/sundara/sarga58/sundara_58_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-1-60": "narration rejected: lite-20261019-0729: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render",
-  "ramayana-6-74": "script: beat 3: its evidence is not an exact quote from the passage: 'Hanuma and Vibhishana... roamed about in the battle-front, with torches in their'; beat 8: its evidence is not an exact quote from"
+  "ramayana-6-74": "script: beat 3: its evidence is not an exact quote from the passage: 'Hanuma and Vibhishana... roamed about in the battle-front, with torches in their'; beat 8: its evidence is not an exact quote from",
+  "ramayana-1-43": "narration rejected: lite-20261105-0156: best of 3 Gemini takes has insufficient script coverage (74% below 75%); narration rejected before render"
  },
  "pending": null,
  "ready": null,
@@ -5411,7 +5412,9 @@
   "ramayana-1-75": 1,
   "ramayana-5-54": 1,
   "ramayana-6-74": 2,
-  "ramayana-6-50": 1
+  "ramayana-6-50": 1,
+  "ramayana-1-43": 1,
+  "ramayana-6-105": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
