@@ -20,6 +20,8 @@ job's token has read-only repository permissions. The job reads:
 - The six-hour QA dispatcher and its exact `qa-v22` run. An inactive workflow,
   a missing run for ten hours, or a failed latest completed run alerts. The
   dispatcher is checked separately so a manual QA run cannot hide its failure.
+  Like the release check it follows `YTC_ENABLE_CONTROL_RELEASE`: while the Lite
+  lane publishes (signed release and QA disabled), QA is not checked.
   A newly changed dispatcher waits for its first following cron slot and the
   normal four-hour scheduling slack before a missing slot alerts.
 - Every signed episode with a published due time that has passed. It checks the

@@ -14,6 +14,7 @@ ENV = {"GITHUB_REPOSITORY": monitor.REPOSITORY, "GITHUB_REF": "refs/heads/main",
        "GH_TOKEN": "secret-gh", "BUFFER_API_KEY": "secret-buffer", "BUFFER_ORG_ID": monitor.BUFFER_ORG_ID,
        "BUFFER_YOUTUBE_CHANNEL_ID": YT_BUFFER_ID, "BUFFER_INSTAGRAM_CHANNEL_ID": monitor.BUFFER_INSTAGRAM_ID,
        "CLOUDINARY_URL": "cloudinary://private-key:private-secret@mw0oh0v8"}
+QA_ENV = ENV | {"YTC_ENABLE_CONTROL_RELEASE": "1"}
 
 
 def channels():
@@ -93,6 +94,11 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(result["status"], "alert")
         self.assertEqual(result["latest_completed_scheduled"]["id"], 1)
 
+    def test_qa_gate_off_with_release_lane_off(self):
+        with patch.object(monitor, "_json", side_effect=AssertionError("no QA read when the release lane is off")):
+            result = monitor.qa(NOW, ENV)
+        self.assertEqual((result["status"], result["issues"]), ("gate_off", []))
+
     def test_failed_pinned_qa_is_visible_despite_new_in_progress_run(self):
         def run(run_id, workflow, *, status="completed", conclusion="success", minutes=30):
             return {"id": run_id, "event": "schedule" if workflow == "dispatch" else "workflow_dispatch",
@@ -113,7 +119,7 @@ class MonitorTests(unittest.TestCase):
             return {"path": f".github/workflows/{name}", "state": "active"}
 
         with patch.object(monitor, "_json", side_effect=fake_json):
-            result = monitor.qa(NOW, ENV)
+            result = monitor.qa(NOW, QA_ENV)
         self.assertEqual(result["status"], "alert")
         self.assertEqual(result["pinned_qa"]["latest_completed"]["id"], 20)
         self.assertIn("latest completed pinned independent QA run did not succeed", result["issues"])
@@ -133,7 +139,7 @@ class MonitorTests(unittest.TestCase):
             return {"path": f".github/workflows/{name}", "state": "active"}
 
         with patch.object(monitor, "_json", side_effect=fake_json):
-            self.assertEqual(monitor.qa(NOW, ENV)["status"], "ok")
+            self.assertEqual(monitor.qa(NOW, QA_ENV)["status"], "ok")
 
     def test_missing_scheduled_dispatch_is_visible_even_after_manual_qa_success(self):
         def fake_json(url, **_):
@@ -150,7 +156,7 @@ class MonitorTests(unittest.TestCase):
             return {"path": f".github/workflows/{name}", "state": "active"}
 
         with patch.object(monitor, "_json", side_effect=fake_json):
-            result = monitor.qa(NOW, ENV)
+            result = monitor.qa(NOW, QA_ENV)
         self.assertEqual(result["status"], "alert")
         self.assertIn("no scheduled independent QA dispatch run found", result["issues"])
         self.assertEqual(result["pinned_qa"]["latest"]["conclusion"], "success")
@@ -174,11 +180,11 @@ class MonitorTests(unittest.TestCase):
         reference = datetime(2026, 10, 4, 13, 0, tzinfo=timezone.utc)
         with (patch.object(monitor, "_json", side_effect=fake_json),
               patch.object(monitor, "_request", return_value=changed)):
-            warm = monitor.qa(reference + timedelta(hours=1), ENV)
+            warm = monitor.qa(reference + timedelta(hours=1), QA_ENV)
             self.assertEqual(warm["status"], "ok")
             self.assertEqual(warm["dispatch"]["status"], "warming_up")
             reference = datetime(2026, 10, 4, 16, 0, tzinfo=timezone.utc)
-            missed = monitor.qa(reference + timedelta(hours=1), ENV)
+            missed = monitor.qa(reference + timedelta(hours=1), QA_ENV)
         self.assertIn("no scheduled independent QA dispatch run found", missed["issues"])
 
     def test_report_never_contains_provider_exception_or_secrets(self):

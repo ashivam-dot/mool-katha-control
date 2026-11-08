@@ -374,6 +374,10 @@ def qa(now: datetime, env: dict[str, str]) -> dict:
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
                "X-GitHub-Api-Version": "2022-11-28"}
     result = {"dispatch": None, "pinned_qa": None, "issues": []}
+    if env.get("YTC_ENABLE_CONTROL_RELEASE") != "1":
+        # Independent QA only reviews signed releases; with that lane off (Lite publishes) there is nothing to QA.
+        result["status"] = "gate_off"
+        return result
     for workflow_name, label, predicate in (
         (QA_DISPATCH_WORKFLOW, "scheduled independent QA dispatch",
          lambda run: run.get("event") == "schedule" and run.get("head_branch") == "main"),
