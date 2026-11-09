@@ -6413,7 +6413,195 @@
   "ramayana-1-53": "script: needs 140-175 Hindi words in total, has 128; shloka_verse '[1-53-23]' is not a verse number printed in the passage",
   "ramayana-3-45": "script: beat 1 scene shows violence directly ('severe'); paint the moment before or after, or a symbol such as an arrow in flight or the glow of fire, with no injury visible; beat 8 scene shows violen"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261110-0305",
+  "topic_key": "ramayana-4-11",
+  "script": {
+   "usable": true,
+   "title": "अजेय वाली ऋष्यमूक पर्वत पर जाने से क्यों डरता था? | रामायण 🔱",
+   "hook_text": "ऋष्यमूक पर वाली का भय",
+   "beats": [
+    {
+     "text": "अजेय वाली ऋष्यमूक पर्वत पर पैर रखने से क्यों काँपता था?",
+     "evidence": "ततः शाप भयात् भीत ऋष्यमूकम् महागिरिम् | प्रवेष्टुम् न इच्छति हरिः द्रष्टुम् वा अपि नरेश्वर ||",
+     "scene": "Close-up of the mighty monkey king Vali, his golden brow furrowed in sudden unease and dread against the craggy silhouettes of the Kishkindha hills under a harsh bright sky.",
+     "close": "",
+     "visual_query": "Vali Kishkindha Ramayana",
+     "emphasis": "ऋष्यमूक"
+    },
+    {
+     "text": "हज़ार हाथियों के बल वाला दुन्दुभि राक्षस भैंसे का रूप धरकर किष्किन्धा के द्वार पर गरजा।",
+     "evidence": "महिषो दुन्दुभिर् नाम कैलास शिखर प्रभः | बलम् नाग सहस्रस्य धारयामास वीर्यवान् ||",
+     "scene": "Wide shot of Kishkindha's massive stone ramparts where a gigantic dark buffalo demon Dundubhi, sharp horns held high, stamps the dust violently in furious challenge at twilight.",
+     "close": "Close-up of Dundubhi's fearsome snout and flared nostrils steaming as he bellows furiously before the gateway.",
+     "visual_query": "Dundubhi buffalo demon Kishkindha",
+     "emphasis": "दुन्दुभि"
+    },
+    {
+     "text": "क्रोध में भरे वाली ने उसके सींग पकड़े और ज़मीन पर पटक-पटक कर उसे मार डाला।",
+     "evidence": "विषाणयो गृहीत्वा तम् दुन्दुभिम् गिरि संनिभम् | आविध्यत तथा वाली विनदन् कपि कुंजरः ||",
+     "scene": "Medium shot of Vali, golden chest ornament gleaming, seizing the colossal horns of the buffalo demon with his bare hands and hurling the beast down with tremendous fury.",
+     "close": "Close-up of Vali's fierce, triumphant grimace and sinewy golden arms locked securely around the horn tips.",
+     "visual_query": "Vali fight Dundubhi painting",
+     "emphasis": "सींग"
+    },
+    {
+     "text": "फिर वाली ने दोनों हाथों से उस भारी शव को घुमाकर एक योजन दूर फेंक दिया।",
+     "evidence": "तम् तोलयित्वा बाहुभ्याम् गत सत्त्वम् अचेतनम् | चिक्षेप वेगवान् वाली वेगेन एकेन योजनम् ||",
+     "scene": "Wide dynamic angle of Vali raising the lifeless carcass high overhead with both arms, swinging it before flinging it across the cloud-dappled sky toward distant mountains.",
+     "close": "Close-up of Vali's powerful hands opening wide as the massive dark shape hurtles through the rushing wind.",
+     "visual_query": "Vali throwing demon carcass",
+     "emphasis": "योजन"
+    },
+    {
+     "text": "हवा में उड़ते उस शव के मुख से लहू की बूँदें मतंग मुनि के आश्रम पर जा गिरीं।",
+     "evidence": "तस्य वेग प्रविद्धस्य वक्त्रात् क्षतज बिन्दवः | प्रपेतुः मारुत उत्क्षिप्ता मतंगस्य आश्रमम् प्रति ||",
+     "scene": "Wide view of sage Matanga's tranquil green hermitage under the shade of ancient trees as wind-scattered red drops fall upon the quiet courtyard leaves.",
+     "close": "Close-up of fresh crimson drops spattering across the sacred altar stone beside quiet green foliage.",
+     "visual_query": "Matanga ashram forest hermitage",
+     "emphasis": "लहू"
+    },
+    {
+     "text": "अपने पवित्र तपोवन में रक्त गिरते देख मतंग मुनि क्रोध से भर उठे।",
+     "evidence": "तान् दृष्ट्वा पतिताम् तत्र मुनिः शोणित विप्रुषः | क्रुद्धः तस्य महाभाग चिन्तयामास कोन्वम् ||",
+     "scene": "Medium shot of the venerable sage Matanga stepping out of his thatched hut, his ascetic face stern with righteous indignation as he views the desecrated ground.",
+     "close": "Close-up of Sage Matanga's eyes blazing with quiet spiritual wrath under his matted grey brow.",
+     "visual_query": "Sage Matanga hermitage anger",
+     "emphasis": "क्रोध"
+    },
+    {
+     "text": "मुनि ने शाप दिया कि यदि वह आश्रम के एक योजन के घेरे में आया, तो उसका तुरंत वध हो जाएगा।",
+     "evidence": "इह तेन अप्रवेष्टव्यम् प्रविष्टस्य वधो भवेत् | वनम् मत् संश्रयम् येन दूषितम् रुधिर स्रवैः ||",
+     "scene": "Medium shot of Sage Matanga lifting his right hand in pronouncement of a curse, surrounded by trembling deer and forest hermits beneath towering trees.",
+     "close": "Close-up of the sage's raised hand, fingers taut with ascetic authority against the afternoon light.",
+     "visual_query": "Rishi curse Indian painting",
+     "emphasis": "शाप"
+    },
+    {
+     "text": "घबराया हुआ वाली हाथ जोड़कर क्षमा माँगने पहुँचा, पर मुनि ने उसकी ओर देखा तक नहीं।",
+     "evidence": "महर्षिः तम् अनादृत्य प्रविवेश आश्रमम् प्रति | शाप धारण भीतः तु वाली विह्वलताम् गतः ||",
+     "scene": "Wide shot of Vali kneeling outside the hermitage with folded hands in deep distress while Sage Matanga turns his back and walks into his dwelling without a word.",
+     "close": "Close-up of Vali's clasped trembling hands and lowered head, stripped of all arrogance.",
+     "visual_query": "Vali begging sage forgiveness",
+     "emphasis": "क्षमा"
+    },
+    {
+     "text": "मुनि के उसी शाप के भय से वाली ने कभी ऋष्यमूक पर्वत की ओर आँख उठाकर भी नहीं देखा।",
+     "evidence": "ततः शाप भयात् भीत ऋष्यमूकम् महागिरिम् | प्रवेष्टुम् न इच्छति हरिः द्रष्टुम् वा अपि नरेश्वर ||",
+     "scene": "Wide view of the majestic Rishyamuka mountain bathed in afternoon sun, an impenetrable sanctuary where Sugreeva stands looking outward.",
+     "close": "Close-up of Sugreeva's relieved face watching from the safety of Rishyamuka's high rocky perch.",
+     "visual_query": "Rishyamuka mountain Sugriva Ramayana",
+     "emphasis": "भय"
+    },
+    {
+     "text": "इसी कारण सुग्रीव बिना किसी भय के वहाँ रहे, क्योंकि वह पर्वत वाली की पहुँच से सदा बाहर था।",
+     "evidence": "तस्य अप्रवेशम् ज्ञात्वा अहम् इदम् राम महावनम् | विचरामि सह अमात्यो विषादेन विवर्जितः ||",
+     "scene": "Medium shot of Rama and Lakshmana listening calmly to Sugreeva beside the ancient sala trees as the sun sets over the rugged rocks of Kishkindha.",
+     "close": "Close-up of Rama's serene countenance, eyes reflecting quiet resolve and profound understanding.",
+     "visual_query": "Rama Sugriva Kishkindha meeting",
+     "emphasis": "सुग्रीव"
+    }
+   ],
+   "description": "वाल्मीकि रामायण के किष्किन्धाकाण्ड में सुग्रीव श्रीराम को दुन्दुभि वध की कथा सुनाते हैं। दुन्दुभि के शव से मतंग मुनि के आश्रम में रक्त गिरा, जिससे क्रुद्ध होकर मुनि ने शाप दिया और ऋष्यमूक पर्वत पर वाली का प्रवेश वर्जित हो गया।\n\nवाल्मीकि रामायण · किष्किन्धाकाण्ड · सर्ग 11",
+   "hashtags": [
+    "#valmiki",
+    "#ramayan",
+    "#moolkatha",
+    "#kishkindha"
+   ],
+   "keywords": [
+    "Vali",
+    "Sugriva",
+    "Dundubhi",
+    "Matanga Rishi",
+    "Rishyamuka",
+    "Kishkindha Kanda",
+    "Valmiki Ramayana Hindi"
+   ],
+   "shloka_verse": "4-11-53",
+   "key_quote": "Untreadable is this sheltering wood of mine to him who has stained it with squirts of blood, and if he enters this place peradventure, fatality occurs on him.",
+   "names": [
+    "वाली",
+    "ऋष्यमूक",
+    "दुन्दुभि",
+    "किष्किन्धा",
+    "मतंग",
+    "सुग्रीव"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Opening rhetorical question; non-factual."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 4-11-7 and 4-11-25-26."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 4-11-40 and 4-11-45-46."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 4-11-47."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 4-11-48."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 4-11-49."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 4-11-53 through 55."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verses 4-11-62 and 63."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 4-11-64."
+     },
+     {
+      "beat": 10,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by verse 4-11-65."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All beats are fully supported by Kishkindha Kanda Sarga 11 of the Valmiki Ramayana. The tone is respectful, and the title poses an open question without giving away the answer."
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -6440,7 +6628,8 @@
   "ramayana-6-105": 1,
   "mahabharata-3-296": 1,
   "ramayana-1-53": 2,
-  "ramayana-3-45": 2
+  "ramayana-3-45": 2,
+  "ramayana-1-66": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
