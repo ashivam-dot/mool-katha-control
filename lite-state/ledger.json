@@ -7165,7 +7165,199 @@
   "ramayana-3-45": "script: beat 1 scene shows violence directly ('severe'); paint the moment before or after, or a symbol such as an arrow in flight or the glow of fire, with no injury visible; beat 8 scene shows violen",
   "ramayana-1-64": "narration rejected: lite-20261111-1343: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261113-0028",
+  "topic_key": "ramayana-1-30",
+  "script": {
+   "usable": true,
+   "title": "मारीच को बाण मारकर भी श्री राम ने क्यों नहीं मारा? | रामायण",
+   "hook_text": "मारीच क्यों बच गया?",
+   "beats": [
+    {
+     "text": "श्री राम ने बाण मारकर भी मारीच को जीवित क्यों छोड़ दिया?",
+     "evidence": "Maareecha is pitched for a hundred yojana lengths in full, and flung down into an ocean rocking with tidewaters... without taking away his life.",
+     "scene": "A close-up of young prince Rama holding his bow with calm determination against a darkening evening sky in the forest.",
+     "close": "",
+     "visual_query": "Rama holding bow",
+     "emphasis": "जीवित"
+    },
+    {
+     "text": "विश्वामित्र के यज्ञ की रक्षा के लिए राम और लक्ष्मण छह दिनों तक बिना सोए पहरा देते रहे।",
+     "evidence": "On hearing that sentence of the other sages those two glorious princes have wakefully safeguarded that woodland of the ritual for six nights and days.",
+     "scene": "A wide shot of a peaceful forest hermitage at night, where young Rama and Lakshmana stand guard with bows beside a quiet fire altar.",
+     "close": "A close-up of Lakshmana's eyes, wide awake and watchful, staring into the dark night.",
+     "visual_query": "Rama Lakshmana guarding ashram",
+     "emphasis": "छह"
+    },
+    {
+     "text": "छठे दिन यज्ञ की अग्नि अचानक तेज़ हो उठी और आकाश में भयंकर गर्जना हुई।",
+     "evidence": "when the sixth day has come... the fire in the Altar of Fire flared up suddenly... a strident and frightening blare is generated in the sky.",
+     "scene": "A medium shot of the sacred altar fire flaring bright orange, with Sage Vishvamitra sitting in deep meditation nearby under ancient forest trees.",
+     "close": "A close-up of the bright flames leaping up on the sacred fire altar.",
+     "visual_query": "Vishvamitra fire altar",
+     "emphasis": "गर्जना"
+    },
+    {
+     "text": "अचानक मारीच और सुबाहु अपने साथियों के साथ आ पहुँचे और यज्ञ में विघ्न डालने लगे।",
+     "evidence": "Maareecha and Subaahu are the monstrous demons that have come along with their followers and they have started to pour down spates of blood.",
+     "scene": "A wide shot of dark storm clouds rolling over the forest sky, with shadowy demon forms hovering high above the hermitage trees.",
+     "close": "A close-up of Sage Vishvamitra's troubled face, looking up at the dark sky above.",
+     "visual_query": "Demons over forest ashram",
+     "emphasis": "विघ्न"
+    },
+    {
+     "text": "अग्नि वेदी पर विघ्न देखकर राम तुरंत दौड़े और उन्होंने आकाश में उड़ते राक्षसों को देखा।",
+     "evidence": "On noticing the Altar of Fire swamped with streams of blood, then Rama swiftly ran towards that direction and saw the demons in the sky.",
+     "scene": "A medium shot of Rama running swiftly towards the altar, reaching for an arrow in his quiver while looking up at the sky.",
+     "close": "A close-up of Rama's hand grasping a golden arrow from his quiver.",
+     "visual_query": "Rama running with arrow",
+     "emphasis": "दौड़े"
+    },
+    {
+     "text": "राम ने लक्ष्मण से कहा कि वे मानवास्त्र से इन राक्षसों को बादलों की तरह उड़ा देंगे।",
+     "evidence": "they will be puffed out with Manava missile like a gust puffing thick clouds, you may see.\" Thus Rama said to Lakshmana.",
+     "scene": "A medium shot of Rama speaking to Lakshmana with calm resolve, holding his bow while Lakshmana listens attentively.",
+     "close": "A close-up of Lakshmana's face nodding with complete trust in Rama.",
+     "visual_query": "Rama speaking to Lakshmana",
+     "emphasis": "मानवास्त्र"
+    },
+    {
+     "text": "राम ने अत्यंत दीप्तिमान मानवास्त्र धनुष पर चढ़ाकर मारीच की छाती पर चला दिया।",
+     "evidence": "agile Rama fitted the very benign and highly radiant arrow Maanava on his bow... darted it on the chest of Maareecha.",
+     "scene": "A wide shot of Rama drawing a luminous golden arrow on his bow, aiming up toward the dark sky.",
+     "close": "A close-up of the radiant tip of the glowing arrow resting on Rama's bowstring.",
+     "visual_query": "Rama drawing glowing arrow",
+     "emphasis": "दीप्तिमान"
+    },
+    {
+     "text": "उस बाण के प्रहार से मारीच बेहोश होकर सौ योजन दूर समुद्र में जा गिरा, पर उसके प्राण बच गए।",
+     "evidence": "Cleanly hit with that great missile Maanava, demon Maareecha is pitched for a hundred yojana lengths in full, and flung down into an ocean rocking with tidewaters.",
+     "scene": "A wide shot of a stormy ocean under dark skies, where a distant streak of light enters the splashing ocean waves.",
+     "close": "A close-up of foaming blue ocean waves churning after the missile's strike.",
+     "visual_query": "Streak of light ocean",
+     "emphasis": "समुद्र"
+    },
+    {
+     "text": "इसके बाद राम ने आग्नेयास्त्र से सुबाहु को गिराया और वायव्यास्त्र से बाकी राक्षसों का अंत किया।",
+     "evidence": "took up a very powerful missile called Aagneya astra... darted it on the chest of Subaahu... took up the missile of Air-god and hit down the remaining demons.",
+     "scene": "A medium shot of Rama releasing bright fiery and wind arrows into the sky, clearing the dark storm clouds above.",
+     "close": "A close-up of Rama's fingers effortlessly releasing the bowstring.",
+     "visual_query": "Rama shooting celestial arrows",
+     "emphasis": "वायव्यास्त्र"
+    },
+    {
+     "text": "राम ने मारीच को क्यों नहीं मारा? क्योंकि मनु का मानवास्त्र बिना प्राण लिए केवल मूर्छित करके दूर फेंक देता है!",
+     "evidence": "see the Cold arrow belonging to Maanava missile expounded by Manu which is taking him away on baffling, but without taking away his life.",
+     "scene": "A medium shot of Sage Vishvamitra standing beside Rama and Lakshmana, smiling with gratitude in the soft twilight after the ritual is saved.",
+     "close": "A close-up of Rama's serene face, looking peacefully toward the forest horizon.",
+     "visual_query": "Vishvamitra praising Rama",
+     "emphasis": "मूर्छित"
+    }
+   ],
+   "description": "वाल्मीकि रामायण के अनुसार जब मारीच और सुबाहु ने महर्षि विश्वामित्र के यज्ञ में विघ्न डाला, तब श्री राम ने मारीच पर मानवास्त्र का प्रयोग किया। इस बाण ने मारीच के प्राण लिए बिना उसे सौ योजन दूर समुद्र में फेंक दिया। जानिए इस घटना का मूल विवरण।\n\nवाल्मीकि रामायण · बालकाण्ड · सर्ग 30",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#moolkatha",
+    "#shriram",
+    "#yajna"
+   ],
+   "keywords": [
+    "Rama",
+    "Maricha",
+    "Valmiki Ramayana",
+    "Balakanda",
+    "Manava Astra",
+    "Subahu",
+    "Vishvamitra"
+   ],
+   "shloka_verse": "1-30-18",
+   "key_quote": "Cleanly hit with that great missile Maanava, demon Maareecha is pitched for a hundred yojana lengths in full, and flung down into an ocean rocking with tidewaters.",
+   "names": [
+    "श्री राम",
+    "मारीच",
+    "महर्षि विश्वामित्र",
+    "लक्ष्मण",
+    "सुबाहु",
+    "मानवास्त्र",
+    "आग्नेयास्त्र",
+    "वायव्यास्त्र",
+    "मनु"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Pure question."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     },
+     {
+      "beat": 10,
+      "factual": true,
+      "supported": true,
+      "note": "Accurate to passage."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All factual statements in the script are fully supported by the provided text from Valmiki Ramayana."
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -7195,7 +7387,8 @@
   "ramayana-3-45": 2,
   "ramayana-1-66": 1,
   "ramayana-1-64": 2,
-  "ramayana-3-71": 1
+  "ramayana-3-71": 1,
+  "ramayana-5-3": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
