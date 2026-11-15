@@ -8182,182 +8182,11 @@
   "ramayana-1-53": "script: needs 140-175 Hindi words in total, has 128; shloka_verse '[1-53-23]' is not a verse number printed in the passage",
   "ramayana-3-45": "script: beat 1 scene shows violence directly ('severe'); paint the moment before or after, or a symbol such as an arrow in flight or the glow of fire, with no injury visible; beat 8 scene shows violen",
   "ramayana-1-64": "narration rejected: lite-20261111-1343: best of 3 Gemini takes has insufficient script coverage (0% below 75%); narration rejected before render",
-  "mahabharata-17-3": "https://archive.sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
+  "mahabharata-17-3": "https://archive.sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
+  "ramayana-1-2": "https://www.valmikiramayan.net/utf8/baala/sarga2/bala_2_frame.htm: page title names no kanda and sarga ('One moment, please...')",
+  "ramayana-1-1": "https://www.valmikiramayan.net/utf8/baala/sarga1/bala_1_frame.htm: page title names no kanda and sarga ('One moment, please...')"
  },
- "pending": {
-  "id": "lite-20261115-1358",
-  "topic_key": "ramayana-1-2",
-  "script": {
-   "usable": true,
-   "title": "पहला श्लोक असल में एक श्राप क्यों था? | वाल्मीकि रामायण 😢",
-   "hook_text": "प्रथम श्लोक का रहस्य",
-   "beats": [
-    {
-     "text": "महर्षि वाल्मीकि के मुँह से निकला पहला श्लोक एक श्राप क्यों था?",
-     "evidence": "out of state of compassion and apperceiving the killing of male bird as unjust, the sage uttered this sentence... Oh! violent Hunter",
-     "scene": "A close-up painting of Sage Valmiki's face, filled with deep grief and sudden sorrow, eyes glistening under soft golden forest light.",
-     "close": "",
-     "visual_query": "Sage Valmiki painting",
-     "emphasis": "श्राप"
-    },
-    {
-     "text": "देवर्षि नारद के जाने के बाद महर्षि वाल्मीकि अपने शिष्य भरद्वाज के साथ तमसा नदी के तट पर पहुँचे।",
-     "evidence": "on Narada's going to the world of gods in a trice, that sage Valmiki went to the banks of Tamasa river",
-     "scene": "A medium shot painting showing Sage Valmiki walking peacefully beside his young disciple Bharadwaja along the clear banks of the Tamasa river under daytime sun.",
-     "close": "A close-up shot of the clear sparkling water flowing gently over the clean riverbank.",
-     "visual_query": "Valmiki Bharadwaja Tamasa river",
-     "emphasis": "तमसा"
-    },
-    {
-     "text": "वहाँ उन्होंने क्रौंच पक्षियों के जोड़े को एक साथ उड़ते और मधुर आवाज़ में चहकते देखा।",
-     "evidence": "holy sage Valmiki saw a couple of curlews, in the vicinity of that river's foreshore, flying there about in togetherness and cooing charmingly.",
-     "scene": "A wide shot painting of green forest trees near the river, with two curlew birds flying together joyfully in mid-air under bright sunlight.",
-     "close": "Close-up painting of two curlew birds perching together on a leafy branch with happy expressions.",
-     "visual_query": "Krouncha birds Valmiki",
-     "emphasis": "क्रौंच"
-    },
-    {
-     "text": "तभी एक दुष्ट शिकारी ने बाण चलाकर नर पक्षी को धरती पर गिरा दिया।",
-     "evidence": "A tribal hunter with evil intent, and a receptacle of enimity, killed the male one among the couple of birds, while Valmiki was looking on.",
-     "scene": "A medium shot painting of a hunter holding a bow in the forest shadows, looking stern as an arrow leaves his bow toward the tree.",
-     "close": "A close-up shot of an arrow lying broken on the forest grass near fallen autumn leaves.",
-     "visual_query": "Hunter bow arrow forest",
-     "emphasis": "शिकारी"
-    },
-    {
-     "text": "मादा पक्षी का करुण विलाप देखकर वाल्मीकि का हृदय शोक और दया से भर उठा।",
-     "evidence": "On seeing that bird felled that way by the tribal hunter, compassion occassioned in that saintly sage Valmiki.",
-     "scene": "A medium shot painting showing Sage Valmiki raising his hand toward the hunter, his expression compassionate yet firm, as the grieving bird cries nearby.",
-     "close": "Close-up of the female curlew bird crying sorrowfully beside her fallen mate.",
-     "visual_query": "Valmiki cursing hunter",
-     "emphasis": "विलाप"
-    },
-    {
-     "text": "उनके मुँह से अचानक शिकारी के लिए चार चरणों में बँधा एक श्राप निकल पड़ा।",
-     "evidence": "Oh! violent Hunter, by which reason you have killed one bird of the couple... you will never get a state of rest for everlasting years",
-     "scene": "A close-up painting of Sage Valmiki sitting thoughtfully by the river shore, looking contemplative and deeply astonished.",
-     "close": "Close-up of disciple Bharadwaja looking at his master Valmiki with reverence and wonder.",
-     "visual_query": "Valmiki in deep thought",
-     "emphasis": "श्राप"
-    },
-    {
-     "text": "आश्रम लौटने पर चार मुख वाले सृष्टि के रचयिता ब्रह्मा जी स्वयं वाल्मीकि से मिलने पहुँचे।",
-     "evidence": "Then, the great resplendent Four-faced creator of fourteen worlds, almighty Brahma, arrived there on his own, to see that eminent saint Valmiki.",
-     "scene": "A wide shot painting showing four-faced Lord Brahma glowing with divine golden light appearing inside Valmiki's forest hermitage.",
-     "close": "Close-up of Sage Valmiki's astonished face, bowing respectfully with joined hands.",
-     "visual_query": "Brahma visits Valmiki",
-     "emphasis": "ब्रह्मा"
-    },
-    {
-     "text": "ब्रह्मा जी ने मुस्कुराकर कहा, यह वाणी मेरी प्रेरणा से निकली है, तुम इसी श्लोकबद्ध छंद में रामकथा लिखो।",
-     "evidence": "Then, Brahma smilingly spoke to that eminent saint Valmiki... Oh, Brahman, that speech of yours sprang forth at my wish alone, hence oh, eminent sage, you shall render the legend of Rama",
-     "scene": "A medium shot painting of four-faced Lord Brahma sitting gracefully on a high seat, smiling benevolently and gesturing blessings toward Valmiki.",
-     "close": "Close-up of Lord Brahma's radiant serene face smiling as he speaks holy words.",
-     "visual_query": "Lord Brahma blessing Valmiki",
-     "emphasis": "रामकथा"
-    },
-    {
-     "text": "इस प्रकार एक पक्षी के वध से उपजा वाल्मीकि का शोक ही पहला श्लोक बन गया!",
-     "evidence": "While I was tormented by grief, there arose a sentence consisting of four verses... and that will be called Shloka, not otherwise...",
-     "scene": "A wide shot painting of Sage Valmiki sitting under a banyan tree writing on palm leaves with an iron stylus in serene nature.",
-     "close": "Close-up of a palm leaf manuscript with ancient Devanagari script and an iron stylus resting upon it.",
-     "visual_query": "Valmiki writing Ramayana",
-     "emphasis": "श्लोक"
-    }
-   ],
-   "description": "महर्षि वाल्मीकि द्वारा क्रौंच पक्षी के वध पर व्यक्त शोक से रामायण के प्रथम श्लोक की रचना हुई। ब्रह्मा जी की प्रेरणा से उन्होंने इसी छंद में संपूर्ण रामायण की रचना की। वाल्मीकि रामायण · बालकाण्ड · सर्ग 2",
-   "hashtags": [
-    "#ramayan",
-    "#valmiki",
-    "#moolkatha",
-    "#sanskrit"
-   ],
-   "keywords": [
-    "Valmiki Ramayana",
-    "First Shloka",
-    "Valmiki",
-    "Brahma",
-    "Tamasa River",
-    "Krouncha Bird",
-    "Mool Katha"
-   ],
-   "shloka_verse": "1-2-15",
-   "key_quote": "While I was tormented by grief, there arose a sentence consisting of four verses possessing metrically posited letters suitable to be played as song and string music and that will be called Shloka, not otherwise...",
-   "names": [
-    "वाल्मीकि",
-    "भरद्वाज",
-    "तमसा",
-    "क्रौंच",
-    "ब्रह्मा"
-   ]
-  },
-  "review": {
-   "ok": true,
-   "issues": [],
-   "result": {
-    "items": [
-     {
-      "beat": 1,
-      "factual": false,
-      "supported": true,
-      "note": "Beat 1 is a question asking why the first shloka was a curse, so it is not factual."
-     },
-     {
-      "beat": 2,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-3 to 1-2-7."
-     },
-     {
-      "beat": 3,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verse 1-2-9."
-     },
-     {
-      "beat": 4,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-10 to 1-2-12."
-     },
-     {
-      "beat": 5,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-11 to 1-2-14."
-     },
-     {
-      "beat": 6,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-15 and 1-2-18."
-     },
-     {
-      "beat": 7,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-22 and 1-2-23."
-     },
-     {
-      "beat": 8,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-30, 1-2-31, and 1-2-35."
-     },
-     {
-      "beat": 9,
-      "factual": true,
-      "supported": true,
-      "note": "Supported by verses 1-2-18 and 1-2-40."
-     }
-    ],
-    "respectful": true,
-    "title_reveals_answer": false,
-    "summary": "All factual assertions in the video are fully supported by the provided text from Valmiki Ramayana, Baala Kanda, Sarga 2. The title poses a question to generate interest rather than giving away the answer, and the content is respectful throughout."
-   }
-  },
-  "gate_attempts": 0
- },
+ "pending": null,
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -8389,7 +8218,9 @@
   "ramayana-1-64": 2,
   "ramayana-3-71": 1,
   "ramayana-5-3": 1,
-  "mahabharata-17-3": 1
+  "mahabharata-17-3": 1,
+  "ramayana-1-2": 1,
+  "ramayana-1-1": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
