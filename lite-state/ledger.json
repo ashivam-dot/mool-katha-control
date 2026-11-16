@@ -8187,7 +8187,195 @@
   "ramayana-1-1": "https://www.valmikiramayan.net/utf8/baala/sarga1/bala_1_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-2-52": "https://www.valmikiramayan.net/utf8/ayodhya/sarga52/ayodhya_52_frame.htm: page title names no kanda and sarga ('One moment, please...')"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261117-0211",
+  "topic_key": "ramayana-4-66",
+  "script": {
+   "usable": true,
+   "title": "हनुमान का बायाँ जबड़ा क्यों टूट गया था? | रामायण",
+   "hook_text": "हनुमान के नाम का रहस्य",
+   "beats": [
+    {
+     "text": "बालक का बायाँ जबड़ा इंद्र के वज्र से क्यों टूट गया?",
+     "evidence": "तदा शैलाग्र शिखरे वामो हनुर् अभज्यत | ततो हि नाम धेयम् ते हनुमान् इति कीर्तितम्",
+     "scene": "Close-up shot of young child Hanuman soaring through the sky, his eyes bright with wonder and innocence as golden sunlight reflects on his face against a vast blue sky.",
+     "close": "",
+     "visual_query": "Child Hanuman sun sky",
+     "emphasis": "जबड़ा"
+    },
+    {
+     "text": "उदास वानर सेना को देखकर जांबवान एकांत में शांत बैठे हनुमान के पास पहुंचे।",
+     "evidence": "अनेक शत साहस्रीम् विषण्णाम् हरि वाहिनीम् | जांबवान् समुदीक्ष्य एवम् हनुमंतम् अथ अब्रवीत्",
+     "scene": "Wide shot of thousands of dispirited vanara soldiers seated silently across rugged grey mountain rocks, as the elder Jambavan approaches Hanuman sitting quietly alone on a high stone under dim afternoon light.",
+     "close": "Close-up shot of old bear king Jambavan looking at Hanuman with deep concern and quiet wisdom in his eyes.",
+     "visual_query": "Jambavan vanara army",
+     "emphasis": "जांबवान"
+    },
+    {
+     "text": "जांबवान ने हनुमान को याद दिलाया कि वे पवनदेव और माता अंजना के पराक्रमी पुत्र हैं।",
+     "evidence": "मारुतस्य औरसः पुत्रः तेजसा च अपि तत् समः",
+     "scene": "Medium shot of Jambavan standing on the mountain top near Hanuman, raising his hand gently as he speaks, bright sunlight surrounding both figures against mountain peaks.",
+     "close": "Close-up shot of Hanuman's tranquil face as he listens thoughtfully, his eyes filled with quiet awareness.",
+     "visual_query": "Jambavan talking Hanuman",
+     "emphasis": "पवनदेव"
+    },
+    {
+     "text": "बचपन में सूर्य को फल समझकर हनुमान आकाश में तीन सौ योजन ऊपर तक उड़ गए थे।",
+     "evidence": "बालो दृष्ट्वा महा वने | फलंचेतिजिघृक्षुस्त्वम् उत्प्लुत्याभ्युत्पतोदिवम् | शतानि त्रीणि गत्वा अथ योजनानाम्",
+     "scene": "Wide shot of young child Hanuman leaping fearlessly from a lush green mountain forest into the sky toward a glowing red sun disc during morning dawn.",
+     "close": "Close-up shot of child Hanuman's outstretched hands reaching towards the vibrant solar disc with childlike enthusiasm.",
+     "visual_query": "Child Hanuman flying sun",
+     "emphasis": "सूर्य"
+    },
+    {
+     "text": "उन्हें अपने पास आता देख क्रोध में भरकर देवराज इंद्र ने उन पर वज्र चला दिया।",
+     "evidence": "त्वाम् अपि उपगतम् तूर्णम् अंतरीक्षम् महाकपे | क्षिप्तम् इन्द्रेण ते वज्रम् कोप आविष्टेन तेजसा",
+     "scene": "Medium shot of divine king Indra standing atop dark stormy clouds, his face tense with anger as he hurls a crackling golden thunderbolt across the sky.",
+     "close": "Close-up shot of Indra's fierce expression as golden divine sparks emanate from his raised hand.",
+     "visual_query": "Indra throwing thunderbolt",
+     "emphasis": "वज्र"
+    },
+    {
+     "text": "पर्वत की चोटी पर गिरते ही उनका बायाँ जबड़ा टूट गया, और वे हनुमान नाम से प्रसिद्ध हुए!",
+     "evidence": "तदा शैलाग्र शिखरे वामो हनुर् अभज्यत | ततो हि नाम धेयम् ते हनुमान् इति कीर्तितम्",
+     "scene": "Wide shot of young child Hanuman falling upon a sharp rocky mountain peak after being hit by the divine thunderbolt under bright open daylight.",
+     "close": "Close-up shot of child Hanuman resting on the stone peak, showing his left jaw bruised and swollen from the impact.",
+     "visual_query": "Hanuman falling mountain peak",
+     "emphasis": "हनुमान"
+    },
+    {
+     "text": "पुत्र को चोटिल देखकर क्रुद्ध पवनदेव ने तीनों लोकों में वायु का बहना बंद कर दिया।",
+     "evidence": "ततः त्वाम् निहतम् दृष्ट्वा वायुः गन्ध वहः स्वयम् | त्रैलोक्यम् भृश संक्रुद्धो न ववौ वै प्रभंजनः",
+     "scene": "Wide shot of motionless forest trees and still ocean waters as Vayu stands in deep fury, holding back all air currents under a pale midday sky.",
+     "close": "Close-up shot of Vayu's stern face, his brows furrowed in deep anger as atmospheric breezes freeze around him.",
+     "visual_query": "Vayu god angry sky",
+     "emphasis": "पवनदेव"
+    },
+    {
+     "text": "तब ब्रह्मा जी ने उन्हें अस्त्रों से अभय दिया और इंद्र ने स्वेच्छा मृत्यु का वरदान दिया।",
+     "evidence": "प्रसादिते च पवने ब्रह्मा तुभ्यम् वरम् ददौ | अशस्त्र वध्यताम् तात समरे सत्य विक्रम",
+     "scene": "Medium shot of divine Lord Brahma and Indra standing on clouds before Vayu, extending their palms in blessing toward child Hanuman lying on the mountain peak.",
+     "close": "Close-up shot of Lord Brahma's serene four-faced head, golden rays of divine boons radiating from his uplifted palm.",
+     "visual_query": "Brahma Indra boons Hanuman",
+     "emphasis": "वरदान"
+    },
+    {
+     "text": "जांबवान की बात सुनते ही हनुमान ने पूरी वानर सेना के सामने विशाल रूप धारण कर लिया।",
+     "evidence": "ततः कपीनाम् ऋषभेण चोदितः प्रतीत वेगः पवन आत्मजः कपिः | प्रहर्षयन् ताम् हरि वीर वाहिनीम् चकार रूपम् महत् आत्मनः तदा",
+     "scene": "Wide shot of Hanuman expanding his body into a giant heroic form atop the mountain under brilliant sunlight while vanara soldiers look up in awe.",
+     "close": "Close-up shot of giant Hanuman's resolute face looking forward with immense strength and determination.",
+     "visual_query": "Hanuman giant form Kishkindha",
+     "emphasis": "विशाल"
+    },
+    {
+     "text": "जांबवान की प्रेरणा से हनुमान को अपने वास्तविक बल और पराक्रम का स्मरण हो गया।",
+     "evidence": "प्रहर्षयन् ताम् हरि वीर वाहिनीम् चकार रूपम् महत् आत्मनः तदा",
+     "scene": "Wide shot of the vanara army cheering enthusiastically at the base of the mountain around the towering giant form of Hanuman.",
+     "close": "Close-up shot of Hanuman pressing his large palms together in solemn confidence and devotion.",
+     "visual_query": "Hanuman vanara army Kishkindha",
+     "emphasis": "स्मरण"
+    }
+   ],
+   "description": "वाल्मीकि रामायण के अनुसार, जब जांबवान ने हनुमान को उनके जन्म और पराक्रम की याद दिलाई, तब हनुमान ने अपना विशालकाय रूप धारण किया। जानिए बालक हनुमान पर इंद्र के वज्र प्रहार की सत्य कथा। वाल्मीकि रामायण · किष्किन्धाकाण्ड · सर्ग 66.",
+   "hashtags": [
+    "#ramayan",
+    "#valmikiramayan",
+    "#hanuman",
+    "#moolkatha",
+    "#kishkindhakanda"
+   ],
+   "keywords": [
+    "Hanuman birth story",
+    "Valmiki Ramayana",
+    "Jambavan Hanuman",
+    "Vajra Indra Hanuman",
+    "Kishkindha Kanda",
+    "Mool Katha"
+   ],
+   "shloka_verse": "4-66-24",
+   "key_quote": "Then, your left cheekbone, zygomatic arch, is broken when you fell down on a highest mountaintop, from thereupon your name-phrase is indeed averred as Hanumaan.",
+   "names": [
+    "हनुमान",
+    "जांबवान",
+    "इंद्र",
+    "पवनदेव",
+    "अंजना",
+    "ब्रह्मा"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Question framing, not an assertion of fact."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verses 4-66-1 and 4-66-2)."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verses 4-66-8, 4-66-18, 4-66-29)."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verses 4-66-21 and 4-66-22)."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verse 4-66-23)."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verse 4-66-24)."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verse 4-66-25)."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verses 4-66-27 and 4-66-28)."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verse 4-66-38)."
+     },
+     {
+      "beat": 10,
+      "factual": true,
+      "supported": true,
+      "note": "Supported by passage (verse 4-66-38)."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All factual statements in the beats are directly supported by Valmiki Ramayana Kishkindha Kanda Sarga 66, accurately recounting Jambavan reminding Hanuman of his birth, flying towards the sun, being struck by Indra's thunderbolt, and receiving boons."
+   }
+  },
+  "gate_attempts": 1
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
