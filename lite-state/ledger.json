@@ -8658,9 +8658,195 @@
   "mahabharata-17-3": "https://archive.sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://sacred-texts.com/hin/m17/m17003.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
   "ramayana-1-2": "https://www.valmikiramayan.net/utf8/baala/sarga2/bala_2_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-1-1": "https://www.valmikiramayan.net/utf8/baala/sarga1/bala_1_frame.htm: page title names no kanda and sarga ('One moment, please...')",
-  "ramayana-2-52": "https://www.valmikiramayan.net/utf8/ayodhya/sarga52/ayodhya_52_frame.htm: page title names no kanda and sarga ('One moment, please...')"
+  "ramayana-2-52": "https://www.valmikiramayan.net/utf8/ayodhya/sarga52/ayodhya_52_frame.htm: page title names no kanda and sarga ('One moment, please...')",
+  "mahabharata-2-44": "https://archive.sacred-texts.com/hin/m02/m02044.htm returned HTTP 403; https://sacred-texts.com/hin/m02/m02044.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m"
  },
- "pending": null,
+ "pending": {
+  "id": "lite-20261118-0100",
+  "topic_key": "mahabharata-3-53",
+  "script": {
+   "usable": true,
+   "title": "सोने के हंस ने नल और दमयन्ती को कैसे मिलाया? | महाभारत",
+   "hook_text": "सोने के हंस का रहस्य",
+   "beats": [
+    {
+     "text": "राजा नल ने पकड़े हुए सोने के हंस को क्यों छोड़ा?",
+     "evidence": "",
+     "scene": "Close-up of young handsome King Nala in a royal palace grove, gazing forward with intense wonder and deep longing, golden afternoon sunlight filtering through deep green leaves onto his face.",
+     "close": "",
+     "visual_query": "Raja Nala thinking",
+     "emphasis": "सोने"
+    },
+    {
+     "text": "निषध देश के राजा नल और विदर्भ की राजकुमारी दमयन्ती ने एक-दूसरे को कभी नहीं देखा था।",
+     "evidence": "conceived an attachment towards each other not begot of sight",
+     "scene": "Wide split landscape showing the majestic stone palace of Nishadha under a bright sky on one side, and the lush white courtyards of Vidarbha kingdom on the other.",
+     "close": "Close-up of Princess Damayanti standing by a marble pillar in Vidarbha, looking into the distance with a thoughtful, dreamy expression.",
+     "visual_query": "Damayanti Vidarbha palace",
+     "emphasis": "कभी"
+    },
+    {
+     "text": "दोनों केवल दूतों से एक-दूसरे के गुणों की प्रशंसा सुनकर ही प्रेम में बंध गए थे।",
+     "evidence": "heralds again and again celebrated the praises of Nala before Damayanti and those of Damayanti before the ruler of the Nishadhas.",
+     "scene": "Medium shot of royal court heralds singing praises before Damayanti, who listens attentively with a gentle, glowing smile among her maidens.",
+     "close": "Close-up of Damayanti's hands holding a lotus blossom, trembling slightly with nascent affection.",
+     "visual_query": "Damayanti listening heralds",
+     "emphasis": "प्रशंसा"
+    },
+    {
+     "text": "नल अपने मन के प्रेम को संभाल नहीं पा रहे थे और उपवन में अकेले भटकते थे।",
+     "evidence": "And then Nala was unable to control the love that was in his bosom. And he began to pass much of his time in solitude in the gardens",
+     "scene": "Wide shot of King Nala walking alone through dense palace woods by a tranquil lotus pond, head bowed in sweet torment and restlessness.",
+     "close": "Close-up of Nala's handsome face showing emotional turmoil and deep devotion, bathed in soft garden shade.",
+     "visual_query": "Nala walking solitude",
+     "emphasis": "अकेले"
+    },
+    {
+     "text": "वहीं उन्हें सोने के पंखों वाले हंस दिखे, और नल ने एक हंस को पकड़ लिया।",
+     "evidence": "there he saw a number of swans furnished with golden wings, wandering in those woods. And from among them he caught one with his hands.",
+     "scene": "Medium shot of King Nala stepping quietly toward a cluster of luminous swans whose golden plumage glitters brightly beside the water.",
+     "close": "Close-up of Nala's strong hands gently catching the radiant golden swan by its wings as it flaps softly.",
+     "visual_query": "Nala catching golden swan",
+     "emphasis": "पकड़"
+    },
+    {
+     "text": "हंस बोला, हे राजन, मुझे मत मारिए! मैं दमयन्ती से आपकी ऐसी प्रशंसा करूँगा कि वह सिर्फ आपको चाहेगी।",
+     "evidence": "Deserve I not to be slain by thee. O king. I will do something that is agreeable to thee. O king of the Nishadhas. I will speak of thee before Damayanti",
+     "scene": "Medium shot of the captive golden swan turning its head upward toward Nala, speaking with supernatural grace while Nala listens in astonishment.",
+     "close": "Close-up of Nala's eyes widening with profound surprise and hope as he hears the celestial bird speak human words.",
+     "visual_query": "Golden swan speaking Nala",
+     "emphasis": "प्रशंसा"
+    },
+    {
+     "text": "नल ने उसे आज़ाद कर दिया, और वह हंस उड़कर सीधे विदर्भ में दमयन्ती के महल पहुँचा।",
+     "evidence": "Thus addressed, the king liberated that swan. And those swans then rose on their wings and went to the country of the Vidarbhas.",
+     "scene": "Wide shot of King Nala opening his palms to release the shining bird into the bright open sky toward the distant kingdom of Vidarbha.",
+     "close": "Close-up of the swan's golden wings catching the sun's brilliance as it ascends high above green treetops.",
+     "visual_query": "Golden swan flying sky",
+     "emphasis": "आज़ाद"
+    },
+    {
+     "text": "दमयन्ती जब उस अनोखे पक्षी के पीछे दौड़ी, तो हंस ने एकांत में नल के अद्भुत रूप का बखान किया।",
+     "evidence": "having led her to a secluded spot, addressed her in human speech, saying, O Damayanti, there is a king amongst the Nishadhas named Nala.",
+     "scene": "Medium shot of Damayanti chasing the golden bird into a secluded bower of flowering creepers away from her maidens, her face bright with curiosity.",
+     "close": "Close-up of the golden swan standing upon a stone balustrade, speaking earnestly to Damayanti with head respectfully tilted.",
+     "visual_query": "Damayanti and the swan",
+     "emphasis": "एकांत"
+    },
+    {
+     "text": "हंस ने अपना वादा पूरा किया, और मुग्ध दमयन्ती ने नल के लिए अपना प्रेम संदेश हंस को सौंप दिया।",
+     "evidence": "replied unto him there, saying, 'Do thou speak thus unto Nala also,' Saying So be it , to the daughter of Vidarbha, the oviparous one, O king, returned",
+     "scene": "Medium shot of Damayanti leaning toward the golden swan in the quiet grove, speaking with deep tenderness and complete surrender of heart.",
+     "close": "Close-up of Damayanti's expressive eyes glowing with love and shyness as she sends her heartfelt reply back to King Nala.",
+     "visual_query": "Damayanti speaking to swan",
+     "emphasis": "पूरा"
+    },
+    {
+     "text": "क्या राजा नल का एक अनजान पक्षी के वादे पर इतना बड़ा भरोसा करना सही था?",
+     "evidence": "",
+     "scene": "Wide cinematic shot of the golden swan flying across mountain peaks at sunset, bearing the eternal promise of love back to King Nala.",
+     "close": "Close-up of King Nala standing on his palace terrace in the evening breeze, looking at the distant horizon with faithful expectation.",
+     "visual_query": "Nala waiting palace terrace",
+     "emphasis": "भरोसा"
+    }
+   ],
+   "description": "महाभारत के वन पर्व में राजा नल और दमयन्ती के अलौकिक प्रेम की मूल कथा मिलती है। एक-दूसरे को देखे बिना केवल गुणों को सुनकर मुग्ध हुए प्रेमियों के बीच एक सुनहरे हंस ने दूत बनकर संवाद कराया था। नल द्वारा जीवनदान पाए हंस ने विदर्भ जाकर दमयन्ती तक नल का संदेश पहुँचाया और अपना वचन निभाया।",
+   "hashtags": [
+    "#mahabharat",
+    "#naladamayanti",
+    "#moolkatha",
+    "#hindumythology"
+   ],
+   "keywords": [
+    "Nala Damayanti",
+    "Golden Swan",
+    "Mahabharata Vana Parva",
+    "नल दमयन्ती",
+    "महाभारत कथा",
+    "Mool Katha"
+   ],
+   "shloka_verse": "",
+   "key_quote": "I will speak of thee before Damayanti in such a way that she will not ever desire to have any other person (for her lord).",
+   "names": [
+    "नल",
+    "दमयन्ती",
+    "निषध",
+    "विदर्भ"
+   ]
+  },
+  "review": {
+   "ok": true,
+   "issues": [],
+   "result": {
+    "items": [
+     {
+      "beat": 1,
+      "factual": false,
+      "supported": true,
+      "note": "Opening hook question."
+     },
+     {
+      "beat": 2,
+      "factual": true,
+      "supported": true,
+      "note": "Directly supported by the passage."
+     },
+     {
+      "beat": 3,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; heralds celebrated their virtues repeatedly."
+     },
+     {
+      "beat": 4,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; Nala wandered alone in the palace gardens."
+     },
+     {
+      "beat": 5,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; Nala saw golden-winged swans and caught one."
+     },
+     {
+      "beat": 6,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; the swan pleaded for its life and promised to speak to Damayanti."
+     },
+     {
+      "beat": 7,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; Nala released it and it flew to Vidarbha to Damayanti."
+     },
+     {
+      "beat": 8,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; Damayanti pursued it to a secluded spot where it praised Nala."
+     },
+     {
+      "beat": 9,
+      "factual": true,
+      "supported": true,
+      "note": "Supported; Damayanti asked the swan to speak similarly to Nala."
+     },
+     {
+      "beat": 10,
+      "factual": false,
+      "supported": true,
+      "note": "Closing rhetorical question."
+     }
+    ],
+    "respectful": true,
+    "title_reveals_answer": false,
+    "summary": "All factual statements are accurately matched with the passage from Vana Parva Section 53."
+   }
+  },
+  "gate_attempts": 0
+ },
  "ready": null,
  "strikes": {
   "ramayana-1-67": 1,
@@ -8696,7 +8882,8 @@
   "ramayana-1-2": 1,
   "ramayana-1-1": 1,
   "ramayana-4-66": 1,
-  "ramayana-2-52": 1
+  "ramayana-2-52": 1,
+  "mahabharata-2-44": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
