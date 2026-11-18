@@ -8884,7 +8884,9 @@
   "ramayana-2-52": "https://www.valmikiramayan.net/utf8/ayodhya/sarga52/ayodhya_52_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "mahabharata-2-44": "https://archive.sacred-texts.com/hin/m02/m02044.htm returned HTTP 403; https://sacred-texts.com/hin/m02/m02044.htm returned HTTP 403; https://web.archive.org/web/2025id_/https://sacred-texts.com/hin/m",
   "ramayana-2-30": "https://www.valmikiramayan.net/utf8/ayodhya/sarga30/ayodhya_30_frame.htm returned HTTP 500",
-  "ramayana-5-7": "https://www.valmikiramayan.net/utf8/sundara/sarga7/sundara_7_frame.htm returned HTTP 500"
+  "ramayana-5-7": "https://www.valmikiramayan.net/utf8/sundara/sarga7/sundara_7_frame.htm returned HTTP 500",
+  "ramayana-2-83": "https://www.valmikiramayan.net/utf8/ayodhya/sarga83/ayodhya_83_frame.htm returned HTTP 500",
+  "ramayana-3-30": "https://www.valmikiramayan.net/utf8/aranya/sarga30/aranya_30_frame.htm returned HTTP 500"
  },
  "pending": null,
  "ready": null,
@@ -8925,7 +8927,9 @@
   "ramayana-2-52": 1,
   "mahabharata-2-44": 1,
   "ramayana-2-30": 1,
-  "ramayana-5-7": 1
+  "ramayana-5-7": 1,
+  "ramayana-2-83": 1,
+  "ramayana-3-30": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
