@@ -8898,7 +8898,9 @@
   "ramayana-2-38": "https://www.valmikiramayan.net/utf8/ayodhya/sarga38/ayodhya_38_frame.htm returned HTTP 500",
   "ramayana-2-49": "https://www.valmikiramayan.net/utf8/ayodhya/sarga49/ayodhya_49_frame.htm returned HTTP 500",
   "ramayana-6-67": "https://www.valmikiramayan.net/utf8/yuddha/sarga67/yuddha_67_frame.htm returned HTTP 500",
-  "ramayana-1-50": "https://www.valmikiramayan.net/utf8/baala/sarga50/bala_50_frame.htm returned HTTP 500"
+  "ramayana-1-50": "https://www.valmikiramayan.net/utf8/baala/sarga50/bala_50_frame.htm returned HTTP 500",
+  "ramayana-1-40": "https://www.valmikiramayan.net/utf8/baala/sarga40/bala_40_frame.htm returned HTTP 500",
+  "ramayana-4-17": "https://www.valmikiramayan.net/utf8/kish/sarga17/kishkindha_17_frame.htm returned HTTP 500"
  },
  "pending": null,
  "ready": null,
@@ -8953,7 +8955,9 @@
   "ramayana-2-38": 1,
   "ramayana-2-49": 1,
   "ramayana-6-67": 1,
-  "ramayana-1-50": 1
+  "ramayana-1-50": 1,
+  "ramayana-1-40": 1,
+  "ramayana-4-17": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
