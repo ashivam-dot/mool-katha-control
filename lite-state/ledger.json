@@ -8940,7 +8940,9 @@
   "ramayana-4-51": "https://www.valmikiramayan.net/utf8/kish/sarga51/kishkindha_51_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-3-41": "https://www.valmikiramayan.net/utf8/aranya/sarga41/aranya_41_frame.htm: page title names no kanda and sarga ('One moment, please...')",
   "ramayana-6-38": "https://www.valmikiramayan.net/utf8/yuddha/sarga38/yuddha_38_frame.htm: page title names no kanda and sarga ('One moment, please...')",
-  "ramayana-3-19": "https://www.valmikiramayan.net/utf8/aranya/sarga19/aranya_19_frame.htm returned HTTP 500"
+  "ramayana-3-19": "https://www.valmikiramayan.net/utf8/aranya/sarga19/aranya_19_frame.htm returned HTTP 500",
+  "ramayana-4-37": "https://www.valmikiramayan.net/utf8/kish/sarga37/kishkindha_37_frame.htm: page title names no kanda and sarga ('One moment, please...')",
+  "ramayana-2-22": "https://www.valmikiramayan.net/utf8/ayodhya/sarga22/ayodhya_22_frame.htm: page title names no kanda and sarga ('One moment, please...')"
  },
  "pending": null,
  "ready": null,
@@ -9037,7 +9039,9 @@
   "ramayana-4-51": 1,
   "ramayana-3-41": 1,
   "ramayana-6-38": 1,
-  "ramayana-3-19": 1
+  "ramayana-3-19": 1,
+  "ramayana-4-37": 1,
+  "ramayana-2-22": 1
  },
  "blocked_pictures": [
   "cleveland:170831",
